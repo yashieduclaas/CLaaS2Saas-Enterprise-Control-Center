@@ -1,0 +1,16 @@
+{
+  "name": "@claas2saas/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./rbac": "./rbac/index.ts",
+    "./api": "./api/index.ts",
+    "./routes": "./routes/index.ts",
+    "./auth": "./auth/index.ts",
+    "./tenant": "./tenant/index.ts",
+    "./audit": "./audit/index.ts",
+    "./shared": "./shared/index.ts"
+  }
+}
