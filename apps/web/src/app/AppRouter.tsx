@@ -30,6 +30,9 @@ const ForbiddenPage = lazy(() =>
 const EccPage = lazy(() =>
   import('@/features/ecc').then(m => ({ default: m.EccPage }))
 );
+const ModuleMgmtPage = lazy(() =>
+  import('@/features/module-mgmt').then(m => ({ default: m.ModuleMgmtPage }))
+);
 
 const isDemoMode = (import.meta.env['VITE_AUTH_MODE'] as string | undefined) === 'demo';
 
@@ -84,7 +87,7 @@ export function AppRouter() {
           {/* Administration */}
           <Route path={getRoutePath('module-mgmt')} element={
             <PermissionGuard pageKey="module-mgmt">
-              <Suspense fallback={<PageSkeleton />}><PlaceholderPage title="Module Management" /></Suspense>
+              <Suspense fallback={<PageSkeleton />}><ModuleMgmtPage /></Suspense>
             </PermissionGuard>
           } />
           <Route path={getRoutePath('role-mgmt')} element={

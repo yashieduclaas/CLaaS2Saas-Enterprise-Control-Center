@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { makeStyles, tokens, Button } from '@fluentui/react-components';
-import { AppIcon } from '@/components/AppIcon';
+import { makeStyles, tokens, mergeClasses } from '@fluentui/react-components';
 import { NavRail } from '@/navigation/NavRail';
 import { TopBar } from './TopBar';
 
@@ -21,41 +20,43 @@ const useStyles = makeStyles({
     flex: 1,
     overflow: 'hidden',
   },
+  railContainer: {
+    position: 'relative',
+    flexShrink: 0,
+    transition: 'width 150ms ease',
+    width: RAIL_WIDTH_EXPANDED,
+  },
+  railContainerCollapsed: {
+    width: RAIL_WIDTH_COLLAPSED,
+  },
   main: {
     flex: 1,
     overflowY: 'auto',
     padding: tokens.spacingVerticalXL,
     paddingLeft: tokens.spacingHorizontalXL,
     paddingRight: tokens.spacingHorizontalXL,
-  },
-  toggleButton: {
-    position: 'absolute',
-    top: tokens.spacingVerticalS,
-    left: tokens.spacingHorizontalS,
-    zIndex: 10,
+    backgroundColor: tokens.colorNeutralBackground3,
   },
 });
 
 export function AppLayout() {
   const styles = useStyles();
   const [collapsed, setCollapsed] = useState(false);
-  const railWidth = collapsed ? RAIL_WIDTH_COLLAPSED : RAIL_WIDTH_EXPANDED;
 
   return (
     <div className={styles.shell}>
       <TopBar />
       <div className={styles.body}>
-        <div style={{ position: 'relative', width: railWidth, transition: 'width 150ms ease', flexShrink: 0 }}>
-          <Button
-            className={styles.toggleButton}
-            appearance="subtle"
-            size="small"
-            icon={collapsed ? <AppIcon name="navigation" size={20} /> : <AppIcon name="dismiss" size={20} />}
-            aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
-            aria-expanded={!collapsed}
-            onClick={() => setCollapsed((c) => !c)}
+        <div
+          className={mergeClasses(
+            styles.railContainer,
+            collapsed && styles.railContainerCollapsed
+          )}
+        >
+          <NavRail
+            collapsed={collapsed}
+            onCollapseClick={() => setCollapsed((c) => !c)}
           />
-          <NavRail collapsed={collapsed} width={railWidth} />
         </div>
         <main className={styles.main} id="main-content" tabIndex={-1}>
           <Outlet />

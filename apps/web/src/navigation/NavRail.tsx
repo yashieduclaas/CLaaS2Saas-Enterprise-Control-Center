@@ -1,79 +1,123 @@
 // apps/web/src/navigation/NavRail.tsx
-// PLATFORM FILE - ROUTE_MAP driven. No hardcoded NAV_ITEMS.
+// PLATFORM FILE — Sidebar matching enterprise shell spec.
 
 import { useState } from 'react';
-import { makeStyles, tokens, Tooltip, mergeClasses } from '@fluentui/react-components';
-import { AppIcon, type IconName } from '@/components/AppIcon';
+import { makeStyles, tokens, mergeClasses, Tooltip } from '@fluentui/react-components';
 import { NavLink, useLocation } from 'react-router-dom';
 import { usePermission } from '@/rbac/usePermission';
-import { ROUTE_MAP, type RouteKey } from '@/rbac/RoutePermissionMap';
-import type { RouteMapEntry } from '@claas2saas/contracts/routes';
+import { getRouteEntry } from '@/rbac/RoutePermissionMap';
+import type { RouteKey } from '@/rbac/RoutePermissionMap';
 import type { PermissionCode } from '@claas2saas/contracts/rbac';
+import {
+  ShieldCheckmarkRegular,
+  SettingsRegular,
+  HeadsetRegular,
+  GridRegular,
+  AppsRegular,
+  PersonRegular,
+  PersonArrowRightRegular,
+  ClipboardTaskList16Regular,
+  ScalesRegular,
+  WrenchRegular,
+  DataTrendingRegular,
+  RocketRegular,
+  KeyRegular,
+  TicketDiagonalRegular,
+  BookRegular,
+  BotRegular,
+  ChevronDownRegular,
+  ChevronLeftRegular,
+} from '@fluentui/react-icons';
 
-const PAGE_ICON_NAMES: Partial<Record<RouteKey, IconName>> = {
-  'kernel-dashboard': 'shieldCheck',
-  'scc-dashboard': 'chart',
-  'audit-logs': 'clipboardTaskList',
-  'module-mgmt': 'apps',
-  'role-mgmt': 'personStar',
-  'user-profile': 'people',
-  'user-role-assign': 'personArrowRight',
-  'admin-access-requests': 'key',
-};
-
-type GroupId = 'scc' | 'acc' | 'helpdesk';
-
-interface NavGroupDef {
-  id: GroupId;
+interface NavItemDef {
   label: string;
-  iconName: IconName;
-  navSections: string[];
+  path: string;
+  pageKey?: RouteKey;
+  icon: React.ReactNode;
 }
 
+interface NavGroupDef {
+  id: string;
+  label: string;
+  groupIcon: React.ReactNode;
+  items: NavItemDef[];
+}
+
+const SCC_ITEMS: NavItemDef[] = [
+  { label: 'Dashboard', path: '/kernel', pageKey: 'kernel-dashboard', icon: <GridRegular fontSize={16} /> },
+  { label: 'Module Management', path: '/modules', pageKey: 'module-mgmt', icon: <AppsRegular fontSize={16} /> },
+  { label: 'User Profile Enrichment', path: '/users', pageKey: 'user-profile', icon: <PersonRegular fontSize={16} /> },
+  { label: 'Security Role Management', path: '/roles', pageKey: 'role-mgmt', icon: <ShieldCheckmarkRegular fontSize={16} /> },
+  { label: 'User Role Assignment', path: '/assignments', pageKey: 'user-role-assign', icon: <PersonArrowRightRegular fontSize={16} /> },
+  { label: 'Audit Logs', path: '/audit', pageKey: 'audit-logs', icon: <ClipboardTaskList16Regular fontSize={16} /> },
+];
+
+const ACC_ITEMS: NavItemDef[] = [
+  { label: 'Governance & Compliance', path: '/access-requests', pageKey: 'admin-access-requests', icon: <ScalesRegular fontSize={16} /> },
+  { label: 'Workflow Automation', path: '/workflow', icon: <WrenchRegular fontSize={16} /> },
+  { label: 'Analytics & KPIs', path: '/analytics', icon: <DataTrendingRegular fontSize={16} /> },
+  { label: 'Deployment & Release', path: '/deployment', icon: <RocketRegular fontSize={16} /> },
+];
+
+const HELPDESK_ITEMS: NavItemDef[] = [
+  { label: 'Access Requests', path: '/access-requests', pageKey: 'admin-access-requests', icon: <KeyRegular fontSize={16} /> },
+  { label: 'Issue Ticketing', path: '/tickets', icon: <TicketDiagonalRegular fontSize={16} /> },
+  { label: 'Knowledge Base', path: '/knowledge', icon: <BookRegular fontSize={16} /> },
+  { label: 'AI Assistant', path: '/assistant', icon: <BotRegular fontSize={16} /> },
+];
+
 const NAV_GROUPS: NavGroupDef[] = [
-  { id: 'scc', label: 'SCC', iconName: 'shieldCheck', navSections: ['monitoring', 'security'] },
-  { id: 'acc', label: 'ACC', iconName: 'settings', navSections: ['governance'] },
-  { id: 'helpdesk', label: 'Helpdesk', iconName: 'headset', navSections: [] },
+  { id: 'scc', label: 'SCC', groupIcon: <ShieldCheckmarkRegular fontSize={20} />, items: SCC_ITEMS },
+  { id: 'acc', label: 'ACC', groupIcon: <SettingsRegular fontSize={20} />, items: ACC_ITEMS },
+  { id: 'helpdesk', label: 'Helpdesk', groupIcon: <HeadsetRegular fontSize={20} />, items: HELPDESK_ITEMS },
 ];
 
 const useStyles = makeStyles({
   rail: {
     display: 'flex',
     flexDirection: 'column',
+    width: '100%',
     height: '100%',
     overflowY: 'auto',
     overflowX: 'hidden',
     backgroundColor: tokens.colorNeutralBackground2,
     borderRight: `1px solid ${tokens.colorNeutralStroke2}`,
-    paddingTop: tokens.spacingVerticalS,
-    paddingBottom: tokens.spacingVerticalL,
+    paddingTop: tokens.spacingVerticalM,
+    paddingBottom: tokens.spacingVerticalXL,
   },
   group: {
     display: 'flex',
     flexDirection: 'column',
   },
+  groupDivider: {
+    height: '1px',
+    backgroundColor: tokens.colorNeutralStroke2,
+    marginTop: tokens.spacingVerticalS,
+    marginBottom: tokens.spacingVerticalS,
+    marginLeft: tokens.spacingHorizontalM,
+    marginRight: tokens.spacingHorizontalM,
+  },
   groupHeader: {
     display: 'flex',
     alignItems: 'center',
     gap: tokens.spacingHorizontalS,
-    padding: `0 ${tokens.spacingHorizontalM}`,
+    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
     minHeight: '40px',
     width: '100%',
     border: 'none',
     background: 'none',
     cursor: 'pointer',
     color: tokens.colorNeutralForeground1,
-    fontSize: tokens.fontSizeBase300,
+    fontSize: tokens.fontSizeBase400,
     fontWeight: tokens.fontWeightSemibold,
     textAlign: 'left',
     borderRadius: tokens.borderRadiusMedium,
-    margin: `2px ${tokens.spacingHorizontalXS}`,
+    margin: `0 ${tokens.spacingHorizontalXS}`,
     ':hover': {
       backgroundColor: tokens.colorNeutralBackground3Hover,
     },
   },
   groupHeaderIcon: {
-    fontSize: '20px',
     flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
@@ -91,8 +135,10 @@ const useStyles = makeStyles({
     flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
-    transform: 'rotate(0deg)',
     transition: 'transform 0.15s ease',
+  },
+  chevronExpanded: {
+    transform: 'rotate(0deg)',
   },
   chevronCollapsed: {
     transform: 'rotate(-90deg)',
@@ -100,22 +146,23 @@ const useStyles = makeStyles({
   groupItems: {
     display: 'flex',
     flexDirection: 'column',
-    paddingTop: tokens.spacingVerticalXS,
-    gap: tokens.spacingVerticalXS,
+    gap: tokens.spacingVerticalXXS,
+    paddingLeft: tokens.spacingHorizontalM,
+    paddingRight: tokens.spacingHorizontalM,
   },
   navItem: {
     display: 'flex',
     alignItems: 'center',
     gap: tokens.spacingHorizontalS,
     padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
-    paddingLeft: 'calc(2 * 8px + 20px + 8px)',
+    paddingLeft: 'calc(20px + 8px + 8px)',
     color: tokens.colorNeutralForeground2,
     textDecoration: 'none',
     borderRadius: tokens.borderRadiusMedium,
     margin: `0 ${tokens.spacingHorizontalXS}`,
     cursor: 'pointer',
-    minHeight: '32px',
-    fontSize: tokens.fontSizeBase200,
+    minHeight: '40px',
+    fontSize: tokens.fontSizeBase300,
     ':hover': {
       backgroundColor: tokens.colorNeutralBackground3Hover,
       color: tokens.colorNeutralForeground1,
@@ -130,16 +177,10 @@ const useStyles = makeStyles({
     },
   },
   navIcon: {
-    width: '16px',
-    height: '16px',
     flexShrink: 0,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    '& svg': {
-      width: '16px',
-      height: '16px',
-    },
   },
   navLabel: {
     overflow: 'hidden',
@@ -148,63 +189,75 @@ const useStyles = makeStyles({
   navLabelHidden: {
     display: 'none',
   },
+  collapseButton: {
+    marginTop: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '32px',
+    height: '32px',
+    marginLeft: tokens.spacingHorizontalS,
+    marginRight: 'auto',
+    marginBottom: tokens.spacingVerticalM,
+    border: 'none',
+    background: 'none',
+    borderRadius: tokens.borderRadiusMedium,
+    cursor: 'pointer',
+    color: tokens.colorNeutralForeground2,
+    ':hover': {
+      backgroundColor: tokens.colorNeutralBackground3Hover,
+      color: tokens.colorNeutralForeground1,
+    },
+  },
 });
 
-interface NavItemConditionalProps {
-  entry: RouteMapEntry;
-  collapsed: boolean;
-}
-
-function NavItemConditional({ entry, collapsed }: NavItemConditionalProps) {
+function NavItem({ item, collapsed }: { item: NavItemDef; collapsed: boolean }) {
   const styles = useStyles();
   const location = useLocation();
-  const hasPermission = usePermission(entry.requiredPermission as PermissionCode | null);
 
-  if (entry.requiredPermission && !hasPermission) return null;
+  const requiredPermission: PermissionCode | null = item.pageKey
+    ? (getRouteEntry(item.pageKey).requiredPermission as PermissionCode | null)
+    : null;
+  const hasPermission = usePermission(requiredPermission);
+
+  if (requiredPermission !== null && !hasPermission) return null;
 
   const isActive =
-    location.pathname === entry.path || location.pathname.startsWith(entry.path + '/');
+    location.pathname === item.path || location.pathname.startsWith(item.path + '/');
 
-  const iconName = PAGE_ICON_NAMES[entry.pageKey as RouteKey];
-
-  const navItemEl = (
+  const linkEl = (
     <NavLink
-      to={entry.path}
+      to={item.path}
       className={mergeClasses(styles.navItem, isActive && styles.navItemActive)}
       aria-current={isActive ? 'page' : undefined}
-      aria-label={collapsed ? entry.label : undefined}
+      aria-label={collapsed ? item.label : undefined}
     >
-      <span className={styles.navIcon}>
-        {iconName && <AppIcon name={iconName} size={16} filled={isActive} />}
-      </span>
+      <span className={styles.navIcon}>{item.icon}</span>
       <span className={mergeClasses(styles.navLabel, collapsed && styles.navLabelHidden)}>
-        {entry.label}
+        {item.label}
       </span>
     </NavLink>
   );
 
   if (collapsed) {
     return (
-      <Tooltip content={entry.label} relationship="label" showDelay={300} positioning="after">
-        {navItemEl}
+      <Tooltip content={item.label} relationship="label" showDelay={300} positioning="after">
+        {linkEl}
       </Tooltip>
     );
   }
-
-  return navItemEl;
+  return linkEl;
 }
 
 interface NavGroupProps {
   group: NavGroupDef;
-  entries: RouteMapEntry[];
   collapsed: boolean;
   isExpanded: boolean;
   onToggle: () => void;
 }
 
-function NavGroup({ group, entries, collapsed, isExpanded, onToggle }: NavGroupProps) {
+function NavGroup({ group, collapsed, isExpanded, onToggle }: NavGroupProps) {
   const styles = useStyles();
-  const { iconName, label } = group;
 
   const headerButton = (
     <button
@@ -212,21 +265,24 @@ function NavGroup({ group, entries, collapsed, isExpanded, onToggle }: NavGroupP
       className={styles.groupHeader}
       onClick={onToggle}
       aria-expanded={isExpanded}
-      aria-label={collapsed ? label : undefined}
+      aria-label={collapsed ? group.label : undefined}
     >
-      <span className={styles.groupHeaderIcon}>
-        <AppIcon name={iconName} size={20} />
-      </span>
+      <span className={styles.groupHeaderIcon}>{group.groupIcon}</span>
       <span
         className={mergeClasses(
           styles.groupHeaderLabel,
           collapsed && styles.groupHeaderLabelHidden
         )}
       >
-        {label}
+        {group.label}
       </span>
-      <span className={mergeClasses(styles.chevron, !isExpanded && styles.chevronCollapsed)}>
-        <AppIcon name="chevronDown" size={16} />
+      <span
+        className={mergeClasses(
+          styles.chevron,
+          isExpanded ? styles.chevronExpanded : styles.chevronCollapsed
+        )}
+      >
+        <ChevronDownRegular fontSize={16} />
       </span>
     </button>
   );
@@ -234,7 +290,7 @@ function NavGroup({ group, entries, collapsed, isExpanded, onToggle }: NavGroupP
   return (
     <div className={styles.group}>
       {collapsed ? (
-        <Tooltip content={label} relationship="label" showDelay={300} positioning="after">
+        <Tooltip content={group.label} relationship="label" showDelay={300} positioning="after">
           {headerButton}
         </Tooltip>
       ) : (
@@ -242,8 +298,8 @@ function NavGroup({ group, entries, collapsed, isExpanded, onToggle }: NavGroupP
       )}
       {isExpanded && (
         <div className={styles.groupItems}>
-          {entries.map((entry) => (
-            <NavItemConditional key={entry.pageKey} entry={entry} collapsed={collapsed} />
+          {group.items.map((item) => (
+            <NavItem key={item.path + item.label} item={item} collapsed={collapsed} />
           ))}
         </div>
       )}
@@ -253,46 +309,54 @@ function NavGroup({ group, entries, collapsed, isExpanded, onToggle }: NavGroupP
 
 interface NavRailProps {
   collapsed: boolean;
-  width: string;
+  width?: string;
+  onCollapseClick?: () => void;
 }
 
-export function NavRail({ collapsed, width }: NavRailProps) {
+export function NavRail({ collapsed, onCollapseClick }: NavRailProps) {
   const styles = useStyles();
-  const navEntries = ROUTE_MAP.filter((e) => e.showInNav);
-
   const [sccExpanded, setSccExpanded] = useState(true);
   const [accExpanded, setAccExpanded] = useState(true);
   const [helpdeskExpanded, setHelpdeskExpanded] = useState(true);
 
-  const expansion: Record<GroupId, boolean> = {
+  const expansion: Record<string, boolean> = {
     scc: sccExpanded,
     acc: accExpanded,
     helpdesk: helpdeskExpanded,
   };
 
-  const handleToggle = (id: GroupId) => {
+  const handleToggle = (id: string) => {
     if (id === 'scc') setSccExpanded((v) => !v);
     else if (id === 'acc') setAccExpanded((v) => !v);
     else setHelpdeskExpanded((v) => !v);
   };
 
   return (
-    <nav className={styles.rail} style={{ width }} aria-label="Primary navigation">
-      {NAV_GROUPS.map((group) => {
-        const entries = navEntries.filter((e) =>
-          e.navSection && group.navSections.includes(e.navSection)
-        );
-        return (
+    <nav
+      className={styles.rail}
+      aria-label="Primary navigation"
+    >
+      {NAV_GROUPS.map((group, index) => (
+        <div key={group.id}>
+          {index > 0 && <div className={styles.groupDivider} aria-hidden />}
           <NavGroup
-            key={group.id}
             group={group}
-            entries={entries}
             collapsed={collapsed}
-            isExpanded={expansion[group.id]}
+            isExpanded={expansion[group.id] ?? true}
             onToggle={() => handleToggle(group.id)}
           />
-        );
-      })}
+        </div>
+      ))}
+      {onCollapseClick && (
+        <button
+          type="button"
+          className={styles.collapseButton}
+          onClick={onCollapseClick}
+          aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
+        >
+          <ChevronLeftRegular fontSize={20} />
+        </button>
+      )}
     </nav>
   );
 }
