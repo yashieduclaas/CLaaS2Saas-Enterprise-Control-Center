@@ -7,7 +7,9 @@ import { PageSkeleton } from '@/app/PageSkeleton';
 import { useRoleListQuery } from './api/useRoleListQuery';
 import { RoleTable } from './components/RoleTable';
 import { RoleTableSkeleton } from './components/RoleTableSkeleton';
+import { AddSecurityRoleModal } from './components/AddSecurityRoleModal';
 import type { PermissionCode } from '@claas2saas/contracts/rbac';
+import type { SecurityRole } from './types/securityRole';
 
 const useStyles = makeStyles({
   page: { display: 'flex', flexDirection: 'column', gap: tokens.spacingVerticalL },
@@ -34,14 +36,21 @@ function RoleManagementContent() {
   const [search, setSearch] = useState('');
   const [deferredSearch, setDeferredSearch] = useState('');
 
+  // ── Modal state ────────────────────────────────────────────────────────────
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // ── Local optimistic roles prepended by onCreated ─────────────────────────
+  // These sit on top of whatever the API query returns.
+  const [optimisticRoles, setOptimisticRoles] = useState<SecurityRole[]>([]);
+
   const canCreate = usePermission('ROLE:CREATE' satisfies PermissionCode);
 
   const { data, isLoading, isError, isFetching, refetch } = useRoleListQuery({
-    search: deferredSearch || undefined,
     pageSize: 25,
+    ...(deferredSearch ? { search: deferredSearch } : {}),
   });
 
-  const roles = data?.data ?? [];
+  const apiRoles = data?.data ?? [];
 
   function handleSearchChange(value: string) {
     setSearch(value);
@@ -49,6 +58,15 @@ function RoleManagementContent() {
     if (trimmed.length === 0 || trimmed.length >= 2) {
       setDeferredSearch(trimmed);
     }
+  }
+
+  /**
+   * Called by AddSecurityRoleModal after a successful async create.
+   * Prepends the new role optimistically — no full-list refetch required.
+   * The parent owns the state update; the modal is decoupled.
+   */
+  function handleRoleCreated(newRole: SecurityRole) {
+    setOptimisticRoles(prev => [newRole, ...prev]);
   }
 
   return (
@@ -68,7 +86,21 @@ function RoleManagementContent() {
           aria-label="Search roles"
           disabled={isLoading}
         />
-        {canCreate && <Button appearance="primary">Add Role</Button>}
+        {/* Button always rendered — canCreate controls disabled, not visibility.
+            If the button was invisible before, canCreate was false (permission
+            not granted or still loading). Check browser console for debug info. */}
+        <Button
+          appearance="primary"
+          id="btn-add-role"
+          disabled={!canCreate}
+          title={!canCreate ? 'You do not have permission to create roles' : undefined}
+          onClick={() => {
+            console.log('[RoleManagementPage] + Add New Role clicked, showAddModal → true');
+            setShowAddModal(true);
+          }}
+        >
+          + Add New Role
+        </Button>
       </div>
 
       {isError && (
@@ -87,8 +119,30 @@ function RoleManagementContent() {
       {isLoading ? (
         <RoleTableSkeleton />
       ) : (
-        <RoleTable roles={roles} hasActiveSearch={deferredSearch.length > 0} />
+        <RoleTable
+          roles={[...optimisticRoles.map(r => ({
+            // Map SecurityRole → RoleDto shape for the existing RoleTable
+            roleId: r.id,
+            tenantId: '',
+            moduleId: r.moduleCode,
+            roleCode: r.roleCode,
+            roleName: r.roleName,
+            roleType: 'ADMIN' as const,   // safe placeholder — backend will own this
+            isSystemRole: r.roleType === 'SYSTEM',
+            isActive: true,
+            permissionCodes: [],
+            createdAt: r.createdAt,
+          })), ...apiRoles]}
+          hasActiveSearch={deferredSearch.length > 0}
+        />
       )}
+
+      {/* ── Add New Security Role modal ── */}
+      <AddSecurityRoleModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onCreated={handleRoleCreated}
+      />
     </div>
   );
 }
