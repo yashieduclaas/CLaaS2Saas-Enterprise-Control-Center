@@ -1,0 +1,49 @@
+{
+  "podName": "feat-roles-read-20260219",
+  "featureName": "Role Management — List Roles (Read Only)",
+  "featureKey": "roles-read",
+  "generatedBy": "claude-sonnet-4-6",
+  "generatedAt": "2026-02-19T00:00:00Z",
+  "targetTicket": "CLAAS-ROLES-READ",
+  "schemaVersion": "1.0",
+
+  "scope": {
+    "hasWebChanges": false,
+    "hasApiChanges": true,
+    "hasNewPermissionCodes": false,
+    "hasRouteMapAddition": false,
+    "affectedModules": ["security-kernel"]
+  },
+
+  "contractsUsed": [
+    "@claas2saas/contracts/rbac",
+    "@claas2saas/contracts/api"
+  ],
+
+  "permissionCodesUsed": [
+    "ROLES:READ"
+  ],
+
+  "newPermissionCodesDeclared": [],
+
+  "routeMapAdditions": [],
+
+  "immutablePathsTouched": [],
+
+  "testCoverage": {
+    "rbacMatrixTestsIncluded": true,
+    "integrationTestsIncluded": true,
+    "unitTestsIncluded": true,
+    "coverageStatement": "RBAC matrix covers all 6 canonical personas (GLOBAL_ADMIN, SECURITY_ADMIN, MODULE_ADMIN, HELP_DESK, STANDARD_USER, NO_ROLE). Integration tests verify 401/403/200, tenant isolation, and cancellation. Unit tests cover handler success, empty result, cancellation, and tenant enforcement."
+  },
+
+  "agentDeclarations": {
+    "noLocalDtosDefined": true,
+    "noRoleNameChecks": true,
+    "noImmutablePathsModified": true,
+    "noGlobalStateIntroduced": true,
+    "allApiEndpointsAuthorized": true,
+    "allPermissionsFromContracts": true,
+    "griffelOnlyForStyling": true
+  }
+}

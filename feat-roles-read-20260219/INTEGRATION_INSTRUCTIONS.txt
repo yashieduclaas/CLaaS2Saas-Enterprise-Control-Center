@@ -1,0 +1,90 @@
+# Backend Pod Integration Instructions
+# feat-roles-read-20260219
+#
+# These are the ONLY changes required to existing platform files.
+# Every change is additive. No existing code is modified or deleted.
+# Apply these changes AFTER extracting the pod files into their target paths.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# CHANGE 1 — ApplicationServiceExtensions.cs
+# File: apps/api/src/Kernel.Application/ApplicationServiceExtensions.cs
+#
+# In AddApplicationServices(), add ONE line:
+#
+#   public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+#   {
+#       services.AddScoped<IAuthorizationHandler, PermissionRequirementHandler>();
+# +     services.AddRolesFeature();          // ← ADD THIS LINE
+#       return services;
+#   }
+#
+# In AddApplicationAuthorization(), inside the options delegate, add ONE line:
+#
+#   services.AddAuthorization(options =>
+#   {
+#       options.AddPolicy("RequireAuthenticated", policy =>
+#           policy.RequireAuthenticatedUser());
+# +     options.AddRolesReadPolicy();         // ← ADD THIS LINE
+#       options.FallbackPolicy = ...
+#   });
+#
+# Required usings to add at the top:
+#   using Kernel.Application.Features.Roles;
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# CHANGE 2 — InfrastructureServiceExtensions.cs
+# File: apps/api/src/Kernel.Infrastructure/InfrastructureServiceExtensions.cs
+#
+# In AddInfrastructureServices(), add ONE line:
+#
+#   public static IServiceCollection AddInfrastructureServices(...)
+#   {
+#       services.AddScoped<IPermissionEvaluator, StubPermissionEvaluator>();
+#       services.AddSingleton<IPermissionCache, InMemoryPermissionCache>();
+# +     services.AddRolesInfrastructure();   // ← ADD THIS LINE
+#       return services;
+#   }
+#
+# Required usings to add at the top:
+#   using Kernel.Infrastructure.Repositories;
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# CHANGE 3 — EF Core DbContext registration
+# File: apps/api/src/Kernel.Infrastructure/InfrastructureServiceExtensions.cs
+#
+# Register KernelDbContext (SQLite for MVP, swap to SQL Server at MMP):
+#
+#   services.AddDbContext<KernelDbContext>(options =>
+#       options.UseSqlite(configuration.GetConnectionString("KernelDb")
+#           ?? "Data Source=kernel.db"));
+#
+# Add to appsettings.Development.json (NOT appsettings.json — dev only):
+#   "ConnectionStrings": {
+#     "KernelDb": "Data Source=kernel-dev.db"
+#   }
+#
+# Required usings:
+#   using Kernel.Infrastructure.Persistence;
+#   using Microsoft.EntityFrameworkCore;
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# CHANGE 4 — ITenantContextAccessor implementation
+# File: apps/api/src/Kernel.Infrastructure/Tenant/HttpTenantContextAccessor.cs (NEW)
+#
+# Register implementation if not already present:
+#   services.AddHttpContextAccessor();
+#   services.AddScoped<ITenantContextAccessor, HttpTenantContextAccessor>();
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# CHANGE 5 — Kernel.Domain.csproj
+# If Role.cs domain entity is new, ensure Kernel.Domain project contains no
+# package reference additions. Role.cs is pure C# — no new packages required.
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# POST-INTEGRATION VERIFICATION
+#
+# dotnet build Kernel.sln                         # Expected: 0 errors
+# dotnet test --filter "Category=pod-roles-read"  # Expected: all pass
+# curl -H "Authorization: Bearer <token>" \
+#      http://localhost:5000/api/v1/roles          # Expected: 200 + JSON envelope
+# curl http://localhost:5000/api/v1/roles          # Expected: 401
