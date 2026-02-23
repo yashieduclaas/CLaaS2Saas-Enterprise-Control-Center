@@ -9,7 +9,9 @@
 export interface SecurityRole {
     id: string;
     solutionCode: string;
+    solutionName: string;    // display name for Solution column
     moduleCode: string;
+    moduleName: string;      // display name for Module column
     roleCode: string;
     roleName: string;
     roleType: 'SYSTEM' | 'CUSTOM';

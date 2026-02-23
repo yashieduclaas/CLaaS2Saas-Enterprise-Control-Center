@@ -18,14 +18,14 @@ const useStyles = makeStyles({
         whiteSpace: 'nowrap',
     },
     active: {
-        backgroundColor: '#e8f5e9',
-        color: '#2e7d32',
-        border: '1px solid #a5d6a7',
+        backgroundColor: 'var(--color-success-bg)',
+        color: 'var(--color-success-text)',
+        border: '1px solid var(--color-success-border)',
     },
     inactive: {
-        backgroundColor: '#f5f5f5',
-        color: '#757575',
-        border: '1px solid #e0e0e0',
+        backgroundColor: 'var(--color-bg-muted)',
+        color: 'var(--color-gray-600)',
+        border: '1px solid var(--color-badge-neutral-border)',
     },
 });
 

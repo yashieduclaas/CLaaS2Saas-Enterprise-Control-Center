@@ -56,7 +56,7 @@ const useStyles = makeStyles({
     backdrop: {
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0,0,0,0.42)',
+        backgroundColor: 'var(--color-overlay)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -86,7 +86,7 @@ const useStyles = makeStyles({
     title: {
         fontSize: tokens.fontSizeBase500,
         fontWeight: tokens.fontWeightSemibold,
-        color: '#1a3a5c',
+        color: 'var(--color-brand-primary)',
         margin: 0,
         padding: 0,
     },
@@ -130,7 +130,7 @@ const useStyles = makeStyles({
     label: {
         fontSize: tokens.fontSizeBase300,
         fontWeight: tokens.fontWeightSemibold,
-        color: '#1a3a5c',
+        color: 'var(--color-brand-primary)',
     },
     // ── Inputs ───────────────────────────────────────────────────────────────────
     select: {
@@ -207,9 +207,9 @@ const useStyles = makeStyles({
     // ── Save error ───────────────────────────────────────────────────────────────
     saveBanner: {
         fontSize: '13px',
-        color: '#b71c1c',
+        color: 'var(--color-danger-text)',
         padding: '8px 12px',
-        backgroundColor: '#fdecea',
+        backgroundColor: 'var(--color-error-bg)',
         borderRadius: tokens.borderRadiusMedium,
     },
 });

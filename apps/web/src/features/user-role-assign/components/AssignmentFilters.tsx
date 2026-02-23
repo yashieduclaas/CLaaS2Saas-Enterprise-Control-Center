@@ -82,8 +82,8 @@ const useStyles = makeStyles({
         flexShrink: 0,
     },
     dotAll: { backgroundColor: tokens.colorNeutralForeground3 },
-    dotActive: { backgroundColor: '#2e7d32' },
-    dotInactive: { backgroundColor: '#757575' },
+    dotActive: { backgroundColor: 'var(--color-success-text)' },
+    dotInactive: { backgroundColor: 'var(--color-gray-600)' },
 });
 
 interface FilterTab {
