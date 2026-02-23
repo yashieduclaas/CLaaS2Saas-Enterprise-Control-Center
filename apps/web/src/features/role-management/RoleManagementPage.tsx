@@ -34,10 +34,10 @@ import styles from './pages/RoleManagementPage.module.css';
 
 // ── Role code → badge class ───────────────────────────────────────────────────
 const ROLE_CODE_BADGE: Record<string, string> = {
-  COLLABORATOR: styles.badgeCollaborator,
-  CONTRIBUTOR: styles.badgeContributor,
-  VIEWER: styles.badgeViewer,
-  GLOBAL_ADMIN: styles.badgeGlobalAdmin,
+  COLLABORATOR: styles.badgeCollaborator ?? '',
+  CONTRIBUTOR: styles.badgeContributor ?? '',
+  VIEWER: styles.badgeViewer ?? '',
+  GLOBAL_ADMIN: styles.badgeGlobalAdmin ?? '',
 };
 
 function RoleCodeBadge({ code }: { code: string }) {

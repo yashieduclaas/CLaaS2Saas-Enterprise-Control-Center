@@ -156,7 +156,7 @@ export function EditUserModal({ open, user, onClose, onSaved }: EditUserModalPro
                                     value={form.displayName}
                                     onChange={(_, d) => {
                                         setForm((f) => ({ ...f, displayName: d.value }));
-                                        if (errors.displayName) setErrors((e) => ({ ...e, displayName: undefined }));
+                                        if (errors.displayName) setErrors((e) => { const { displayName: _, ...rest } = e; return rest; });
                                     }}
                                     aria-invalid={!!errors.displayName}
                                 />
@@ -175,7 +175,7 @@ export function EditUserModal({ open, user, onClose, onSaved }: EditUserModalPro
                                     value={form.role}
                                     onChange={(_, d) => {
                                         setForm((f) => ({ ...f, role: d.value }));
-                                        if (errors.role) setErrors((e) => ({ ...e, role: undefined }));
+                                        if (errors.role) setErrors((e) => { const { role: _, ...rest } = e; return rest; });
                                     }}
                                     aria-invalid={!!errors.role}
                                 >
@@ -209,7 +209,7 @@ export function EditUserModal({ open, user, onClose, onSaved }: EditUserModalPro
                                     value={form.status}
                                     onChange={(_, d) => {
                                         setForm((f) => ({ ...f, status: d.value as 'Active' | 'Inactive' }));
-                                        if (errors.status) setErrors((e) => ({ ...e, status: undefined }));
+                                        if (errors.status) setErrors((e) => { const { status: _, ...rest } = e; return rest; });
                                     }}
                                     aria-invalid={!!errors.status}
                                 >
@@ -239,7 +239,7 @@ export function EditUserModal({ open, user, onClose, onSaved }: EditUserModalPro
                             appearance="primary"
                             onClick={handleSave}
                             disabled={isLoading}
-                            icon={isLoading ? <Spinner size="tiny" appearance="inverted" /> : undefined}
+                            {...(isLoading && { icon: <Spinner size="tiny" appearance="inverted" /> })}
                         >
                             {isLoading ? 'Saving…' : 'Save Changes'}
                         </Button>

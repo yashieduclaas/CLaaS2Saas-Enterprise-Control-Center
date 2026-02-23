@@ -75,14 +75,7 @@ export function useDemoAuth(): DemoAuthContextValue {
 }
 
 export function DemoAuthProvider({ children }: PropsWithChildren) {
-  const [activeEmail, setActiveEmail] = useState<string>(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-      localStorage.setItem(STORAGE_KEY, DEFAULT_EMAIL);
-      return DEFAULT_EMAIL;
-    }
-    return stored;
-  });
+  const [activeEmail, setActiveEmail] = useState<string>(() => readStoredEmail());
 
   const activeUser = getUserByEmail(activeEmail) ?? DEMO_USERS[0];
 
