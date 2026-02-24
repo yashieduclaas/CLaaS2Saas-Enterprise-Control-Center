@@ -3,7 +3,8 @@
 // Fluent -> Auth -> QueryClient -> Permissions
 
 import type { PropsWithChildren } from 'react';
-import { FluentProvider, webLightTheme, createDOMRenderer, RendererProvider } from '@fluentui/react-components';
+import { FluentProvider, createDOMRenderer, RendererProvider } from '@fluentui/react-components';
+import { kernelLightTheme } from '@/theme/kernelTheme';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { PermissionProvider } from '@/rbac/PermissionContext';
 import { queryClient } from '@/api/queryClient';
@@ -19,7 +20,7 @@ export function AppProviders({ children }: PropsWithChildren) {
 
   return (
     <RendererProvider renderer={renderer} targetDocument={document}>
-    <FluentProvider theme={webLightTheme}>
+    <FluentProvider theme={kernelLightTheme}>
       <AuthProvider>
         <QueryClientProvider client={queryClient}>
           <PermissionProvider>

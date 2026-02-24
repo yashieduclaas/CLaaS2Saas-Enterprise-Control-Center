@@ -12,8 +12,9 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     height: '100vh',
+    minHeight: '100vh',
     overflow: 'hidden',
-    backgroundColor: tokens.colorNeutralBackground1,
+    backgroundColor: 'var(--color-bg-page)',
   },
   body: {
     display: 'flex',
@@ -35,7 +36,7 @@ const useStyles = makeStyles({
     padding: tokens.spacingVerticalXL,
     paddingLeft: tokens.spacingHorizontalXL,
     paddingRight: tokens.spacingHorizontalXL,
-    backgroundColor: tokens.colorNeutralBackground3,
+    backgroundColor: 'var(--color-bg-page)',
   },
 });
 

@@ -53,7 +53,7 @@ const useStyles = makeStyles({
     backdrop: {
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0,0,0,0.45)',
+        backgroundColor: 'var(--color-overlay)',
         display: 'flex',
         alignItems: 'flex-start',
         justifyContent: 'center',
@@ -88,7 +88,7 @@ const useStyles = makeStyles({
     title: {
         fontSize: tokens.fontSizeBase500,
         fontWeight: tokens.fontWeightSemibold,
-        color: '#1a3a5c',
+        color: 'var(--color-brand-primary)',
         margin: 0,
     },
     closeBtn: {
@@ -136,7 +136,7 @@ const useStyles = makeStyles({
     label: {
         fontSize: tokens.fontSizeBase300,
         fontWeight: tokens.fontWeightSemibold,
-        color: '#1a3a5c',
+        color: 'var(--color-brand-primary)',
     },
     labelOptional: {
         fontWeight: tokens.fontWeightRegular,
@@ -406,7 +406,7 @@ export function EditRoleAssignmentModal({
                 <div className={styles.body}>
                     {/* Save error banner */}
                     {saveError && (
-                        <div role="alert" style={{ color: '#b71c1c', fontSize: '13px', padding: '8px 12px', background: '#fdecea', borderRadius: '6px' }}>
+                        <div role="alert" style={{ color: 'var(--color-danger-text)', fontSize: '13px', padding: '8px 12px', background: 'var(--color-error-bg)', borderRadius: '6px' }}>
                             {saveError}
                         </div>
                     )}

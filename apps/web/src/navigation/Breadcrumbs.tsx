@@ -25,7 +25,7 @@ export function Breadcrumbs() {
         <span key={crumb} style={{ display: 'flex', alignItems: 'center' }}>
           {idx > 0 && <BreadcrumbDivider />}
           <BreadcrumbItem
-            current={idx === crumbs.length - 1}
+            aria-current={idx === crumbs.length - 1 ? 'page' : undefined}
             style={{
               color: idx === crumbs.length - 1
                 ? tokens.colorNeutralForeground1

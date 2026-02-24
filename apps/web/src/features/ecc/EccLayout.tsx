@@ -15,7 +15,7 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     minHeight: '100vh',
-    backgroundColor: tokens.colorNeutralBackground2,
+    backgroundColor: 'var(--color-bg-page)',
   },
   topBar: {
     display: 'flex',
@@ -72,6 +72,7 @@ const useStyles = makeStyles({
     alignItems: 'center',
     padding: tokens.spacingVerticalXL,
     overflowY: 'auto',
+    backgroundColor: 'var(--color-bg-page)',
   },
   content: {
     width: '100%',

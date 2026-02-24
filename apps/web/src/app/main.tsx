@@ -3,6 +3,7 @@ import { StrictMode, Component, type ErrorInfo, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppProviders } from './AppProviders';
 import { AppRouter } from './AppRouter';
+import '../theme/colors.css';
 import '../styles/index.css';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
@@ -20,8 +21,8 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
     if (this.state.error) {
       return (
         <div style={{ padding: 24, fontFamily: 'sans-serif', maxWidth: 600 }}>
-          <h1 style={{ color: '#c00' }}>Application Error</h1>
-          <pre style={{ overflow: 'auto', background: '#f5f5f5', padding: 16, borderRadius: 4 }}>
+          <h1 style={{ color: 'var(--color-error-text)' }}>Application Error</h1>
+          <pre style={{ overflow: 'auto', background: 'var(--color-bg-muted)', padding: 16, borderRadius: 4 }}>
             {this.state.error.message}
           </pre>
         </div>

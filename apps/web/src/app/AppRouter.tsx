@@ -12,14 +12,14 @@ import { PageSkeleton } from './PageSkeleton';
 import { getRoutePath } from '@/rbac/RoutePermissionMap';
 import { DemoModeBanner } from '@/dev/DemoModeBanner';
 
+const SignInPage = lazy(() =>
+  import('@/features/auth/pages/SignInPage').then(m => ({ default: m.SignInPage }))
+);
 const RoleManagementPage = lazy(() =>
   import('@/features/role-management/RoleManagementPage').then(m => ({ default: m.RoleManagementPage }))
 );
 const AuditActionsPage = lazy(() =>
   import('@/features/audit/AuditActionsPage').then(m => ({ default: m.AuditActionsPage }))
-);
-const KernelDashboardPage = lazy(() =>
-  import('@/features/kernel-dashboard').then(m => ({ default: m.KernelDashboardPage }))
 );
 const PlaceholderPage = lazy(() =>
   import('@/features/PlaceholderPage').then(m => ({ default: m.PlaceholderPage }))
@@ -33,6 +33,18 @@ const EccPage = lazy(() =>
 const ModuleMgmtPage = lazy(() =>
   import('@/features/module-mgmt').then(m => ({ default: m.ModuleMgmtPage }))
 );
+const UserRoleAssignmentPage = lazy(() =>
+  import('@/features/user-role-assign').then(m => ({ default: m.UserRoleAssignmentPage }))
+);
+const SccRootLandingPage = lazy(() =>
+  import('@/features/scc').then(m => ({ default: m.SccRootLandingPage }))
+);
+const SccDashboardPage = lazy(() =>
+  import('@/features/scc-dashboard').then(m => ({ default: m.SccDashboardPage }))
+);
+const UserEnrichmentPage = lazy(() =>
+  import('@/features/user-enrichment/pages/UserEnrichmentPage').then(m => ({ default: m.UserEnrichmentPage }))
+);
 
 const isDemoMode = (import.meta.env['VITE_AUTH_MODE'] as string | undefined) === 'demo';
 
@@ -41,9 +53,11 @@ export function AppRouter() {
     <BrowserRouter>
       {isDemoMode && <DemoModeBanner />}
       <Routes>
-        {/* Public routes */}
+        {/* Public routes — render outside AuthGuard+AppLayout so no sidebar shows */}
         <Route path={getRoutePath('login')} element={
-          <div className="app-loading-fallback">Sign In</div>
+          <Suspense fallback={<div className="app-loading-fallback">Loading…</div>}>
+            <SignInPage />
+          </Suspense>
         } />
         <Route path={getRoutePath('forbidden')} element={
           <Suspense fallback={<PageSkeleton />}><ForbiddenPage /></Suspense>
@@ -68,14 +82,15 @@ export function AppRouter() {
           <Route index element={<Navigate to={getRoutePath('kernel-dashboard')} replace />} />
 
           {/* Monitoring */}
-          <Route path={getRoutePath('kernel-dashboard')} element={
-            <PermissionGuard pageKey="kernel-dashboard">
-              <Suspense fallback={<PageSkeleton />}><KernelDashboardPage /></Suspense>
-            </PermissionGuard>
-          } />
+          {/* /scc → SCC Root Landing (AI Welcome); /kernel → Real Dashboard */}
           <Route path={getRoutePath('scc-dashboard')} element={
             <PermissionGuard pageKey="scc-dashboard">
-              <Suspense fallback={<PageSkeleton />}><PlaceholderPage title="Security Control Centre" /></Suspense>
+              <Suspense fallback={<PageSkeleton />}><SccRootLandingPage /></Suspense>
+            </PermissionGuard>
+          } />
+          <Route path={getRoutePath('kernel-dashboard')} element={
+            <PermissionGuard pageKey="kernel-dashboard">
+              <Suspense fallback={<PageSkeleton />}><SccDashboardPage /></Suspense>
             </PermissionGuard>
           } />
           <Route path={getRoutePath('audit-logs')} element={
@@ -97,12 +112,12 @@ export function AppRouter() {
           } />
           <Route path={getRoutePath('user-profile')} element={
             <PermissionGuard pageKey="user-profile">
-              <Suspense fallback={<PageSkeleton />}><PlaceholderPage title="User Profiles" /></Suspense>
+              <Suspense fallback={<PageSkeleton />}><UserEnrichmentPage /></Suspense>
             </PermissionGuard>
           } />
           <Route path={getRoutePath('user-role-assign')} element={
             <PermissionGuard pageKey="user-role-assign">
-              <Suspense fallback={<PageSkeleton />}><PlaceholderPage title="Role Assignments" /></Suspense>
+              <Suspense fallback={<PageSkeleton />}><UserRoleAssignmentPage /></Suspense>
             </PermissionGuard>
           } />
 

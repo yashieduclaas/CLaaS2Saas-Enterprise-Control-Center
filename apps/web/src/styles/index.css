@@ -1,6 +1,15 @@
 /* apps/web/src/styles/index.css */
 /* Sole global CSS file. Griffel handles all component styles. */
 
+/* Brand fonts — used by SignInPage (Montserrat, Source Sans 3) */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Source+Sans+3:wght@300;400;600&display=swap');
+
+/* Focus ring — WCAG 2.1 AA compliant */
+:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 2px;
+}
+
 *,
 *::before,
 *::after {
@@ -15,7 +24,7 @@ body,
   min-height: 100%;
   height: 100%;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background-color: #f5f5f5;
+  background-color: var(--color-bg-muted);
 }
 
 /* Fallback loading - visible when Griffel/Fluent styles not yet applied */
@@ -27,5 +36,5 @@ body,
   padding: 24px;
   font-size: 18px;
   font-weight: 600;
-  color: #242424;
+  color: var(--color-text-primary);
 }

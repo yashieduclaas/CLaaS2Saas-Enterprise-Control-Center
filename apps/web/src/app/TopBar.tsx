@@ -20,7 +20,7 @@ const useStyles = makeStyles({
     height: '56px',
     paddingLeft: tokens.spacingHorizontalL,
     paddingRight: tokens.spacingHorizontalL,
-    backgroundColor: tokens.colorBrandBackground,
+    backgroundColor: 'var(--color-brand-primary)',
     flexShrink: 0,
   },
   left: {
@@ -33,21 +33,16 @@ const useStyles = makeStyles({
     alignItems: 'center',
     cursor: 'pointer',
     textDecoration: 'none',
+    backgroundColor: 'transparent',
+    border: 'none',
+    padding: 0,
+    margin: 0,
   },
-  brandClaas: {
-    color: tokens.colorNeutralForegroundOnBrand,
-    fontSize: tokens.fontSizeBase500,
-    fontWeight: tokens.fontWeightSemibold,
-  },
-  brandTwo: {
-    color: tokens.colorPaletteYellowForeground1,
-    fontSize: tokens.fontSizeBase500,
-    fontWeight: tokens.fontWeightSemibold,
-  },
-  brandSaaS: {
-    color: tokens.colorNeutralForegroundOnBrand,
-    fontSize: tokens.fontSizeBase500,
-    fontWeight: tokens.fontWeightSemibold,
+  logo: {
+    height: '32px',
+    width: 'auto',
+    display: 'block',
+    background: 'transparent',
   },
   divider: {
     width: '1px',
@@ -155,9 +150,7 @@ export function TopBar() {
     <header className={styles.bar} role="banner">
       <div className={styles.left}>
         <button type="button" className={styles.brand} onClick={handleBrandClick} aria-label="Go to Enterprise Control Centre">
-          <span className={styles.brandClaas}>CLaaS</span>
-          <span className={styles.brandTwo}>2</span>
-          <span className={styles.brandSaaS}>SaaS</span>
+          <img src="/logo.png" alt="CLaaS2SaaS" className={styles.logo} />
         </button>
         <div className={styles.divider} aria-hidden />
         <span className={styles.moduleLabel}>Kernel Apps</span>

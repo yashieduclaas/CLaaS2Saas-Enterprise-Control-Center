@@ -216,7 +216,7 @@ export function AssignmentTable({ assignments, onUpdated, onDelete }: Assignment
                                 <td className={styles.cell}>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                         <RoleBadge roleCode={row.roleCode} roleLabel={row.roleCode.replace('_', ' ')} />
-                                        <span style={{ fontSize: '11px', color: '#757575' }}>{row.roleLabel}</span>
+                                        <span style={{ fontSize: '11px', color: 'var(--color-gray-600)' }}>{row.roleLabel}</span>
                                     </div>
                                 </td>
 

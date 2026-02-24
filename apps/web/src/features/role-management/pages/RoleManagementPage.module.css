@@ -1,0 +1,176 @@
+/* apps/web/src/features/role-management/pages/RoleManagementPage.module.css */
+
+/* ── Page shell ── */
+.page {
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Header row ── */
+.pageHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.titleBlock {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.pageTitle {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.pageSubtitle {
+    font-size: 14px;
+    color: var(--color-text-muted);
+    margin: 0;
+}
+
+/* ── Card ── */
+.card {
+    background: var(--color-bg-surface);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.06),
+        0 4px 16px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* ── Search ── */
+.searchWrap {
+    width: 100%;
+}
+
+/* ── Table ── */
+.tableWrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.colHeader {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-brand-primary);
+}
+
+/* Solution / Module cell — two-line stacked */
+.cellPrimary {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    display: block;
+}
+
+.cellSecondary {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    display: block;
+}
+
+.cellText {
+    font-size: 13px;
+    color: var(--color-text-secondary);
+}
+
+/* ── Role Code Badges ── */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.badgeCollaborator {
+    background: var(--color-info-bg);
+    color: var(--color-info-text);
+}
+
+.badgeContributor {
+    background: var(--color-success-bg);
+    color: var(--color-success-text);
+}
+
+.badgeViewer {
+    background: var(--color-warning-bg);
+    color: var(--color-warning-text);
+}
+
+.badgeGlobalAdmin {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-text);
+}
+
+.badgeDefault {
+    background: var(--color-badge-neutral-bg);
+    color: var(--color-badge-neutral-text);
+}
+
+/* ── Role Type Pill ── */
+.typePill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    background: var(--color-info-alt-bg);
+    color: var(--color-info-alt-text);
+    white-space: nowrap;
+}
+
+/* ── Manage button ── */
+.manageBtn {
+    font-size: 12px !important;
+    min-height: 28px !important;
+    padding: 0 10px !important;
+    border-radius: 6px !important;
+}
+
+/* ── Actions ── */
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.actionBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.actionBtn:hover {
+    background: var(--color-badge-neutral-bg);
+    color: var(--color-text-primary);
+}
+
+/* ── Footer ── */
+.footer {
+    font-size: 13px;
+    color: var(--color-text-muted-light);
+    padding-top: 4px;
+}

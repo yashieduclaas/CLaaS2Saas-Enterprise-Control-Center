@@ -41,6 +41,8 @@ interface NavGroupDef {
   label: string;
   groupIcon: React.ReactNode;
   items: NavItemDef[];
+  /** If set, clicking group header navigates here (e.g. /scc for SCC root landing) */
+  headerNavPath?: string;
 }
 
 const SCC_ITEMS: NavItemDef[] = [
@@ -67,7 +69,7 @@ const HELPDESK_ITEMS: NavItemDef[] = [
 ];
 
 const NAV_GROUPS: NavGroupDef[] = [
-  { id: 'scc', label: 'SCC', groupIcon: <ShieldCheckmarkRegular fontSize={20} />, items: SCC_ITEMS },
+  { id: 'scc', label: 'SCC', groupIcon: <ShieldCheckmarkRegular fontSize={20} />, items: SCC_ITEMS, headerNavPath: '/scc' },
   { id: 'acc', label: 'ACC', groupIcon: <SettingsRegular fontSize={20} />, items: ACC_ITEMS },
   { id: 'helpdesk', label: 'Helpdesk', groupIcon: <HeadsetRegular fontSize={20} />, items: HELPDESK_ITEMS },
 ];
@@ -258,15 +260,10 @@ interface NavGroupProps {
 
 function NavGroup({ group, collapsed, isExpanded, onToggle }: NavGroupProps) {
   const styles = useStyles();
+  const hasHeaderNav = Boolean(group.headerNavPath);
 
-  const headerButton = (
-    <button
-      type="button"
-      className={styles.groupHeader}
-      onClick={onToggle}
-      aria-expanded={isExpanded}
-      aria-label={collapsed ? group.label : undefined}
-    >
+  const headerContent = (
+    <>
       <span className={styles.groupHeaderIcon}>{group.groupIcon}</span>
       <span
         className={mergeClasses(
@@ -281,9 +278,35 @@ function NavGroup({ group, collapsed, isExpanded, onToggle }: NavGroupProps) {
           styles.chevron,
           isExpanded ? styles.chevronExpanded : styles.chevronCollapsed
         )}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle(); }}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
+        role="button"
+        tabIndex={0}
+        aria-label={isExpanded ? 'Collapse' : 'Expand'}
       >
         <ChevronDownRegular fontSize={16} />
       </span>
+    </>
+  );
+
+  const headerButton = hasHeaderNav ? (
+    <NavLink
+      to={group.headerNavPath!}
+      className={styles.groupHeader}
+      style={{ textDecoration: 'none' }}
+      aria-label={collapsed ? group.label : undefined}
+    >
+      {headerContent}
+    </NavLink>
+  ) : (
+    <button
+      type="button"
+      className={styles.groupHeader}
+      onClick={onToggle}
+      aria-expanded={isExpanded}
+      aria-label={collapsed ? group.label : undefined}
+    >
+      {headerContent}
     </button>
   );
 

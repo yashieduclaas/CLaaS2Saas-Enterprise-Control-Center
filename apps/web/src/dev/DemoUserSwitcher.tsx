@@ -42,9 +42,10 @@ export function DemoUserSwitcher() {
         className={styles.dropdown}
         value={activeUser.displayName}
         selectedOptions={[activeUser.email]}
-        onOptionSelect={(_: unknown, data: { optionValue?: string }) => {
-          if (data.optionValue) {
-            void handlePersonaChange(data.optionValue);
+        onOptionSelect={(_: unknown, data: { optionValue?: string | undefined }) => {
+          const val = data.optionValue;
+          if (val != null && val !== '') {
+            void handlePersonaChange(val);
           }
         }}
         aria-label="Switch demo persona"
