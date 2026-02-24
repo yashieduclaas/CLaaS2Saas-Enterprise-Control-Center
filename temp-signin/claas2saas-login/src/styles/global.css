@@ -1,0 +1,43 @@
+/* global.css — CLaaS2SaaS Enterprise Control Center */
+
+/* Google Fonts — brand typography */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Source+Sans+3:wght@300;400;600&display=swap');
+
+/* Reset — works alongside Fluent UI's own resets */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: #EEE7E0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fluent UI token overrides for our brand */
+:root {
+  --colorBrandBackground:       #193e6b;
+  --colorBrandBackgroundHover:  #1e4d85;
+  --colorBrandBackgroundPressed:#102d52;
+  --colorNeutralBackground1:    #EEE7E0;
+  --colorNeutralBackground2:    #FFFFFF;
+}
+
+/* Focus ring — WCAG 2.1 AA compliant */
+:focus-visible {
+  outline: 2px solid #B3A125;
+  outline-offset: 2px;
+}
+
+/* Remove list style for feature list */
+ul {
+  list-style: none;
+}
