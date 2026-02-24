@@ -23,6 +23,7 @@ import {
 } from '@fluentui/react-icons';
 import { useUsers } from '../hooks/useUsers';
 import { EditUserModal } from '../components/EditUserModal';
+import AddUserModal from '../components/AddUserModal';
 import type { UserProfile } from '../types/user';
 import styles from './UserEnrichmentPage.module.css';
 
@@ -70,6 +71,9 @@ export function UserEnrichmentPage() {
     const [selectedUser, setSelectedUser] = useState<UserProfile | null>(null);
     const [isEditOpen, setIsEditOpen] = useState(false);
 
+    // Add user modal state
+    const [showAddModal, setShowAddModal] = useState(false);
+
     const filtered = users.filter((u) => {
         const q = search.toLowerCase();
         return (
@@ -104,7 +108,7 @@ export function UserEnrichmentPage() {
                     appearance="primary"
                     icon={<AddRegular />}
                     className={styles.addButton}
-                    onClick={() => console.log('Add user clicked')}
+                    onClick={() => setShowAddModal(true)}
                 >
                     + Add New User
                 </Button>
@@ -189,6 +193,12 @@ export function UserEnrichmentPage() {
                 user={selectedUser}
                 onClose={() => setIsEditOpen(false)}
                 onSaved={handleSaved}
+            />
+
+            {/* ── Add User Modal ── */}
+            <AddUserModal
+                open={showAddModal}
+                onClose={() => setShowAddModal(false)}
             />
 
         </div>
