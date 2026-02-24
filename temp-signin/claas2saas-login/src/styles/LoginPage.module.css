@@ -1,0 +1,314 @@
+/* LoginPage.module.css — CLaaS2SaaS Enterprise Control Center */
+
+/* ── Page wrapper ── */
+.pageRoot {
+  display: flex;
+  min-height: 100vh;
+  min-width: 900px;
+  background: #EEE7E0;  /* platinum beige */
+  font-family: 'Montserrat', sans-serif;
+  overflow: hidden;
+}
+
+/* ── Left branding panel ── */
+.panelLeft {
+  width: 45%;
+  background: #193e6b;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+  overflow: hidden;
+  animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* Grid texture overlay */
+.panelLeft::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg,  transparent, transparent 40px, rgba(179,161,37,0.06) 40px, rgba(179,161,37,0.06) 41px),
+    repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(179,161,37,0.04) 40px, rgba(179,161,37,0.04) 41px);
+  pointer-events: none;
+}
+
+/* Decorative outer ring */
+.panelLeft::after {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  border: 1px solid rgba(179,161,37,0.15);
+  bottom: -150px; right: -150px;
+  pointer-events: none;
+}
+
+.circleInner {
+  position: absolute;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  border: 1px solid rgba(233,172,83,0.2);
+  bottom: -80px; right: -80px;
+  pointer-events: none;
+}
+
+/* Brand lockup */
+.brandLockup {
+  position: relative;
+  z-index: 2;
+}
+
+.enterpriseLabel {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #E9AC53;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.enterpriseLabel::before {
+  content: '';
+  width: 30px; height: 1px;
+  background: #E9AC53;
+}
+
+.brandName {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 52px;
+  line-height: 1;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+.brandName .gold { color: #B3A125; }
+
+.brandSub {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  color: #E9AC53;
+  letter-spacing: 1px;
+  margin-bottom: 48px;
+}
+
+.divider {
+  width: 60px; height: 3px;
+  background: linear-gradient(90deg, #B3A125, #E9AC53);
+  margin-bottom: 40px;
+  border-radius: 2px;
+}
+
+.accessLabel {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 12px;
+}
+
+.controlTitle {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  line-height: 1.15;
+  color: #FFFFFF;
+}
+.controlTitle em {
+  font-style: normal;
+  color: #E9AC53;
+}
+
+/* Feature bullets */
+.featureList {
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  position: relative;
+  z-index: 2;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+  animation: fadeUp 0.5s ease both;
+}
+.featureItem:nth-child(1) { animation-delay: 0.6s; }
+.featureItem:nth-child(2) { animation-delay: 0.75s; }
+.featureItem:nth-child(3) { animation-delay: 0.9s; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.featureDot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #E9AC53;
+  flex-shrink: 0;
+}
+
+.featureText {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  font-weight: 300;
+  letter-spacing: 0.3px;
+}
+
+/* ── Right login panel ── */
+.panelRight {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 40px;
+  position: relative;
+  animation: fadeIn 0.8s ease 0.3s both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.panelRight::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle at top right, rgba(179,161,37,0.08), transparent 70%);
+  pointer-events: none;
+}
+
+/* ── Login card ── */
+.loginCard {
+  width: 100%;
+  max-width: 420px;
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 52px 48px;
+  box-shadow:
+    0 2px 8px rgba(25,62,107,0.06),
+    0 20px 60px rgba(25,62,107,0.10),
+    0 0 0 1px rgba(25,62,107,0.05);
+  position: relative;
+  animation: cardReveal 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+/* Top gradient accent bar */
+.loginCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 48px; right: 48px;
+  height: 3px;
+  background: linear-gradient(90deg, #193e6b, #B3A125, #E9AC53);
+  border-radius: 0 0 3px 3px;
+}
+
+.cardEyebrow {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: #B3A125;
+  margin-bottom: 10px;
+}
+
+.cardHeading {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 26px;
+  color: #193e6b;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.cardDesc {
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 14px;
+  color: rgba(25,62,107,0.5);
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+/* Microsoft sign-in button override */
+.msButton {
+  width: 100% !important;
+  background-color: #193e6b !important;
+  border-radius: 10px !important;
+  padding: 14px 24px !important;
+  min-height: 52px !important;
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  letter-spacing: 0.3px !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  margin-bottom: 18px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.msButton:hover {
+  background-color: #1e4d85 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(25,62,107,0.35) !important;
+}
+
+.msButton:active {
+  transform: translateY(0) !important;
+}
+
+.msLogo {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.btnArrow {
+  margin-left: auto;
+  font-size: 18px;
+  opacity: 0.6;
+  transition: transform 0.2s ease;
+}
+.msButton:hover .btnArrow {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
+/* Secure notice */
+.secureNotice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 12px;
+  color: #B3A125;
+  font-weight: 600;
+}
