@@ -36,6 +36,9 @@ const ModuleMgmtPage = lazy(() =>
 const UserRoleAssignmentPage = lazy(() =>
   import('@/features/user-role-assign').then(m => ({ default: m.UserRoleAssignmentPage }))
 );
+const SccRootLandingPage = lazy(() =>
+  import('@/features/scc').then(m => ({ default: m.SccRootLandingPage }))
+);
 const SccDashboardPage = lazy(() =>
   import('@/features/scc-dashboard').then(m => ({ default: m.SccDashboardPage }))
 );
@@ -79,14 +82,17 @@ export function AppRouter() {
           <Route index element={<Navigate to={getRoutePath('kernel-dashboard')} replace />} />
 
           {/* Monitoring */}
-          {/* SCC Dashboard now renders at /kernel (kernel-dashboard route) */}
+          {/* /scc → SCC Root Landing (AI Welcome); /kernel → Real Dashboard */}
+          <Route path={getRoutePath('scc-dashboard')} element={
+            <PermissionGuard pageKey="scc-dashboard">
+              <Suspense fallback={<PageSkeleton />}><SccRootLandingPage /></Suspense>
+            </PermissionGuard>
+          } />
           <Route path={getRoutePath('kernel-dashboard')} element={
             <PermissionGuard pageKey="kernel-dashboard">
               <Suspense fallback={<PageSkeleton />}><SccDashboardPage /></Suspense>
             </PermissionGuard>
           } />
-          {/* Redirect old /scc path to /kernel so existing links still work */}
-          <Route path={getRoutePath('scc-dashboard')} element={<Navigate to={getRoutePath('kernel-dashboard')} replace />} />
           <Route path={getRoutePath('audit-logs')} element={
             <PermissionGuard pageKey="audit-logs">
               <Suspense fallback={<PageSkeleton />}><AuditActionsPage /></Suspense>
