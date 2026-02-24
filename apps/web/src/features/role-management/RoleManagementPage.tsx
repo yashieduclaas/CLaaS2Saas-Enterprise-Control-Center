@@ -28,6 +28,7 @@ import { usePermissionContext } from '@/rbac/PermissionContext';
 import { PageSkeleton } from '@/app/PageSkeleton';
 import { useRoles } from './hooks/useRoles';
 import { AddSecurityRoleModal } from './components/AddSecurityRoleModal';
+import { EditSecurityRoleModal } from './components/EditSecurityRoleModal';
 import type { PermissionCode } from '@claas2saas/contracts/rbac';
 import type { SecurityRole } from './types/securityRole';
 import styles from './pages/RoleManagementPage.module.css';
@@ -84,6 +85,7 @@ function RoleManagementContent() {
   const { data: allRoles, isLoading, error } = useRoles();
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editRole, setEditRole] = useState<SecurityRole | null>(null);
   const [optimisticRoles, setOptimisticRoles] = useState<SecurityRole[]>([]);
 
   const canCreate = usePermission('ROLE:CREATE' satisfies PermissionCode);
@@ -107,11 +109,12 @@ function RoleManagementContent() {
   }
 
   function handleEditClick(role: SecurityRole) {
-    console.log('Edit role:', role.id);
+    setEditRole(role);
   }
 
   return (
     <div className={styles.page}>
+      <div className={styles.pageContainer}>
 
       {/* ── Page Header ── */}
       <div className={styles.pageHeader}>
@@ -145,6 +148,7 @@ function RoleManagementContent() {
             placeholder="Search Roles by Name, Code, Solution, or Module..."
             value={search}
             onChange={(_, d) => setSearch(d.value)}
+            className={styles.searchInput}
             style={{ width: '100%' }}
           />
         </div>
@@ -156,7 +160,7 @@ function RoleManagementContent() {
           ) : error ? (
             <Text style={{ color: 'var(--color-danger-text)' }} role="alert">{error}</Text>
           ) : (
-            <Table aria-label="Security role listing" size="small">
+            <Table aria-label="Security role listing" size="small" className={styles.roleTable}>
               <TableHeader>
                 <TableRow>
                   <TableHeaderCell><span className={styles.colHeader}>Solution</span></TableHeaderCell>
@@ -218,12 +222,22 @@ function RoleManagementContent() {
         )}
       </div>
 
+      </div>
+
       {/* ── Add Modal (existing — untouched) ── */}
       <AddSecurityRoleModal
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
         onCreated={handleRoleCreated}
       />
+
+      {/* ── Edit Modal ── */}
+      {editRole && (
+        <EditSecurityRoleModal
+          role={editRole}
+          onClose={() => setEditRole(null)}
+        />
+      )}
 
     </div>
   );
