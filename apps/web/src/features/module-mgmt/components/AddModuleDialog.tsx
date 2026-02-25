@@ -19,10 +19,10 @@ import {
 import { DismissRegular } from '@fluentui/react-icons';
 
 const SOLUTION_OPTIONS = [
-  { value: 'ADC', label: 'ADC' },
-  { value: 'AIW', label: 'AIW' },
-  { value: 'ACM', label: 'ACM' },
-  { value: 'AES', label: 'AES' },
+  { value: 'AESS', label: 'Agentic ERP & Shared Services' },
+  { value: 'AIW', label: 'Agentic Intelligent Workplace' },
+  { value: 'ADLT', label: 'Adaptive Learning & Talent' },
+  { value: 'ACRM', label: 'Agentic CRM & Marketer' },
 ];
 
 const useStyles = makeStyles({
@@ -182,7 +182,7 @@ export function AddModuleDialog({ open, onOpenChange, onCancel, onAdd }: AddModu
                 </label>
                 <Input
                   id="module-code"
-                  placeholder="e.g., AGNT_HR"
+                  placeholder="e.g., AESS"
                   aria-label="Module Code"
                 />
               </div>
@@ -193,7 +193,7 @@ export function AddModuleDialog({ open, onOpenChange, onCancel, onAdd }: AddModu
                 </label>
                 <Input
                   id="module-name"
-                  placeholder="e.g., Agentic HR"
+                  placeholder="e.g., Agentic ERP & Shared Services"
                   aria-label="Module Name"
                 />
               </div>

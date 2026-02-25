@@ -46,32 +46,40 @@ const useStyles = makeStyles({
 });
 
 interface EccModuleConfig {
+  id: string;
   name: string;
   iconName: IconName;
 }
 
 const UNLOCKED_MODULES: EccModuleConfig[] = [
-  { name: 'Kernel Apps', iconName: 'apps' },
+  { id: 'kernel-apps', name: 'Kernel Apps', iconName: 'apps' },
 ];
 
 const LOCKED_MODULES: EccModuleConfig[] = [
-  { name: 'Agentic HR', iconName: 'peopleTeam' },
-  { name: 'Agentic Talents', iconName: 'star' },
-  { name: 'CLaaS Curriculum', iconName: 'book' },
-  { name: 'CLaaS Developer', iconName: 'code' },
-  { name: 'CLaaS Manager', iconName: 'grid' },
-  { name: 'CLaaS Mentor', iconName: 'hatGraduation' },
-  { name: 'Agentic SOP', iconName: 'clipboardBulletList' },
-  { name: 'Agentic Sales', iconName: 'dataBarVertical' },
-  { name: 'Agentic Finance', iconName: 'money' },
-  { name: 'Agentic Procurement', iconName: 'cart' },
-  { name: 'Agentic Marketer', iconName: 'megaphone' },
+  { id: 'aess', name: 'Agentic ERP & Shared Services', iconName: 'peopleTeam' },
+  { id: 'aiw', name: 'Agentic Intelligent Workplace', iconName: 'grid' },
+  { id: 'adlt', name: 'Adaptive Learning & Talent', iconName: 'star' },
+  { id: 'acrm', name: 'Agentic CRM & Marketer', iconName: 'megaphone' },
 ];
 
 export function EccPage() {
   const styles = useStyles();
   const navigate = useNavigate();
   const { isLoading: permLoading } = usePermissionContext();
+  const [restrictedApp, setRestrictedApp] = useState<{ id: string; name: string } | null>(null);
+
+  const handleLockedAppClick = (id: string, name: string) => {
+    setRestrictedApp({ id, name });
+  };
+
+  const handleRequestAccess = () => {
+    if (!restrictedApp) return;
+
+    setRestrictedApp(null);
+    navigate(getRoutePath('access-request'), {
+      state: { appId: restrictedApp.id, appName: restrictedApp.name },
+    });
+  };
 
   if (permLoading) return <PageSkeleton />;
 
@@ -89,7 +97,7 @@ export function EccPage() {
       <EccSection icon={<AppIcon name="unlock" size={20} />} title="Unlocked">
         {UNLOCKED_MODULES.map((mod) => (
           <EccModuleCard
-            key={mod.name}
+            key={mod.id}
             icon={<AppIcon name={mod.iconName} size={48} />}
             name={mod.name}
             isLocked={false}
@@ -100,40 +108,35 @@ export function EccPage() {
 
       <EccSection icon={<AppIcon name="lock" size={20} />} title="Locked">
         {LOCKED_MODULES.map((mod) => (
-          <LockedModuleCard key={mod.name} config={mod} />
+          <EccModuleCard
+            key={mod.id}
+            icon={<AppIcon name={mod.iconName} size={48} />}
+            name={mod.name}
+            isLocked
+            onClick={() => handleLockedAppClick(mod.id, mod.name)}
+          />
         ))}
       </EccSection>
-    </div>
-  );
-}
 
-function LockedModuleCard({ config }: { config: EccModuleConfig }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <>
-      <EccModuleCard
-        icon={<AppIcon name={config.iconName} size={48} />}
-        name={config.name}
-        isLocked
-        onClick={() => setOpen(true)}
-      />
-      <Dialog open={open} onOpenChange={(_, data) => setOpen(data.open)}>
+      <Dialog open={!!restrictedApp} onOpenChange={(_, data) => !data.open && setRestrictedApp(null)}>
         <DialogSurface>
           <DialogBody>
             <DialogTitle>Access Restricted</DialogTitle>
             <DialogContent>
-              You do not have permission to access {config.name}. Contact your administrator to
-              request access.
+              You do not have access to this application.
+              Do you want to request access from the administrator?
             </DialogContent>
             <DialogActions>
-              <Button appearance="primary" onClick={() => setOpen(false)}>
-                Close
+              <Button appearance="secondary" onClick={() => setRestrictedApp(null)}>
+                Cancel
+              </Button>
+              <Button appearance="primary" onClick={handleRequestAccess}>
+                Yes, Request Access
               </Button>
             </DialogActions>
           </DialogBody>
         </DialogSurface>
       </Dialog>
-    </>
+    </div>
   );
 }

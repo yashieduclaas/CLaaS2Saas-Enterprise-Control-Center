@@ -20,14 +20,13 @@ import styles from './EditSecurityRoleModal.module.css';
 
 // ── Options ─────────────────────────────────────────────────────────────────
 
-const SOLUTION_OPTIONS = ['AIW', 'ADC', 'ACM', 'ELX', 'CLX'] as const;
+const SOLUTION_OPTIONS = ['AESS', 'AIW', 'ADLT', 'ACRM'] as const;
 
 const MODULE_OPTIONS: Record<string, string[]> = {
-    AIW: ['KNL', 'AGNT_TLNT', 'AGNT_COLLAB', 'AGNT_SUPPORT'],
-    ADC: ['AGNT_HR', 'AGNT_FIN', 'AGNT_ANALYTICS'],
-    ACM: ['AGNT_CRCLH', 'COMP_AUDIT', 'COMP_POLICY', 'COMP_RISK'],
-    ELX: ['ELX_CORE', 'ELX_REPORT'],
-    CLX: ['CLX_CORE'],
+    AESS: ['AESS'],
+    AIW: ['AIW'],
+    ADLT: ['ADLT'],
+    ACRM: ['ACRM'],
 };
 
 const ROLE_CODE_OPTIONS = [
