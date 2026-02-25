@@ -49,7 +49,7 @@ const mockData: DashboardData = {
             userEmail: 'alice.johnson@lithan.com',
             action: 'RoleAssignment',
             status: 'SUCCESS',
-            details: 'Assigned Contributor role to Bob Smith for AGNT_TLNT',
+            details: 'Assigned Contributor role to Bob Smith for ADLT',
         },
         {
             id: '4',
@@ -57,7 +57,7 @@ const mockData: DashboardData = {
             userEmail: 'admin@lithan.com',
             action: 'ModuleRegistration',
             status: 'SUCCESS',
-            details: 'Registered new module Agentic Procurement under AES',
+            details: 'Registered new module Agentic CRM & Marketer under ACRM',
         },
     ],
 };

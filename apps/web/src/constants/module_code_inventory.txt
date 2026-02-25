@@ -1,0 +1,40 @@
+# Module Code Inventory - chore/module-codes-cc-20250225
+# Generated: 2025-02-25
+
+## Search 1: Module-related keywords
+# rg "KNL|AGNT_|AGENTIC|Agentic|Adaptive|AESS|AIW|ADLT|ACRM|Agentic ERP|Agentic Intelligent"
+
+FILES CONTAINING MODULE CODES/NAMES:
+- apps/web/src/features/module-mgmt/components/AddModuleDialog.tsx
+- apps/web/src/features/role-management/components/EditSecurityRoleModal.tsx
+- apps/web/src/features/role-management/components/AddSecurityRoleModal.tsx
+- apps/web/src/features/module-mgmt/ModuleMgmtPage.tsx
+- apps/web/src/features/ecc/EccPage.tsx
+- apps/web/src/features/user-role-assign/components/EditRoleAssignmentModal.tsx
+- apps/web/src/features/scc-dashboard/services/dashboardService.ts
+- apps/web/src/features/user-role-assign/components/AssignRoleModal.tsx
+- apps/web/src/features/role-management/services/securityRoleService.ts
+- apps/web/src/features/user-role-assign/services/mockAssignments.ts
+- C2S_RBAC_Requirement_Solution_Design_v1_6.md (docs - reference only)
+
+## Search 2: module_code | solution_code | moduleCode | solutionCode
+# rg "module_code|solution_code|moduleCode|solutionCode|module_name|solution_name"
+
+FILES:
+- role-management: EditSecurityRoleModal, AddSecurityRoleModal, securityRoleService
+- module-mgmt: ModuleRow, ModuleTable, ModuleMgmtPage, AddModuleDialog
+- user-role-assign: mockAssignments, AssignRoleModal, EditRoleAssignmentModal, AssignmentTable
+- Types: securityRole.ts, assignment.ts, security.ts
+
+## Canonical mapping (authoritative)
+AESS  => "Agentic ERP & Shared Services"
+AIW   => "Agentic Intelligent Workplace"
+ADLT  => "Adaptive Learning & Talent"
+ACRM  => "Agentic CRM & Marketer"
+
+## Old code -> New code mapping (for fixture updates)
+ADC + AGNT_HR/AGNT_FIN/AGNT_ANALYTICS -> AESS
+AIW + KNL/AGNT_TLNT/AGNT_COLLAB/AGNT_SUPPORT -> AIW (solution) or ADLT/AIW (by context)
+ACM + AGNT_CRCLM -> ACRM
+AGNT_TLNT (Adaptive Learning) -> ADLT
+AGNT_CRCLM/ACRM -> ACRM
