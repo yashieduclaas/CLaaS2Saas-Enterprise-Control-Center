@@ -17,13 +17,14 @@ import type { StatusFilter } from './components/AssignmentFilters';
 // ── Styles ───────────────────────────────────────────────────────────────────
 
 const useStyles = makeStyles({
-    page: {
+    pageContent: {
+        padding: '30px',
         display: 'flex',
         flexDirection: 'column',
         gap: tokens.spacingVerticalL,
-        padding: tokens.spacingVerticalXL,
     },
     pageHeader: {
+        marginBottom: '24px',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'flex-start',
@@ -36,13 +37,13 @@ const useStyles = makeStyles({
         gap: tokens.spacingVerticalXS,
     },
     pageTitle: {
-        fontSize: tokens.fontSizeBase600,
-        fontWeight: tokens.fontWeightSemibold,
-        color: tokens.colorNeutralForeground1,
+        fontSize: '24px',
+        fontWeight: 600,
+        color: '#193e6b',
     },
     pageSubtitle: {
-        fontSize: tokens.fontSizeBase300,
-        color: tokens.colorNeutralForeground2,
+        fontSize: '14px',
+        color: '#666666',
     },
     card: {
         backgroundColor: tokens.colorNeutralBackground1,
@@ -192,7 +193,7 @@ function UserRoleAssignmentContent() {
 
     // ── Render ─────────────────────────────────────────────────────────────────
     return (
-        <div className={styles.page}>
+        <div className={styles.pageContent}>
             {/* Page header */}
             <div className={styles.pageHeader}>
                 <div className={styles.titleSection}>

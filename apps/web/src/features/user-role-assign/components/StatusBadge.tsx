@@ -1,45 +1,40 @@
 // apps/web/src/features/user-role-assign/components/StatusBadge.tsx
-// FEATURE FILE — Renders a pill badge for assignment status.
+// Vanilla spec — Active/Inactive badge styles.
 
 import { makeStyles } from '@fluentui/react-components';
 import type { UserRoleAssignment } from '../types/security';
 
 const useStyles = makeStyles({
-    base: {
-        display: 'inline-flex',
-        alignItems: 'center',
-        paddingLeft: '10px',
-        paddingRight: '10px',
-        paddingTop: '3px',
-        paddingBottom: '3px',
-        borderRadius: '999px',
-        fontSize: '12px',
-        fontWeight: '500',
-        whiteSpace: 'nowrap',
-    },
-    active: {
-        backgroundColor: 'var(--color-success-bg)',
-        color: 'var(--color-success-text)',
-        border: '1px solid var(--color-success-border)',
-    },
-    inactive: {
-        backgroundColor: 'var(--color-bg-muted)',
-        color: 'var(--color-gray-600)',
-        border: '1px solid var(--color-badge-neutral-border)',
-    },
+  statusBadge: {
+    padding: '4px 10px',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: 600,
+    whiteSpace: 'nowrap' as const,
+    display: 'inline-flex',
+    alignItems: 'center',
+  },
+  active: {
+    background: 'rgba(40,167,69,0.1)',
+    color: '#28a745',
+  },
+  inactive: {
+    background: 'rgba(220,53,69,0.1)',
+    color: '#dc3545',
+  },
 });
 
 export interface StatusBadgeProps {
-    status: UserRoleAssignment['status'];
+  status: UserRoleAssignment['status'];
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-    const styles = useStyles();
-    const isActive = status === 'ACTIVE';
+  const styles = useStyles();
+  const isActive = status === 'ACTIVE';
 
-    return (
-        <span className={`${styles.base} ${isActive ? styles.active : styles.inactive}`}>
-            {isActive ? 'Active' : 'Inactive'}
-        </span>
-    );
+  return (
+    <span className={`${styles.statusBadge} ${isActive ? styles.active : styles.inactive}`}>
+      {isActive ? 'Active' : 'Inactive'}
+    </span>
+  );
 }

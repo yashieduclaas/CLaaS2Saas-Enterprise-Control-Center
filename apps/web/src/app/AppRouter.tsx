@@ -10,7 +10,6 @@ import { AuthGuard } from '@/auth/AuthGuard';
 import { PermissionGuard } from '@/rbac/PermissionGuard';
 import { PageSkeleton } from './PageSkeleton';
 import { getRoutePath } from '@/rbac/RoutePermissionMap';
-import { DemoModeBanner } from '@/dev/DemoModeBanner';
 
 const SignInPage = lazy(() =>
   import('@/features/auth/pages/SignInPage').then(m => ({ default: m.SignInPage }))
@@ -23,6 +22,9 @@ const AuditActionsPage = lazy(() =>
 );
 const PlaceholderPage = lazy(() =>
   import('@/features/PlaceholderPage').then(m => ({ default: m.PlaceholderPage }))
+);
+const AccessRequestPage = lazy(() =>
+  import('@/features/access-request/AccessRequestPage').then(m => ({ default: m.AccessRequestPage }))
 );
 const ForbiddenPage = lazy(() =>
   import('@/features/ForbiddenPage').then(m => ({ default: m.ForbiddenPage }))
@@ -46,12 +48,9 @@ const UserEnrichmentPage = lazy(() =>
   import('@/features/user-enrichment/pages/UserEnrichmentPage').then(m => ({ default: m.UserEnrichmentPage }))
 );
 
-const isDemoMode = (import.meta.env['VITE_AUTH_MODE'] as string | undefined) === 'demo';
-
 export function AppRouter() {
   return (
     <BrowserRouter>
-      {isDemoMode && <DemoModeBanner />}
       <Routes>
         {/* Public routes — render outside AuthGuard+AppLayout so no sidebar shows */}
         <Route path={getRoutePath('login')} element={
@@ -63,7 +62,9 @@ export function AppRouter() {
           <Suspense fallback={<PageSkeleton />}><ForbiddenPage /></Suspense>
         } />
         <Route path={getRoutePath('access-request')} element={
-          <Suspense fallback={<PageSkeleton />}><PlaceholderPage title="Request Access" /></Suspense>
+          <EccLayout>
+            <Suspense fallback={<PageSkeleton />}><AccessRequestPage /></Suspense>
+          </EccLayout>
         } />
 
         {/* ECC — standalone layout, no NavRail */}
@@ -79,7 +80,7 @@ export function AppRouter() {
 
         {/* Authenticated shell — AppLayout with NavRail */}
         <Route element={<AuthGuard><AppLayout /></AuthGuard>}>
-          <Route index element={<Navigate to={getRoutePath('login')} replace />} />
+          <Route index element={<Navigate to={getRoutePath('ecc')} replace />} />
 
           {/* Monitoring */}
           {/* /scc → SCC Root Landing (AI Welcome); /kernel → Real Dashboard */}
@@ -130,7 +131,7 @@ export function AppRouter() {
         </Route>
 
         {/* Catch-all */}
-        <Route path="*" element={<Navigate to={getRoutePath('login')} replace />} />
+        <Route path="*" element={<Navigate to={getRoutePath('ecc')} replace />} />
       </Routes>
     </BrowserRouter>
   );

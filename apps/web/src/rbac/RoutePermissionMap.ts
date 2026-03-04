@@ -28,7 +28,7 @@ export const ROUTE_MAP: ReadonlyArray<RouteMapEntry> = [
     breadcrumb: [],
   },
   {
-    path: '/request-access',
+    path: '/access-request',
     pageKey: 'access-request',
     label: 'Request Access',
     icon: '',

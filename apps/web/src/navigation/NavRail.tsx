@@ -2,6 +2,7 @@
 // PLATFORM FILE — Sidebar matching enterprise shell spec.
 
 import { useState } from 'react';
+import React from 'react';
 import { makeStyles, tokens, mergeClasses, Tooltip } from '@fluentui/react-components';
 import { NavLink, useLocation } from 'react-router-dom';
 import { usePermission } from '@/rbac/usePermission';
@@ -18,13 +19,7 @@ import {
   PersonArrowRightRegular,
   ClipboardTaskList16Regular,
   ScalesRegular,
-  WrenchRegular,
-  DataTrendingRegular,
-  RocketRegular,
   KeyRegular,
-  TicketDiagonalRegular,
-  BookRegular,
-  BotRegular,
   ChevronDownRegular,
   ChevronLeftRegular,
 } from '@fluentui/react-icons';
@@ -46,26 +41,20 @@ interface NavGroupDef {
 }
 
 const SCC_ITEMS: NavItemDef[] = [
-  { label: 'Dashboard', path: '/kernel', pageKey: 'kernel-dashboard', icon: <GridRegular fontSize={16} /> },
-  { label: 'Module Management', path: '/modules', pageKey: 'module-mgmt', icon: <AppsRegular fontSize={16} /> },
-  { label: 'User Profile Enrichment', path: '/users', pageKey: 'user-profile', icon: <PersonRegular fontSize={16} /> },
-  { label: 'Security Role Management', path: '/roles', pageKey: 'role-mgmt', icon: <ShieldCheckmarkRegular fontSize={16} /> },
-  { label: 'User Role Assignment', path: '/assignments', pageKey: 'user-role-assign', icon: <PersonArrowRightRegular fontSize={16} /> },
-  { label: 'Audit Logs', path: '/audit', pageKey: 'audit-logs', icon: <ClipboardTaskList16Regular fontSize={16} /> },
+  { label: 'Dashboard', path: '/kernel', pageKey: 'kernel-dashboard', icon: <GridRegular fontSize={18} /> },
+  { label: 'Module Management', path: '/modules', pageKey: 'module-mgmt', icon: <AppsRegular fontSize={18} /> },
+  { label: 'User Profile Enrichment', path: '/users', pageKey: 'user-profile', icon: <PersonRegular fontSize={18} /> },
+  { label: 'Security Role Management', path: '/roles', pageKey: 'role-mgmt', icon: <ShieldCheckmarkRegular fontSize={18} /> },
+  { label: 'User Role Assignment', path: '/assignments', pageKey: 'user-role-assign', icon: <PersonArrowRightRegular fontSize={18} /> },
+  { label: 'Audit Logs', path: '/audit', pageKey: 'audit-logs', icon: <ClipboardTaskList16Regular fontSize={18} /> },
 ];
 
 const ACC_ITEMS: NavItemDef[] = [
-  { label: 'Governance & Compliance', path: '/access-requests', pageKey: 'admin-access-requests', icon: <ScalesRegular fontSize={16} /> },
-  { label: 'Workflow Automation', path: '/workflow', icon: <WrenchRegular fontSize={16} /> },
-  { label: 'Analytics & KPIs', path: '/analytics', icon: <DataTrendingRegular fontSize={16} /> },
-  { label: 'Deployment & Release', path: '/deployment', icon: <RocketRegular fontSize={16} /> },
+  { label: 'Governance & Compliance', path: '/access-requests', pageKey: 'admin-access-requests', icon: <ScalesRegular fontSize={18} /> },
 ];
 
 const HELPDESK_ITEMS: NavItemDef[] = [
-  { label: 'Access Requests', path: '/access-requests', pageKey: 'admin-access-requests', icon: <KeyRegular fontSize={16} /> },
-  { label: 'Issue Ticketing', path: '/tickets', icon: <TicketDiagonalRegular fontSize={16} /> },
-  { label: 'Knowledge Base', path: '/knowledge', icon: <BookRegular fontSize={16} /> },
-  { label: 'AI Assistant', path: '/assistant', icon: <BotRegular fontSize={16} /> },
+  { label: 'Access Requests', path: '/access-requests', pageKey: 'admin-access-requests', icon: <KeyRegular fontSize={18} /> },
 ];
 
 const NAV_GROUPS: NavGroupDef[] = [
@@ -119,6 +108,11 @@ const useStyles = makeStyles({
       backgroundColor: tokens.colorNeutralBackground3Hover,
     },
   },
+  groupHeaderCentered: {
+    justifyContent: 'center',
+    paddingLeft: tokens.spacingHorizontalS,
+    paddingRight: tokens.spacingHorizontalS,
+  },
   groupHeaderIcon: {
     flexShrink: 0,
     display: 'flex',
@@ -131,7 +125,11 @@ const useStyles = makeStyles({
     whiteSpace: 'nowrap',
   },
   groupHeaderLabelHidden: {
-    display: 'none',
+    opacity: 0,
+    position: 'absolute' as const,
+    pointerEvents: 'none' as const,
+    width: 0,
+    overflow: 'hidden',
   },
   chevron: {
     flexShrink: 0,
@@ -139,11 +137,22 @@ const useStyles = makeStyles({
     alignItems: 'center',
     transition: 'transform 0.15s ease',
   },
+  chevronHidden: {
+    opacity: 0,
+    position: 'absolute' as const,
+    pointerEvents: 'none' as const,
+    width: 0,
+    overflow: 'hidden',
+  },
   chevronExpanded: {
     transform: 'rotate(0deg)',
   },
   chevronCollapsed: {
     transform: 'rotate(-90deg)',
+  },
+  groupItemsWrapper: {
+    overflow: 'hidden',
+    transition: 'max-height 0.28s ease',
   },
   groupItems: {
     display: 'flex',
@@ -152,12 +161,16 @@ const useStyles = makeStyles({
     paddingLeft: tokens.spacingHorizontalM,
     paddingRight: tokens.spacingHorizontalM,
   },
+  groupItemsCollapsed: {
+    paddingLeft: 0,
+    paddingRight: 0,
+    alignItems: 'center',
+  },
   navItem: {
     display: 'flex',
     alignItems: 'center',
     gap: tokens.spacingHorizontalS,
-    padding: `${tokens.spacingVerticalS} ${tokens.spacingHorizontalM}`,
-    paddingLeft: 'calc(20px + 8px + 8px)',
+    padding: '10px 16px',
     color: tokens.colorNeutralForeground2,
     textDecoration: 'none',
     borderRadius: tokens.borderRadiusMedium,
@@ -165,17 +178,23 @@ const useStyles = makeStyles({
     cursor: 'pointer',
     minHeight: '40px',
     fontSize: tokens.fontSizeBase300,
+    borderLeft: '3px solid transparent',
     ':hover': {
       backgroundColor: tokens.colorNeutralBackground3Hover,
       color: tokens.colorNeutralForeground1,
     },
   },
+  navItemCollapsed: {
+    padding: '10px 0',
+    justifyContent: 'center',
+  },
   navItemActive: {
-    backgroundColor: tokens.colorNeutralBackground3,
-    color: tokens.colorBrandForeground1,
+    backgroundColor: 'var(--color-warning-bg)',
+    color: 'var(--color-brand-accent)',
+    borderLeftColor: 'var(--color-brand-accent)',
     ':hover': {
-      backgroundColor: tokens.colorNeutralBackground3Hover,
-      color: tokens.colorBrandForeground1,
+      backgroundColor: 'var(--color-warning-bg)',
+      color: 'var(--color-brand-accent)',
     },
   },
   navIcon: {
@@ -189,7 +208,11 @@ const useStyles = makeStyles({
     whiteSpace: 'nowrap',
   },
   navLabelHidden: {
-    display: 'none',
+    opacity: 0,
+    position: 'absolute' as const,
+    pointerEvents: 'none' as const,
+    width: 0,
+    overflow: 'hidden',
   },
   collapseButton: {
     marginTop: 'auto',
@@ -211,6 +234,12 @@ const useStyles = makeStyles({
       color: tokens.colorNeutralForeground1,
     },
   },
+  collapseIcon: {
+    transition: 'transform 0.28s ease',
+  },
+  collapseIconRotated: {
+    transform: 'rotate(180deg)',
+  },
 });
 
 function NavItem({ item, collapsed }: { item: NavItemDef; collapsed: boolean }) {
@@ -227,14 +256,25 @@ function NavItem({ item, collapsed }: { item: NavItemDef; collapsed: boolean }) 
   const isActive =
     location.pathname === item.path || location.pathname.startsWith(item.path + '/');
 
+  const iconEl = React.isValidElement(item.icon)
+    ? React.cloneElement(item.icon as React.ReactElement<{ fontSize?: number }>, {
+        fontSize: collapsed ? 20 : 18,
+      })
+    : item.icon;
+
   const linkEl = (
     <NavLink
       to={item.path}
-      className={mergeClasses(styles.navItem, isActive && styles.navItemActive)}
+      className={mergeClasses(
+        styles.navItem,
+        isActive && styles.navItemActive,
+        collapsed && styles.navItemCollapsed
+      )}
       aria-current={isActive ? 'page' : undefined}
       aria-label={collapsed ? item.label : undefined}
+      {...(collapsed && { 'data-tooltip': item.label })}
     >
-      <span className={styles.navIcon}>{item.icon}</span>
+      <span className={styles.navIcon}>{iconEl}</span>
       <span className={mergeClasses(styles.navLabel, collapsed && styles.navLabelHidden)}>
         {item.label}
       </span>
@@ -276,12 +316,13 @@ function NavGroup({ group, collapsed, isExpanded, onToggle }: NavGroupProps) {
       <span
         className={mergeClasses(
           styles.chevron,
-          isExpanded ? styles.chevronExpanded : styles.chevronCollapsed
+          collapsed && styles.chevronHidden,
+          !collapsed && (isExpanded ? styles.chevronExpanded : styles.chevronCollapsed)
         )}
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggle(); }}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
         role="button"
-        tabIndex={0}
+        tabIndex={collapsed ? -1 : 0}
         aria-label={isExpanded ? 'Collapse' : 'Expand'}
       >
         <ChevronDownRegular fontSize={16} />
@@ -292,7 +333,7 @@ function NavGroup({ group, collapsed, isExpanded, onToggle }: NavGroupProps) {
   const headerButton = hasHeaderNav ? (
     <NavLink
       to={group.headerNavPath!}
-      className={styles.groupHeader}
+      className={mergeClasses(styles.groupHeader, collapsed && styles.groupHeaderCentered)}
       style={{ textDecoration: 'none' }}
       aria-label={collapsed ? group.label : undefined}
     >
@@ -301,7 +342,7 @@ function NavGroup({ group, collapsed, isExpanded, onToggle }: NavGroupProps) {
   ) : (
     <button
       type="button"
-      className={styles.groupHeader}
+      className={mergeClasses(styles.groupHeader, collapsed && styles.groupHeaderCentered)}
       onClick={onToggle}
       aria-expanded={isExpanded}
       aria-label={collapsed ? group.label : undefined}
@@ -319,13 +360,16 @@ function NavGroup({ group, collapsed, isExpanded, onToggle }: NavGroupProps) {
       ) : (
         headerButton
       )}
-      {isExpanded && (
-        <div className={styles.groupItems}>
+      <div
+        className={styles.groupItemsWrapper}
+        style={{ maxHeight: isExpanded ? '500px' : '0px' }}
+      >
+        <div className={mergeClasses(styles.groupItems, collapsed && styles.groupItemsCollapsed)}>
           {group.items.map((item) => (
             <NavItem key={item.path + item.label} item={item} collapsed={collapsed} />
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -336,22 +380,18 @@ interface NavRailProps {
   onCollapseClick?: () => void;
 }
 
+const DEFAULT_OPEN_GROUPS = ['scc', 'acc', 'helpdesk'];
+
 export function NavRail({ collapsed, onCollapseClick }: NavRailProps) {
   const styles = useStyles();
-  const [sccExpanded, setSccExpanded] = useState(true);
-  const [accExpanded, setAccExpanded] = useState(true);
-  const [helpdeskExpanded, setHelpdeskExpanded] = useState(true);
+  const [openGroups, setOpenGroups] = useState<string[]>(DEFAULT_OPEN_GROUPS);
 
-  const expansion: Record<string, boolean> = {
-    scc: sccExpanded,
-    acc: accExpanded,
-    helpdesk: helpdeskExpanded,
-  };
-
-  const handleToggle = (id: string) => {
-    if (id === 'scc') setSccExpanded((v) => !v);
-    else if (id === 'acc') setAccExpanded((v) => !v);
-    else setHelpdeskExpanded((v) => !v);
+  const toggleGroup = (groupKey: string) => {
+    setOpenGroups((prev) =>
+      prev.includes(groupKey)
+        ? prev.filter((g) => g !== groupKey)
+        : [...prev, groupKey]
+    );
   };
 
   return (
@@ -365,8 +405,8 @@ export function NavRail({ collapsed, onCollapseClick }: NavRailProps) {
           <NavGroup
             group={group}
             collapsed={collapsed}
-            isExpanded={expansion[group.id] ?? true}
-            onToggle={() => handleToggle(group.id)}
+            isExpanded={openGroups.includes(group.id)}
+            onToggle={() => toggleGroup(group.id)}
           />
         </div>
       ))}
@@ -377,7 +417,10 @@ export function NavRail({ collapsed, onCollapseClick }: NavRailProps) {
           onClick={onCollapseClick}
           aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
         >
-          <ChevronLeftRegular fontSize={20} />
+          <ChevronLeftRegular
+            fontSize={20}
+            className={mergeClasses(styles.collapseIcon, collapsed && styles.collapseIconRotated)}
+          />
         </button>
       )}
     </nav>

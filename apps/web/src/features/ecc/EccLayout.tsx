@@ -80,7 +80,7 @@ const useStyles = makeStyles({
   },
 });
 
-const envLabel = (import.meta.env['VITE_AUTH_MODE'] as string | undefined) === 'demo' ? 'Demo' : 'Production';
+const envLabel = 'Production';
 
 export function EccLayout({ children }: PropsWithChildren) {
   const styles = useStyles();

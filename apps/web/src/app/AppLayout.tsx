@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { makeStyles, tokens, mergeClasses } from '@fluentui/react-components';
 import { NavRail } from '@/navigation/NavRail';
 import { TopBar } from './TopBar';
 
-const RAIL_WIDTH_EXPANDED = '240px';
-const RAIL_WIDTH_COLLAPSED = '56px';
+const RAIL_WIDTH_EXPANDED = '270px';
+const RAIL_WIDTH_COLLAPSED = '64px';
+const RAIL_TRANSITION = 'width 0.28s cubic-bezier(0.4, 0, 0.2, 1)';
 
 const useStyles = makeStyles({
   shell: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles({
   railContainer: {
     position: 'relative',
     flexShrink: 0,
-    transition: 'width 150ms ease',
+    transition: RAIL_TRANSITION,
     width: RAIL_WIDTH_EXPANDED,
   },
   railContainerCollapsed: {
@@ -42,7 +43,14 @@ const useStyles = makeStyles({
 
 export function AppLayout() {
   const styles = useStyles();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebarCollapsed');
+    return saved === 'true';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('sidebarCollapsed', String(collapsed));
+  }, [collapsed]);
 
   return (
     <div className={styles.shell}>

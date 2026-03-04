@@ -1,7 +1,6 @@
 // apps/web/src/features/role-management/RoleManagementPage.tsx
 // Security Role Management — /roles
-// Fluent UI v9, CSS Modules, no inline styles.
-// Keeps AddSecurityRoleModal and existing permission guard intact.
+// Vanilla table spec — Griffel only, native table.
 
 import { useState } from 'react';
 import {
@@ -9,12 +8,7 @@ import {
   Input,
   Spinner,
   Text,
-  Table,
-  TableHeader,
-  TableRow,
-  TableHeaderCell,
-  TableBody,
-  TableCell,
+  makeStyles,
 } from '@fluentui/react-components';
 import {
   AddRegular,
@@ -31,32 +25,191 @@ import { AddSecurityRoleModal } from './components/AddSecurityRoleModal';
 import { EditSecurityRoleModal } from './components/EditSecurityRoleModal';
 import type { PermissionCode } from '@claas2saas/contracts/rbac';
 import type { SecurityRole } from './types/securityRole';
-import styles from './pages/RoleManagementPage.module.css';
 
-// ── Role code → badge class ───────────────────────────────────────────────────
-const ROLE_CODE_BADGE: Record<string, string> = {
-  COLLABORATOR: styles.badgeCollaborator ?? '',
-  CONTRIBUTOR: styles.badgeContributor ?? '',
-  VIEWER: styles.badgeViewer ?? '',
-  GLOBAL_ADMIN: styles.badgeGlobalAdmin ?? '',
+const useStyles = makeStyles({
+  pageContent: {
+    padding: '30px',
+  },
+  pageHeader: {
+    marginBottom: '24px',
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  titleBlock: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+  },
+  pageTitle: {
+    fontSize: '24px',
+    fontWeight: 600,
+    color: '#193e6b',
+    margin: 0,
+    lineHeight: 1.3,
+  },
+  pageSubtitle: {
+    fontSize: '14px',
+    color: '#666666',
+    margin: 0,
+  },
+  card: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  searchWrap: {
+    width: '100%',
+  },
+  tableWrapper: {
+    padding: '25px',
+    borderRadius: '8px',
+    backgroundColor: '#FFFFFF',
+    boxShadow: '0 3px 10px rgba(0,0,0,0.05)',
+    overflowX: 'auto' as const,
+  },
+  dataTable: {
+    width: '100%',
+    borderCollapse: 'collapse' as const,
+  },
+  th: {
+    padding: '15px 12px',
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#193e6b',
+    textAlign: 'left' as const,
+    borderBottom: '1px solid rgba(0,0,0,0.05)',
+  },
+  td: {
+    padding: '15px 12px',
+    fontSize: '14px',
+    color: '#333333',
+    borderBottom: '1px solid rgba(0,0,0,0.05)',
+  },
+  tr: {
+    ':hover': {
+      backgroundColor: 'rgba(0,0,0,0.02)',
+    },
+  },
+  cellPrimary: {
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#333333',
+    display: 'block',
+  },
+  cellSecondary: {
+    fontSize: '12px',
+    color: '#666666',
+    display: 'block',
+  },
+  cellText: {
+    fontSize: '14px',
+    color: '#333333',
+  },
+  roleBadge: {
+    padding: '4px 10px',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: 600,
+    whiteSpace: 'nowrap' as const,
+    display: 'inline-flex',
+    alignItems: 'center',
+  },
+  typeBadge: {
+    padding: '4px 10px',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: 600,
+    whiteSpace: 'nowrap' as const,
+    display: 'inline-flex',
+    alignItems: 'center',
+  },
+  typeBadgeSystem: {
+    background: 'rgba(0,123,255,0.1)',
+    color: '#007bff',
+  },
+  typeBadgeCustom: {
+    background: 'rgba(108,117,125,0.1)',
+    color: '#6c757d',
+  },
+  iconBtn: {
+    padding: '6px 8px',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    border: 'none',
+    background: 'transparent',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#666666',
+    ':hover': {
+      background: 'rgba(0,0,0,0.05)',
+    },
+  },
+  manageBtn: {
+    padding: '6px 14px',
+    borderRadius: '4px',
+    fontSize: '14px',
+    border: '1px solid #dee2e6',
+    background: 'transparent',
+    color: '#333333',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '6px',
+    ':hover': {
+      background: 'rgba(0,0,0,0.05)',
+    },
+  },
+  actions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  footer: {
+    fontSize: '13px',
+    color: '#666666',
+    marginTop: '8px',
+  },
+});
+
+const ROLE_BADGE_COLORS: Record<string, { bg: string; color: string }> = {
+  COLLABORATOR: { bg: 'rgba(0,123,255,0.1)', color: '#007bff' },
+  CONTRIBUTOR: { bg: 'rgba(40,167,69,0.1)', color: '#28a745' },
+  VIEWER: { bg: 'rgba(255,193,7,0.1)', color: '#ffc107' },
+  GLOBAL_ADMIN: { bg: 'rgba(220,53,69,0.1)', color: '#dc3545' },
 };
 
 function RoleCodeBadge({ code }: { code: string }) {
-  const cls = ROLE_CODE_BADGE[code] ?? styles.badgeDefault;
-  return <span className={`${styles.badge} ${cls}`}>{code.replace(/_/g, '_')}</span>;
+  const styles = useStyles();
+  const colors = ROLE_BADGE_COLORS[code] ?? { bg: 'rgba(108,117,125,0.1)', color: '#6c757d' };
+  return (
+    <span
+      className={styles.roleBadge}
+      style={{ background: colors.bg, color: colors.color }}
+    >
+      {code.replace(/_/g, '_')}
+    </span>
+  );
 }
 
 function RoleTypePill({ type }: { type: SecurityRole['roleType'] }) {
+  const styles = useStyles();
   const label = type === 'SYSTEM' ? 'System' : 'Custom';
-  return <span className={styles.typePill}>{label}</span>;
+  return (
+    <span className={`${styles.typeBadge} ${type === 'SYSTEM' ? styles.typeBadgeSystem : styles.typeBadgeCustom}`}>
+      {label}
+    </span>
+  );
 }
 
 function ActionsCell({ role, onEdit }: { role: SecurityRole; onEdit: (r: SecurityRole) => void }) {
+  const styles = useStyles();
   return (
     <div className={styles.actions}>
       <button
         type="button"
-        className={styles.actionBtn}
+        className={styles.iconBtn}
         aria-label={`Edit ${role.roleName}`}
         onClick={() => onEdit(role)}
       >
@@ -64,7 +217,7 @@ function ActionsCell({ role, onEdit }: { role: SecurityRole; onEdit: (r: Securit
       </button>
       <button
         type="button"
-        className={styles.actionBtn}
+        className={styles.iconBtn}
         aria-label={`Delete ${role.roleName}`}
         onClick={() => console.log('Delete role:', role.id)}
       >
@@ -74,7 +227,6 @@ function ActionsCell({ role, onEdit }: { role: SecurityRole; onEdit: (r: Securit
   );
 }
 
-// ── Main export ───────────────────────────────────────────────────────────────
 export function RoleManagementPage() {
   const { isLoading: permLoading } = usePermissionContext();
   if (permLoading) return <PageSkeleton />;
@@ -82,6 +234,7 @@ export function RoleManagementPage() {
 }
 
 function RoleManagementContent() {
+  const styles = useStyles();
   const { data: allRoles, isLoading, error } = useRoles();
   const [search, setSearch] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -89,7 +242,6 @@ function RoleManagementContent() {
   const [optimisticRoles, setOptimisticRoles] = useState<SecurityRole[]>([]);
 
   const canCreate = usePermission('ROLE:CREATE' satisfies PermissionCode);
-
   const roles = [...optimisticRoles, ...allRoles];
 
   const filtered = roles.filter((r) => {
@@ -108,15 +260,8 @@ function RoleManagementContent() {
     setOptimisticRoles((prev) => [newRole, ...prev]);
   }
 
-  function handleEditClick(role: SecurityRole) {
-    setEditRole(role);
-  }
-
   return (
-    <div className={styles.page}>
-      <div className={styles.pageContainer}>
-
-      {/* ── Page Header ── */}
+    <div className={styles.pageContent}>
       <div className={styles.pageHeader}>
         <div className={styles.titleBlock}>
           <h1 className={styles.pageTitle}>Security Role Management</h1>
@@ -128,19 +273,13 @@ function RoleManagementContent() {
           icon={<AddRegular />}
           disabled={!canCreate}
           title={!canCreate ? 'You do not have permission to create roles' : undefined}
-          onClick={() => {
-            console.log('[RoleManagementPage] + Add New Role clicked');
-            setShowAddModal(true);
-          }}
+          onClick={() => setShowAddModal(true)}
         >
           + Add New Role
         </Button>
       </div>
 
-      {/* ── Card ── */}
       <div className={styles.card}>
-
-        {/* Search */}
         <div className={styles.searchWrap}>
           <Input
             id="role-search-input"
@@ -148,73 +287,67 @@ function RoleManagementContent() {
             placeholder="Search Roles by Name, Code, Solution, or Module..."
             value={search}
             onChange={(_, d) => setSearch(d.value)}
-            className={styles.searchInput}
             style={{ width: '100%' }}
           />
         </div>
 
-        {/* Table */}
-        <div className={styles.tableWrap}>
+        <div className={styles.tableWrapper}>
           {isLoading ? (
             <Spinner label="Loading roles…" size="medium" />
           ) : error ? (
-            <Text style={{ color: 'var(--color-danger-text)' }} role="alert">{error}</Text>
+            <Text style={{ color: '#dc3545' }} role="alert">{error}</Text>
           ) : (
-            <Table aria-label="Security role listing" size="small" className={styles.roleTable}>
-              <TableHeader>
-                <TableRow>
-                  <TableHeaderCell><span className={styles.colHeader}>Solution</span></TableHeaderCell>
-                  <TableHeaderCell><span className={styles.colHeader}>Module</span></TableHeaderCell>
-                  <TableHeaderCell><span className={styles.colHeader}>Role Code</span></TableHeaderCell>
-                  <TableHeaderCell><span className={styles.colHeader}>Role Name</span></TableHeaderCell>
-                  <TableHeaderCell><span className={styles.colHeader}>Role Type</span></TableHeaderCell>
-                  <TableHeaderCell><span className={styles.colHeader}>Permissions</span></TableHeaderCell>
-                  <TableHeaderCell><span className={styles.colHeader}>Actions</span></TableHeaderCell>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <table className={styles.dataTable} aria-label="Security role listing">
+              <thead>
+                <tr>
+                  <th className={styles.th}>Solution</th>
+                  <th className={styles.th}>Module</th>
+                  <th className={styles.th}>Role Code</th>
+                  <th className={styles.th}>Role Name</th>
+                  <th className={styles.th}>Role Type</th>
+                  <th className={styles.th}>Permissions</th>
+                  <th className={styles.th}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
                 {filtered.map((role) => (
-                  <TableRow key={role.id}>
-                    <TableCell>
+                  <tr key={role.id} className={styles.tr}>
+                    <td className={styles.td}>
                       <span className={styles.cellPrimary}>{role.solutionCode}</span>
                       <span className={styles.cellSecondary}>{role.solutionName}</span>
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className={styles.td}>
                       <span className={styles.cellPrimary}>{role.moduleCode}</span>
                       <span className={styles.cellSecondary}>{role.moduleName}</span>
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className={styles.td}>
                       <RoleCodeBadge code={role.roleCode} />
-                    </TableCell>
-                    <TableCell>
-                      <span className={styles.cellText}>{role.roleName}</span>
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className={styles.td}><span className={styles.cellText}>{role.roleName}</span></td>
+                    <td className={styles.td}>
                       <RoleTypePill type={role.roleType} />
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        appearance="outline"
-                        size="small"
-                        icon={<SettingsRegular fontSize={12} />}
+                    </td>
+                    <td className={styles.td}>
+                      <button
+                        type="button"
                         className={styles.manageBtn}
                         onClick={() => console.log('Manage permissions:', role.id)}
                         aria-label={`Manage permissions for ${role.roleName}`}
                       >
+                        <SettingsRegular fontSize={12} />
                         Manage
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <ActionsCell role={role} onEdit={handleEditClick} />
-                    </TableCell>
-                  </TableRow>
+                      </button>
+                    </td>
+                    <td className={styles.td}>
+                      <ActionsCell role={role} onEdit={setEditRole} />
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
-            </Table>
+              </tbody>
+            </table>
           )}
         </div>
 
-        {/* Footer */}
         {!isLoading && !error && (
           <Text className={styles.footer}>
             Showing {filtered.length} of {roles.length} security role{roles.length !== 1 ? 's' : ''}
@@ -222,23 +355,18 @@ function RoleManagementContent() {
         )}
       </div>
 
-      </div>
-
-      {/* ── Add Modal (existing — untouched) ── */}
       <AddSecurityRoleModal
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
         onCreated={handleRoleCreated}
       />
 
-      {/* ── Edit Modal ── */}
       {editRole && (
         <EditSecurityRoleModal
           role={editRole}
           onClose={() => setEditRole(null)}
         />
       )}
-
     </div>
   );
 }

@@ -1,200 +1,314 @@
 // apps/web/src/app/TopBar.tsx
-// PLATFORM FILE — Header matching enterprise shell spec.
+// Vanilla Navbar — plain HTML + CSS. No Fluent. No Demo.
 
-import { useNavigate } from 'react-router-dom';
-import { makeStyles, tokens, Input } from '@fluentui/react-components';
-import {
-  SearchRegular,
-  GlobeRegular,
-  AlertRegular,
-  SettingsRegular,
-  FlashRegular,
-} from '@fluentui/react-icons';
+import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { getRoutePath } from '@/rbac/RoutePermissionMap';
-import { DemoUserSwitcher } from '@/dev/DemoUserSwitcher';
+import { useAuth } from '@/auth/useAuth';
+import './topbar-vanilla.css';
 
-const useStyles = makeStyles({
-  bar: {
-    display: 'flex',
-    alignItems: 'center',
-    height: '56px',
-    paddingLeft: tokens.spacingHorizontalL,
-    paddingRight: tokens.spacingHorizontalL,
-    backgroundColor: 'var(--color-brand-primary)',
-    flexShrink: 0,
-  },
-  left: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.spacingHorizontalM,
-  },
-  brand: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer',
-    textDecoration: 'none',
-    backgroundColor: 'transparent',
-    border: 'none',
-    padding: 0,
-    margin: 0,
-  },
-  logo: {
-    height: '32px',
-    width: 'auto',
-    display: 'block',
-    background: 'transparent',
-  },
-  divider: {
-    width: '1px',
-    height: '24px',
-    backgroundColor: tokens.colorNeutralStroke1,
-    opacity: 0.5,
-  },
-  moduleLabel: {
-    color: tokens.colorNeutralForegroundOnBrand,
-    fontSize: tokens.fontSizeBase400,
-    fontWeight: tokens.fontWeightRegular,
-  },
-  center: {
-    flex: 1,
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  searchInput: {
-    width: '400px',
-    maxWidth: '420px',
-    minWidth: '380px',
-    borderRadius: tokens.borderRadiusCircular,
-    backgroundColor: tokens.colorNeutralBackground3,
-  },
-  right: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.spacingHorizontalL,
-  },
-  envBlock: {
-    display: 'flex',
-    flexDirection: 'column' as const,
-    alignItems: 'flex-start',
-  },
-  envLabel: {
-    fontSize: tokens.fontSizeBase100,
-    color: tokens.colorNeutralForeground3,
-    fontWeight: tokens.fontWeightRegular,
-    textTransform: 'uppercase' as const,
-  },
-  envValue: {
-    fontSize: tokens.fontSizeBase200,
-    color: tokens.colorNeutralForegroundOnBrand,
-  },
-  iconButton: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '36px',
-    height: '36px',
-    border: 'none',
-    background: 'transparent',
-    borderRadius: tokens.borderRadiusMedium,
-    cursor: 'pointer',
-    color: tokens.colorNeutralForegroundOnBrand,
-    ':hover': {
-      backgroundColor: tokens.colorNeutralBackground3Hover,
-    },
-  },
-  bellWrapper: {
-    position: 'relative',
-  },
-  bellBadge: {
-    position: 'absolute',
-    top: '4px',
-    right: '4px',
-    width: '8px',
-    height: '8px',
-    borderRadius: tokens.borderRadiusCircular,
-    backgroundColor: tokens.colorPaletteRedBackground3,
-  },
-  profileCircle: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '36px',
-    height: '36px',
-    borderRadius: tokens.borderRadiusCircular,
-    backgroundColor: tokens.colorPaletteYellowBackground1,
-    color: tokens.colorNeutralForegroundOnBrand,
-    fontSize: tokens.fontSizeBase300,
-    fontWeight: tokens.fontWeightSemibold,
-  },
-  envWithGlobe: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: tokens.spacingHorizontalS,
-  },
-  globeIcon: {
-    color: tokens.colorNeutralForegroundOnBrand,
-  },
-});
+const ENVIRONMENTS = [
+  'CLaaS2SaaS default',
+  'CLaaS2SaaS testing',
+  'CLaaS2SaaS production',
+  'CLaaS2SaaS development',
+];
 
-const isDemoMode = (import.meta.env['VITE_AUTH_MODE'] as string | undefined) === 'demo';
+function getInitials(displayName: string | null): string {
+  if (!displayName || !displayName.trim()) return '?';
+  const parts = displayName.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return displayName.slice(0, 2).toUpperCase();
+}
+
+function getRoleLabel(displayName: string | null): string {
+  if (!displayName) return 'User';
+  if (displayName.includes('Global Admin')) return 'Global Admin';
+  if (displayName.includes('Security Admin')) return 'Security Admin';
+  if (displayName.includes('Module Admin')) return 'Module Admin';
+  if (displayName.includes('Help Desk')) return 'Help Desk';
+  if (displayName.includes('Standard User')) return 'Standard User';
+  if (displayName.includes('No Role')) return 'No Role';
+  return 'User';
+}
 
 export function TopBar() {
-  const styles = useStyles();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { displayName } = useAuth();
 
-  const handleBrandClick = () => {
-    navigate(getRoutePath('ecc'));
+  const context = location.pathname.startsWith('/ecc') ? 'ecc' : 'kernel';
+
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [envOpen, setEnvOpen] = useState(false);
+  const [currentEnvironment, setCurrentEnvironment] = useState(() =>
+    typeof window !== 'undefined'
+      ? (localStorage.getItem('selectedEnvironment') || 'CLaaS2SaaS default')
+      : 'CLaaS2SaaS default'
+  );
+
+  const initials = getInitials(displayName);
+  const roleLabel = getRoleLabel(displayName);
+  const unreadCount = 0;
+  const notifications: { notification_id: string }[] = [];
+
+  const environmentList = ENVIRONMENTS.filter((env) => env !== currentEnvironment);
+
+  function selectEnvironment(env: string) {
+    localStorage.setItem('selectedEnvironment', env);
+    setCurrentEnvironment(env);
+    setEnvOpen(false);
+  }
+
+  const toggleEnvPanel = () => {
+    setEnvOpen((prev) => !prev);
+    setUserMenuOpen(false);
+    setNotificationOpen(false);
   };
 
+  const toggleNotificationPanel = () => {
+    setNotificationOpen((prev) => !prev);
+    setUserMenuOpen(false);
+    setEnvOpen(false);
+  };
+
+  const toggleUserMenu = () => {
+    setUserMenuOpen((prev) => !prev);
+    setNotificationOpen(false);
+    setEnvOpen(false);
+  };
+
+  const handleNotificationClick = (n: { notification_id: string }) => {
+    setNotificationOpen(false);
+    navigate(getRoutePath('admin-access-requests'));
+  };
+
+  const handleLogout = () => {
+    setUserMenuOpen(false);
+    navigate(getRoutePath('login'));
+  };
+
+  useEffect(() => {
+    if (!envOpen) return;
+    const timeout = setTimeout(() => {
+      function handleOutsideClick(e: MouseEvent) {
+        const target = e.target as HTMLElement;
+        if (!target.closest('.env-panel') && !target.closest('.nav-env-banner')) {
+          setEnvOpen(false);
+        }
+      }
+      document.addEventListener('click', handleOutsideClick);
+      return () => document.removeEventListener('click', handleOutsideClick);
+    }, 10);
+    return () => clearTimeout(timeout);
+  }, [envOpen]);
+
+  useEffect(() => {
+    if (!userMenuOpen && !notificationOpen) return;
+    function handleOutsideClick(e: MouseEvent) {
+      const target = e.target as HTMLElement;
+      if (
+        !target.closest('.nav-user') &&
+        !target.closest('.user-dropdown') &&
+        !target.closest('.nav-notification-wrapper')
+      ) {
+        setUserMenuOpen(false);
+        setNotificationOpen(false);
+      }
+    }
+    const timeout = setTimeout(() => {
+      document.addEventListener('click', handleOutsideClick);
+    }, 10);
+    return () => {
+      clearTimeout(timeout);
+      document.removeEventListener('click', handleOutsideClick);
+    };
+  }, [userMenuOpen, notificationOpen]);
+
   return (
-    <header className={styles.bar} role="banner">
-      <div className={styles.left}>
-        <button type="button" className={styles.brand} onClick={handleBrandClick} aria-label="Go to Enterprise Control Centre">
-          <img src="/logo.png" alt="CLaaS2SaaS" className={styles.logo} />
-        </button>
-        <div className={styles.divider} aria-hidden />
-        <span className={styles.moduleLabel}>Kernel Apps</span>
+    <nav className="top-nav" role="navigation">
+      <div className="nav-left">
+        <div
+          className="nav-brand"
+          onClick={() => navigate(getRoutePath('ecc'))}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(getRoutePath('ecc')); }}
+        >
+          <span className="brand-c">C</span>
+          <span className="brand-l">L</span>
+          <span className="brand-a1">a</span>
+          <span className="brand-a2">a</span>
+          <span className="brand-s1">S</span>
+          <span className="brand-2">2</span>
+          <span className="brand-s2">S</span>
+          <span className="brand-a3">a</span>
+          <span className="brand-a4">a</span>
+          <span className="brand-s3">S</span>
+        </div>
+
+        <span className="nav-separator">|</span>
+
+        {context === 'ecc' ? (
+          <span className="nav-context-label">Enterprise Control Centre</span>
+        ) : (
+          <span
+            className="nav-context-label"
+            style={{ cursor: 'pointer' }}
+            onClick={() => navigate(getRoutePath('kernel-dashboard'))}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(getRoutePath('kernel-dashboard')); }}
+          >
+            Kernel Apps
+          </span>
+        )}
       </div>
 
-      <div className={styles.center}>
-        <Input
-          className={styles.searchInput}
-          placeholder="Search Modules..."
-          contentBefore={<SearchRegular fontSize={16} />}
-          appearance="filled-lighter"
-          aria-label="Search Modules"
-        />
+      <div className="nav-search-wrapper">
+        <div className="nav-search-bar">
+          <i className="fas fa-search nav-search-icon" aria-hidden />
+          <input
+            type="text"
+            className="nav-search-input"
+            placeholder="Search Modules..."
+            aria-label="Search Modules"
+          />
+          <span className="nav-search-role-badge">
+            <i className="fas fa-user" aria-hidden /> {roleLabel}
+          </span>
+        </div>
       </div>
 
-      <div className={styles.right}>
-        <div className={styles.envWithGlobe}>
-          <span className={styles.globeIcon}><GlobeRegular fontSize={18} /></span>
-          <div className={styles.envBlock}>
-            <span className={styles.envLabel}>ENVIRONMENT</span>
-            <span className={styles.envValue}>CLaaS2SaaS default</span>
+      <div className="nav-right">
+        <div
+          className="nav-env-banner"
+          onClick={toggleEnvPanel}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleEnvPanel(); }}
+          role="button"
+          tabIndex={0}
+          title="Select environment"
+        >
+          <i className="fas fa-globe nav-env-icon" aria-hidden />
+          <div className="nav-env-text">
+            <span className="nav-env-label">Environment</span>
+            <span className="nav-env-name">{currentEnvironment}</span>
           </div>
         </div>
 
-        <span className={styles.bellWrapper}>
-
-          <button type="button" className={styles.iconButton} aria-label="Notifications">
-            <AlertRegular fontSize={20} />
-            <span className={styles.bellBadge} aria-hidden />
+        <div className="nav-notification-wrapper">
+          <button
+            type="button"
+            className="nav-icon-btn"
+            title="Notifications"
+            onClick={toggleNotificationPanel}
+          >
+            <i className="fas fa-bell" aria-hidden />
+            {unreadCount > 0 && (
+              <span className="badge-dot">{unreadCount}</span>
+            )}
           </button>
-        </span>
 
-        <button type="button" className={styles.iconButton} aria-label="Settings">
-          <SettingsRegular fontSize={20} />
+          <div
+            id="notification-panel"
+            className={`notification-panel ${notificationOpen ? '' : 'd-none'}`}
+          >
+            <div className="notification-panel-header">Notifications</div>
+            <div className="notification-list">
+              {notifications.length === 0 ? (
+                <div className="notification-empty">No new notifications</div>
+              ) : (
+                notifications.map((n) => (
+                  <button
+                    key={n.notification_id}
+                    type="button"
+                    className="notification-item"
+                    onClick={() => handleNotificationClick(n)}
+                  >
+                    <i className="fas fa-key" aria-hidden />
+                    New access request
+                  </button>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+
+        <button type="button" className="nav-icon-btn" title="Settings">
+          <i className="fas fa-gear" aria-hidden />
         </button>
 
-        <button type="button" className={styles.iconButton} aria-label="Copilot">
-          <FlashRegular fontSize={20} />
+        <button type="button" className="nav-icon-btn nav-copilot-btn" title="Copilot">
+          <img src="/assets/icons/copilot.png" alt="Copilot" className="copilot-icon" />
         </button>
 
-        <div className={styles.profileCircle} aria-hidden>AJ</div>
+        <div
+          className="nav-user"
+          onClick={toggleUserMenu}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleUserMenu(); }}
+          role="button"
+          tabIndex={0}
+        >
+          <span className="user-avatar">{initials}</span>
+        </div>
 
-        {isDemoMode && <DemoUserSwitcher />}
+        <div
+          id="user-dropdown"
+          className={`user-dropdown ${userMenuOpen ? '' : 'd-none'}`}
+        >
+          <div className="dropdown-user-header">
+            <span className="dropdown-avatar">{initials}</span>
+            <div className="dropdown-user-info">
+              <span className="dropdown-user-name">{displayName || 'User'}</span>
+              <span className="dropdown-user-role">{roleLabel}</span>
+            </div>
+          </div>
+          <div className="dropdown-divider" />
+          <button type="button" onClick={() => { setUserMenuOpen(false); navigate(getRoutePath('user-profile')); }}>
+            <i className="fas fa-user" aria-hidden /> My Profile
+          </button>
+          <button type="button" onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt" aria-hidden /> Logout
+          </button>
+          <button type="button" onClick={() => window.location.reload()}>
+            <i className="fas fa-database" aria-hidden /> Reset Data
+          </button>
+        </div>
       </div>
-    </header>
+
+      <div
+        id="env-panel"
+        className={`env-panel ${envOpen ? '' : 'd-none'}`}
+      >
+        <div className="env-panel-header">
+          <h3>Select environment</h3>
+          <button type="button" onClick={toggleEnvPanel} className="env-panel-close" aria-label="Close">
+            <i className="fas fa-times" aria-hidden />
+          </button>
+        </div>
+        <p className="env-panel-desc">
+          Spaces to create, store, and work with data and apps.
+          <br />
+          <a href="#" className="env-learn-more" onClick={(e) => e.preventDefault()}>
+            Learn more
+          </a>
+        </p>
+        <div className="env-list">
+          {environmentList.map((env) => (
+            <button
+              key={env}
+              type="button"
+              className="env-item"
+              onClick={() => selectEnvironment(env)}
+            >
+              {env}
+            </button>
+          ))}
+        </div>
+      </div>
+    </nav>
   );
 }

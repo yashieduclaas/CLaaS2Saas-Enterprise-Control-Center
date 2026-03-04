@@ -27,6 +27,23 @@ body,
   background-color: var(--color-bg-muted);
 }
 
+/* Sidebar tooltip (collapsed state) — fallback when [data-tooltip] is set */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 70px;
+  background: #111;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
 /* Fallback loading - visible when Griffel/Fluent styles not yet applied */
 .app-loading-fallback {
   display: flex;
