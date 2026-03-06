@@ -79,12 +79,11 @@ function validate(form: FormState): FormErrors {
 export interface AddSecurityRoleModalProps {
     open: boolean;
     onClose: () => void;
-    onCreated?: (newRole: SecurityRole) => void;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────
 
-export function AddSecurityRoleModal({ open, onClose, onCreated }: AddSecurityRoleModalProps) {
+export function AddSecurityRoleModal({ open, onClose }: AddSecurityRoleModalProps) {
     const [form, setForm] = useState<FormState>(INITIAL_FORM);
     const [errors, setErrors] = useState<FormErrors>({});
 

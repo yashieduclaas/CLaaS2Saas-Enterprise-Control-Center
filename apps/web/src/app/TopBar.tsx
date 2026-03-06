@@ -158,10 +158,15 @@ export function TopBar() {
           <span
             className="nav-context-label"
             style={{ cursor: 'pointer' }}
-            onClick={() => navigate(getRoutePath('kernel-dashboard'))}
+            // when in kernel context the header should take user to the landing
+            // page where the "Welcome, how can I help?" search UI lives. that
+            // page lives at /scc (pageKey 'scc-dashboard'), not /kernel. the
+            // previous implementation pointed at kernel-dashboard which is the
+            // actual SCC dashboard behind the nav.
+            onClick={() => navigate(getRoutePath('scc-dashboard'))}
             role="button"
             tabIndex={0}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(getRoutePath('kernel-dashboard')); }}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') navigate(getRoutePath('scc-dashboard')); }}
           >
             Kernel Apps
           </span>

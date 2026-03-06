@@ -46,13 +46,16 @@ export function AccessRequestPage() {
       return;
     }
     try {
-      await submitAccessRequest({
+      const requestData: CreateAccessRequestDTO = {
         appId,
         appName,
         reason: reason.trim(),
         businessJustification: justification.trim(),
-        durationNeeded: durationNeeded.trim() || undefined,
-      });
+      };
+      if (durationNeeded.trim()) {
+        requestData.durationNeeded = durationNeeded.trim();
+      }
+      await submitAccessRequest(requestData);
       showToast('Access request submitted successfully', 'success');
       navigate(getRoutePath('ecc'));
     } catch {

@@ -58,7 +58,7 @@ const HELPDESK_ITEMS: NavItemDef[] = [
 ];
 
 const NAV_GROUPS: NavGroupDef[] = [
-  { id: 'scc', label: 'SCC', groupIcon: <ShieldCheckmarkRegular fontSize={20} />, items: SCC_ITEMS, headerNavPath: '/scc' },
+  { id: 'scc', label: 'SCC', groupIcon: <ShieldCheckmarkRegular fontSize={20} />, items: SCC_ITEMS },
   { id: 'acc', label: 'ACC', groupIcon: <SettingsRegular fontSize={20} />, items: ACC_ITEMS },
   { id: 'helpdesk', label: 'Helpdesk', groupIcon: <HeadsetRegular fontSize={20} />, items: HELPDESK_ITEMS },
 ];

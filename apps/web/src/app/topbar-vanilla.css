@@ -8,7 +8,8 @@
 
 /* ── Top Nav ───────────────────────────────────────────────────────────────── */
 .top-nav {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   height: 64px;
   padding-left: 20px;
@@ -16,6 +17,7 @@
   background: #193e6b;
   flex-shrink: 0;
   position: relative;
+  gap: 16px;
 }
 
 /* ── Nav Left ─────────────────────────────────────────────────────────────── */
@@ -63,11 +65,11 @@
   opacity: 0.9;
 }
 
-/* ── Nav Search ────────────────────────────────────────────────────────────── */
+/* ── Nav Search ────────────────────────────────────────────────────────── */
 .nav-search-wrapper {
-  flex: 1;
   display: flex;
   justify-content: center;
+  grid-column: 2;
 }
 
 .nav-search-bar {
@@ -136,6 +138,8 @@
   color: rgba(255,255,255,0.95);
   border-radius: 4px;
   transition: background 0.15s;
+  width: 190px; /* Fixed width to accommodate "CLaaS2SaaS development" */
+  flex-shrink: 0; /* Prevent button from shrinking */
 }
 
 .nav-env-banner:hover {
@@ -145,6 +149,7 @@
 .nav-env-icon {
   font-size: 1rem;
   color: rgba(255,255,255,0.9);
+  flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
 .nav-env-text {
@@ -152,6 +157,8 @@
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
+  overflow: hidden; /* Ensure text stays within bounds */
+  flex: 1;
 }
 
 .nav-env-label {
@@ -166,6 +173,10 @@
   font-size: 0.8rem;
   color: rgba(255,255,255,0.95);
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%; /* Fill available space in text container */
 }
 
 /* ── Nav Icon Buttons ─────────────────────────────────────────────────────── */

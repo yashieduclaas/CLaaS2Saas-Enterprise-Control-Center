@@ -61,7 +61,6 @@ export const useAccessRequestStyles = makeStyles({
     fontFamily: 'inherit',
     outline: 'none',
     ':focus': {
-      borderColor: '#B3A125',
       boxShadow: '0 0 0 3px rgba(179,161,37,0.15)',
     },
   },
@@ -80,7 +79,6 @@ export const useAccessRequestStyles = makeStyles({
     resize: 'vertical' as const,
     minHeight: '80px',
     ':focus': {
-      borderColor: '#B3A125',
       boxShadow: '0 0 0 3px rgba(179,161,37,0.15)',
     },
   },
