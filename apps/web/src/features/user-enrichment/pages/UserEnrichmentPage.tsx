@@ -1,7 +1,7 @@
 // features/user-enrichment/pages/UserEnrichmentPage.tsx
 // User Profile Enrichment — /users
 // Vanilla table spec — Griffel only, native table.
-
+/*
 import { useState } from 'react';
 import {
   Button,
@@ -317,6 +317,351 @@ export function UserEnrichmentPage() {
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
       />
+    </div>
+  );
+}
+
+*/
+
+// ============================================================
+// UserEnrichmentPage.tsx — User Profile Enrichment
+// Replicates: user-profile.js from kernel_mock
+// ============================================================
+
+import { useState } from 'react';
+
+const ORG_ROLES = [
+  'Senior Developer', 'Project Manager', 'UX Designer', 'DevOps Engineer',
+  'Platform Director', 'Product Manager', 'QA Analyst', 'Business Analyst',
+  'AI Engineer', 'Technology Associate',
+];
+
+interface User {
+  user_id: string;
+  entra_email_id: string;
+  display_name: string;
+  org_role: string;
+  manager_name: string;
+  manager_email_id: string;
+  is_active: boolean;
+}
+
+const INITIAL_USERS: User[] = [
+  {
+    user_id: 'U-001',
+    entra_email_id: 'alice.tan@lithan.com',
+    display_name: 'Alice Tan',
+    org_role: 'Platform Director',
+    manager_name: 'John Smith',
+    manager_email_id: 'john.smith@lithan.com',
+    is_active: true,
+  },
+  {
+    user_id: 'U-002',
+    entra_email_id: 'bob.lee@lithan.com',
+    display_name: 'Bob Lee',
+    org_role: 'Senior Developer',
+    manager_name: 'Alice Tan',
+    manager_email_id: 'alice.tan@lithan.com',
+    is_active: true,
+  },
+  {
+    user_id: 'U-003',
+    entra_email_id: 'carol.ng@lithan.com',
+    display_name: 'Carol Ng',
+    org_role: 'QA Analyst',
+    manager_name: '',
+    manager_email_id: '',
+    is_active: false,
+  },
+];
+
+interface FormState {
+  entra_email_id: string;
+  display_name: string;
+  org_role: string;
+  manager_name: string;
+  is_active: boolean;
+}
+
+const emptyForm = (): FormState => ({
+  entra_email_id: '',
+  display_name: '',
+  org_role: '',
+  manager_name: '',
+  is_active: true,
+});
+
+interface ModalState {
+  open: boolean;
+  mode: 'add' | 'edit';
+  editId?: string;
+}
+
+function Toast({ message, type }: { message: string; type: string }) {
+  return (
+    <div className={`toast-msg toast-${type} show`} style={{ position: 'fixed', bottom: 24, right: 24, zIndex: 3000 }}>
+      <i className={`fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}`} />
+      {' '}{message}
+    </div>
+  );
+}
+
+export function UserEnrichmentPage() {
+  const [users, setUsers] = useState<User[]>(INITIAL_USERS);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [modal, setModal] = useState<ModalState>({ open: false, mode: 'add' });
+  const [form, setForm] = useState<FormState>(emptyForm());
+  const [toast, setToast] = useState<{ message: string; type: string } | null>(null);
+
+  const showToast = (message: string, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const filteredUsers = searchQuery
+    ? users.filter(u => {
+        const q = searchQuery.toLowerCase();
+        return (
+          u.display_name.toLowerCase().includes(q) ||
+          u.entra_email_id.toLowerCase().includes(q) ||
+          u.org_role.toLowerCase().includes(q) ||
+          u.manager_name.toLowerCase().includes(q)
+        );
+      })
+    : users;
+
+  const openAddModal = () => {
+    setForm(emptyForm());
+    setModal({ open: true, mode: 'add' });
+  };
+
+  const openEditModal = (id: string) => {
+    const u = users.find(x => x.user_id === id);
+    if (!u) return;
+    setForm({
+      entra_email_id: u.entra_email_id,
+      display_name: u.display_name,
+      org_role: u.org_role,
+      manager_name: u.manager_name,
+      is_active: u.is_active,
+    });
+    setModal({ open: true, mode: 'edit', editId: id });
+  };
+
+  const closeModal = () => setModal({ open: false, mode: 'add' });
+
+  const saveUser = () => {
+    if (!form.entra_email_id || !form.display_name || !form.org_role) {
+      showToast('Please fill in all required fields', 'error');
+      return;
+    }
+    const duplicate = users.find(u => u.entra_email_id === form.entra_email_id);
+    if (duplicate) {
+      showToast('A user with this email already exists', 'error');
+      return;
+    }
+    setUsers(prev => [
+      ...prev,
+      {
+        user_id: `U-${Date.now()}`,
+        entra_email_id: form.entra_email_id,
+        display_name: form.display_name,
+        org_role: form.org_role,
+        manager_name: form.manager_name,
+        manager_email_id: '',
+        is_active: form.is_active,
+      },
+    ]);
+    closeModal();
+    showToast('User added successfully');
+  };
+
+  const updateUser = () => {
+    setUsers(prev =>
+      prev.map(u =>
+        u.user_id === modal.editId
+          ? { ...u, display_name: form.display_name, org_role: form.org_role, manager_name: form.manager_name, is_active: form.is_active }
+          : u
+      )
+    );
+    closeModal();
+    showToast('User updated successfully');
+  };
+
+  const deleteUser = (id: string) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      setUsers(prev => prev.filter(u => u.user_id !== id));
+      showToast('User deleted');
+    }
+  };
+
+  const copyEmail = (email: string) => {
+    if (!email) { showToast('No email available', 'info'); return; }
+    navigator.clipboard.writeText(email)
+      .then(() => showToast('Email copied to clipboard', 'success'))
+      .catch(() => showToast('Failed to copy email', 'error'));
+  };
+
+  return (
+    <div className="center-stage feature-page">
+      <div className="page-content">
+        <div className="page-header">
+          <div>
+            <h1>User Profile Enrichment</h1>
+            <p className="page-subtitle">Manage User Profiles and Access Control</p>
+          </div>
+          <button className="btn-primary" onClick={openAddModal}>
+            <i className="fas fa-plus" /> Add New User
+          </button>
+        </div>
+
+        <div className="data-table-wrapper">
+          <div className="table-toolbar">
+            <div className="table-title">User Listing</div>
+            <span className="table-count">{filteredUsers.length} users found</span>
+          </div>
+          <div className="search-bar">
+            <i className="fas fa-search" />
+            <input
+              type="text"
+              placeholder="Search by Name, Email, Role, Manager, or Entra ID..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Entra Email Id</th>
+                <th>Display Name</th>
+                <th>Organizational Role</th>
+                <th>Manager</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map(u => (
+                <tr key={u.user_id}>
+                  <td className="email-cell">{u.entra_email_id}</td>
+                  <td><strong>{u.display_name}</strong></td>
+                  <td>{u.org_role}</td>
+                  <td>
+                    {u.manager_name ? (
+                      <span
+                        className="module-lead-link"
+                        onClick={() => copyEmail(u.manager_email_id)}
+                        title="Click to copy email"
+                      >
+                        {u.manager_name}
+                      </span>
+                    ) : '-'}
+                  </td>
+                  <td>
+                    <span className={`status-badge ${u.is_active ? 'active' : 'inactive'}`}>
+                      {u.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td className="actions-cell">
+                    <button className="icon-btn edit" onClick={() => openEditModal(u.user_id)} title="Edit">
+                      <i className="fas fa-pen" />
+                    </button>
+                    <button className="icon-btn delete" onClick={() => deleteUser(u.user_id)} title="Delete">
+                      <i className="fas fa-trash" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="table-footer">
+            Showing {filteredUsers.length} of {users.length} total users
+          </div>
+        </div>
+      </div>
+
+      {/* Modal */}
+      {modal.open && (
+        <div className="modal-overlay" onClick={closeModal}>
+          <div className="modal-box" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>{modal.mode === 'edit' ? 'Edit User Profile' : 'Add New User'}</h3>
+              <button className="modal-close" onClick={closeModal}><i className="fas fa-times" /></button>
+            </div>
+            <div className="modal-body">
+              <div className="form-grid">
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Entra Email ID *</label>
+                    <input
+                      type="email"
+                      value={form.entra_email_id}
+                      onChange={e => setForm(f => ({ ...f, entra_email_id: e.target.value }))}
+                      placeholder="john.doe@lithan.com"
+                      readOnly={modal.mode === 'edit'}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Display Name *</label>
+                    <input
+                      type="text"
+                      value={form.display_name}
+                      onChange={e => setForm(f => ({ ...f, display_name: e.target.value }))}
+                      placeholder="John Doe"
+                    />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Organizational Role *</label>
+                    <select
+                      value={form.org_role}
+                      onChange={e => setForm(f => ({ ...f, org_role: e.target.value }))}
+                      required
+                    >
+                      <option value="">Select Organizational Role</option>
+                      {ORG_ROLES.map(r => (
+                        <option key={r} value={r}>{r}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="form-group">
+                    <label>Manager</label>
+                    <input
+                      type="text"
+                      value={form.manager_name}
+                      onChange={e => setForm(f => ({ ...f, manager_name: e.target.value }))}
+                      placeholder="Manager Name"
+                    />
+                  </div>
+                </div>
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Account Status *</label>
+                    <select
+                      value={form.is_active ? 'true' : 'false'}
+                      onChange={e => setForm(f => ({ ...f, is_active: e.target.value === 'true' }))}
+                    >
+                      <option value="true">Active</option>
+                      <option value="false">Inactive</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={closeModal}>Cancel</button>
+              <button className="btn-primary" onClick={modal.mode === 'edit' ? updateUser : saveUser}>
+                {modal.mode === 'edit' ? 'Save Changes' : 'Add User'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {toast && <Toast message={toast.message} type={toast.type} />}
     </div>
   );
 }
