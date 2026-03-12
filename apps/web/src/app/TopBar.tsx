@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { CopilotRegular } from '@fluentui/react-icons';
 import { getRoutePath } from '@/rbac/RoutePermissionMap';
 import { useAuth } from '@/auth/useAuth';
 import './topbar-vanilla.css';
@@ -247,7 +248,7 @@ export function TopBar() {
         </button>
 
         <button type="button" className="nav-icon-btn nav-copilot-btn" title="Copilot">
-          <img src="/assets/icons/copilot.png" alt="Copilot" className="copilot-icon" />
+          <CopilotRegular fontSize={20} />
         </button>
 
         <div
