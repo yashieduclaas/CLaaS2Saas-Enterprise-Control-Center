@@ -18,7 +18,7 @@ import type { StatusFilter } from './components/AssignmentFilters';
 
 const useStyles = makeStyles({
     pageContent: {
-        padding: '30px',
+        padding: '10px 18px',
         display: 'flex',
         flexDirection: 'column',
         gap: tokens.spacingVerticalL,
@@ -37,10 +37,12 @@ const useStyles = makeStyles({
         gap: tokens.spacingVerticalXS,
     },
     pageTitle: {
-        fontSize: '24px',
+       fontSize: '24px',
         fontWeight: 600,
         color: '#193e6b',
-    },
+        margin: 0,
+        lineHeight: 1.3,
+        },
     pageSubtitle: {
         fontSize: '14px',
         color: '#666666',

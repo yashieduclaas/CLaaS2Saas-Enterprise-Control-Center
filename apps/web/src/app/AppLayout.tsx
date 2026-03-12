@@ -20,6 +20,7 @@ const useStyles = makeStyles({
   body: {
     display: 'flex',
     flex: 1,
+    height: '100%',
     overflow: 'hidden',
   },
   railContainer: {
@@ -33,10 +34,12 @@ const useStyles = makeStyles({
   },
   main: {
     flex: 1,
-    overflowY: 'auto',
-    padding: tokens.spacingVerticalXL,
-    paddingLeft: tokens.spacingHorizontalXL,
-    paddingRight: tokens.spacingHorizontalXL,
+    overflow: 'hidden',
+    height: '100vh',
+    padding:'10px 18px',
+   // padding: tokens.spacingVerticalXL,
+    //paddingLeft: tokens.spacingHorizontalXL,
+    //paddingRight: tokens.spacingHorizontalXL,
     backgroundColor: 'var(--color-bg-page)',
   },
 });

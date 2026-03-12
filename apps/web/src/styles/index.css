@@ -54,7 +54,9 @@ body,
   font-size: 18px;
   font-weight: 600;
   color: var(--color-text-primary);
-}/* ============================================================
+}
+
+/* ============================================================
    styles.css — CLaaS2SaaS Kernel App
    Matching MVP Mockup v2 visual style
    ============================================================ */
@@ -3050,3 +3052,8 @@ code {
 .search-bar input { border-color: rgba(0, 0, 0, 0.12) !important; }
 
 .modal-body input:focus, .modal-body select:focus, .modal-body textarea:focus, .modal-body input:focus-visible, .modal-body select:focus-visible, .modal-body textarea:focus-visible { border-color: rgba(0, 0, 0, 0.12) !important; box-shadow: none !important; outline: none !important; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
