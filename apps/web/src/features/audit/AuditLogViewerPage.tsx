@@ -230,7 +230,7 @@ const useStyles = makeStyles({
         textAlign: 'left',
         borderBottom: '1px solid #E6ECF3',
         whiteSpace: 'nowrap',
-        backgroundColor: '#F8F6F3',
+        backgroundColor: '#f1f5f9',
         position: 'sticky',
         top: 0,
         zIndex: 10
@@ -242,7 +242,7 @@ const useStyles = makeStyles({
         height: '64px',
         borderBottom: '1px solid #E6ECF3',
         ':hover': {
-            backgroundColor: '#F7F3EE',
+            backgroundColor: '#f8fafc',
         },
     },
     trLast: {
