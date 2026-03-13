@@ -1,7 +1,7 @@
 /* AddSecurityRoleModal.module.css — exact specs from design */
 
 .surface {
-    width: 560px !important;
+    width: 600px !important;
     max-width: 560px !important;
     border-radius: 12px !important;
     padding: 24px !important;
@@ -23,17 +23,12 @@
     margin: 0;
 }
 
-.closeBtn {
-    color: #6b7280;
-    min-width: 32px;
-    min-height: 32px;
-}
-
 .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0,1fr) minmax(0,1fr);
     column-gap: 24px;
     row-gap: 18px;
+    width: 100%;
 }
 
 .field {
@@ -60,6 +55,12 @@
     padding: 0 12px !important;
     font-size: 14px !important;
     background: white !important;
+}
+.input,
+.select{
+    width:100% !important;
+    max-width:100% !important;
+    box-sizing:border-box;
 }
 
 .input:focus-within {
@@ -114,4 +115,52 @@
 .errorText {
     font-size: 12px;
     color: #dc2626;
+}
+.surface{
+width:600px;
+padding:24px;
+border-radius:12px;
+}
+
+.header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+margin-bottom:18px;
+width:100%;
+}
+
+.title{
+font-size:20px;
+font-weight:600;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:18px 24px;
+}
+
+.field{
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.footer{
+margin-top:24px;
+display:flex;
+justify-content:flex-end;
+gap:10px;
+}
+.titleWrapper{
+display:flex;
+align-items:center;
+gap:8px;
+}
+
+.closeBtn{
+position:absolute;
+right:20px;
+top:20px;
 }

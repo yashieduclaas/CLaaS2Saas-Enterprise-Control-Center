@@ -17,8 +17,8 @@ const SignInPage = lazy(() =>
 const RoleManagementPage = lazy(() =>
   import('@/features/role-management/RoleManagementPage').then(m => ({ default: m.RoleManagementPage }))
 );
-const AuditActionsPage = lazy(() =>
-  import('@/features/audit/AuditActionsPage').then(m => ({ default: m.AuditActionsPage }))
+const AuditLogViewerPage = lazy(() =>
+  import('@/features/audit/AuditLogViewerPage').then(m => ({ default: m.AuditLogViewerPage }))
 );
 const PlaceholderPage = lazy(() =>
   import('@/features/PlaceholderPage').then(m => ({ default: m.PlaceholderPage }))
@@ -96,7 +96,7 @@ export function AppRouter() {
           } />
           <Route path={getRoutePath('audit-logs')} element={
             <PermissionGuard pageKey="audit-logs">
-              <Suspense fallback={<PageSkeleton />}><AuditActionsPage /></Suspense>
+              <Suspense fallback={<PageSkeleton />}><AuditLogViewerPage /></Suspense>
             </PermissionGuard>
           } />
 

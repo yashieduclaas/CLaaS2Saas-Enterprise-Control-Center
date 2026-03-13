@@ -1,0 +1,437 @@
+# CLaaS2SaaS Enterprise Control Center — UI Style Audit
+
+> **Date**: 2026-03-05  
+> **Scope**: `apps/web/src/`  
+> **Purpose**: Read-only analysis. No files were modified.
+
+---
+
+## STEP 1 — STYLE SOURCES INVENTORY
+
+| Source | Type | Path |
+|---|---|---|
+| `colors.css` | CSS Variables (design tokens) | `src/theme/colors.css` |
+| `kernelTheme.ts` | Fluent UI brand ramp (TS object) | `src/theme/kernelTheme.ts` |
+| `index.css` | Global reset / font import | `src/styles/index.css` |
+| `topbar-vanilla.css` | Plain CSS — TopBar component | `src/app/topbar-vanilla.css` |
+| `SignInPage.module.css` | CSS Module | `src/features/auth/pages/` |
+| `RoleManagementPage.module.css` | CSS Module | `src/features/role-management/pages/` |
+| `AddSecurityRoleModal.module.css` | CSS Module | `src/features/role-management/components/` |
+| `EditSecurityRoleModal.module.css` | CSS Module | `src/features/role-management/components/` |
+| `AddUserModal.module.css` | CSS Module | `src/features/user-enrichment/components/` |
+| `EditUserModal.module.css` | CSS Module | `src/features/user-enrichment/components/` |
+| `UserEnrichmentPage.module.css` | CSS Module | `src/features/user-enrichment/pages/` |
+| Griffel `makeStyles()` | CSS-in-JS (Fluent UI v9) | All `*.tsx` component files |
+| Hardcoded inline `style={{}}` | JSX inline styles | Multiple `*.tsx` files |
+
+> **No Tailwind**. No SCSS. No styled-components. No emotion.
+
+---
+
+## STEP 2 — COLOR INVENTORY
+
+### 2a. Design Tokens (CSS Variables) — `src/theme/colors.css`
+
+| CSS Variable | Hex Value | Semantic Role |
+|---|---|---|
+| `--color-brand-primary` | `#193e6b` | Midnight Blue — brand primary |
+| `--color-brand-primary-hover` | `#1e4d85` | Primary hover state |
+| `--color-brand-primary-alt` | `#1F3C88` | Alternate brand blue |
+| `--color-brand-accent` | `#B3A125` | Gold accent |
+| `--color-brand-accent-light` | `#E9AC53` | Lighter gold |
+| `--color-bg-page` | `#EEE7E0` | Platinum Beige — page canvas |
+| `--color-bg-surface` | `#FFFFFF` | Card / surface white |
+| `--color-bg-muted` | `#f5f5f5` | Muted background |
+| `--color-bg-elevated` | `#FFFFFF` | Elevated surface |
+| `--color-text-primary` | `#111827` | Primary text |
+| `--color-heading` | `#1C2B4A` | Heading text |
+| `--color-text-secondary` | `#374151` | Secondary text |
+| `--color-text-muted` | `#6B7280` | Muted / label text |
+| `--color-text-muted-light` | `#9CA3AF` | Lighter muted text |
+| `--color-text-on-brand` | `#FFFFFF` | White text on dark brand |
+| `--color-border` | `#E5E7EB` | Default border |
+| `--color-border-light` | `#F3F4F6` | Light border |
+| `--color-success-bg` | `#E6F7EC` | Success background |
+| `--color-success-text` | `#2F855A` | Success text |
+| `--color-success-border` | `#a5d6a7` | Success border |
+| `--color-warning-bg` | `#FFF6E5` | Warning background |
+| `--color-warning-text` | `#B7791F` | Warning text |
+| `--color-danger-bg` | `#FDEDED` | Danger background |
+| `--color-danger-text` | `#C53030` | Danger text |
+| `--color-info-bg` | `#E6F4F9` | Info background |
+| `--color-info-text` | `#1F4E79` | Info text |
+| `--color-info-alt-bg` | `#E5EEF6` | Alt info background |
+| `--color-info-alt-text` | `#2C5282` | Alt info text |
+| `--color-badge-neutral-bg` | `#F3F4F6` | Neutral badge bg |
+| `--color-badge-neutral-text` | `#374151` | Neutral badge text |
+| `--color-badge-magenta-bg` | `#fce4ec` | Magenta badge bg |
+| `--color-badge-magenta-text` | `#c2185b` | Magenta badge text |
+| `--color-error-text` | `#C53030` | Error text |
+| `--color-error-form` | `#991547` | Form error |
+| `--color-overlay` | `rgba(0,0,0,0.45)` | Modal overlay |
+
+### 2b. Fluent UI Brand Ramp — `src/theme/kernelTheme.ts`
+
+| Token | Hex | Note |
+|---|---|---|
+| `brandKernel[80]` | `#193e6b` | Primary ← matches `--color-brand-primary` |
+| `brandKernel[90]` | `#1e4d85` | Matches `--color-brand-primary-hover` |
+| Ramp 10–160 | `#050d14` → `#eef5fb` | Full generated ramp |
+
+### 2c. Hardcoded Raw Hex Colors — Scattered Across Components
+
+> [!WARNING]
+> These colors **bypass the token system** — they are raw hex strings hardcoded directly into Griffel `makeStyles()` or JSX `style={}` props and have no corresponding CSS variable.
+
+#### `AuditLogViewerPage.tsx` (Griffel + inline)
+
+| Hex | Usage |
+|---|---|
+| `#F4F6F8` | Page background |
+| `#1F2D3D` | Primary text (headers, cell text) |
+| `#6B7785` | Secondary/muted text |
+| `#2F4A73` | Tab active color, table headers, timestamps — **⚠️ DIFFERENT from `#193e6b`** |
+| `#FFFFFF` | Card, search input background |
+| `#F1F4F9` | Filter pill background |
+| `#E9EDF5` | Filter pill hover |
+| `#F8FAFB` | Table row hover |
+| `#E2E6EA` | Border color |
+| `#EDF7ED` | Success badge background |
+| `#2E7D32` | Success text |
+| `#E8F5E9` | Active session badge background |
+| `#C62828` | Failed/denied status text |
+| `#E65100` | Error status text |
+| `#111827` | Floating help button background |
+| `#EEF2F6` | Permission badge background |
+| `#425466` | Permission badge text |
+| `#9DA8B5` | Input placeholder text |
+| `#C0CAD4` | Inactive tab dot / icon |
+
+#### `topbar-vanilla.css` (plain CSS)
+
+| Hex | Usage |
+|---|---|
+| `#193e6b` | Top nav background ← matches `--color-brand-primary` |
+| `#B3A125` | Brand "2" character, accent items ← matches `--color-brand-accent` |
+| `#FFFFFF` | Notification panel, dropdown backgrounds |
+| `#dc3545` | Notification badge dot |
+| `rgba(255,255,255,0.12)` | Search bar background on nav |
+| `rgba(255,255,255,0.5)` | Nav separator |
+| `rgba(255,255,255,0.6)` | Search placeholder |
+| `rgba(255,255,255,0.95)` | Nav text |
+| `#333` | Dropdown body text |
+| `#777` | Dropdown secondary text |
+| `#666` | Icon button color |
+| `#e9ecef` | Dropdown avatar background |
+
+#### `UserEnrichmentPage.tsx` / `UserRoleAssignmentPage.tsx` (Griffel, old palette)
+
+| Hex | Usage |
+|---|---|
+| `#193e6b` | Page title color ← matches token |
+| `#666666` | Secondary text |
+| `#333333` | Primary text |
+| `#28a745` | Success status |
+| `#dc3545` | Error/danger status |
+| `#007bff` | Link / info color |
+| `#999999` | Tertiary/muted text |
+
+#### `AddSecurityRoleModal.module.css` (CSS Module, hardcoded)
+
+| Hex | Usage |
+|---|---|
+| `#6b7280` | Close button, cancel button text |
+| `#1f2937` | Label text |
+| `#dc2626` | Required marker, error text |
+| `#d1d5db` | Input border |
+| `#f3f4f6` | Cancel button background |
+
+---
+
+## STEP 3 — TYPOGRAPHY SYSTEM
+
+### Font Families
+
+| Font | Where Loaded | Used In |
+|---|---|---|
+| `Montserrat` (wght 300,400,600,700,800,900) | `@import` in `index.css` | `SignInPage` only |
+| `Source Sans 3` (wght 300,400,600) | `@import` in `index.css` | `SignInPage` only |
+| `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Ubuntu` (system stack) | `index.css` body rule | All app pages |
+| `Inter, system-ui, sans-serif` | Hardcoded in `AuditLogViewerPage.tsx` Griffel | Audit pages only |
+
+> [!WARNING]
+> **No `Inter` import exists in `index.css`**. The `AuditLogViewerPage` declares `fontFamily: 'Inter, system-ui, sans-serif'` in Griffel but the font is never loaded — the browser will fall back to `system-ui`. `Inter` should be added to the Google Fonts import.
+
+### Font Sizes
+
+| Element | Size | Weight | Source |
+|---|---|---|---|
+| Audit page title | `28px` | `600` | `AuditLogViewerPage.tsx` |
+| Role Management page title | `24px` | `600` | `RoleManagementPage.tsx` |
+| UserEnrichment page title | `22px` | `600` | `UserEnrichmentPage.module.css` |
+| Page subtitle | `14px` | `400` | Multiple files |
+| Table header `th` | `13px` | `600` | Audit, Role, UserEnrich pages |
+| Table cell primary | `13px` | `600` | Multiple |
+| Table cell secondary | `12px` | `400` | Multiple |
+| Table cell text | `13–14px` | `400–500` | Multiple |
+| Permission badge | `11px` | `600` | `AuditLogViewerPage.tsx` |
+| Status badge | `12px` | `600` | Multiple |
+| Nav brand | `1rem` | `600` | `topbar-vanilla.css` |
+| Nav search | `0.875rem` | `400` | `topbar-vanilla.css` |
+| Nav env label | `0.65rem` | `400` | `topbar-vanilla.css` |
+| Nav env name | `0.8rem` | `500` | `topbar-vanilla.css` |
+| Sign-in brand name | `52px` | `900` | `SignInPage.module.css` |
+| Sign-in card heading | `26px` | `800` | `SignInPage.module.css` |
+| Footer / count text | `12–13px` | `400` | Multiple |
+
+---
+
+## STEP 4 — SPACING SYSTEM
+
+The project uses **ad-hoc spacing** — no centralized spacing scale.  
+Most common values observed:
+
+| Value | Usage |
+|---|---|
+| `4px` | Small gaps, margin tweaks |
+| `6px` | Badge padding, small gaps |
+| `8px` | Action gaps, icon spacing |
+| `10px` | Badge padding |
+| `12px` | Cell padding, modal gaps |
+| `14px` | Nav padding, search padding |
+| `16px` | Standard gap (nav, filter rows) |
+| `20px` | Section spacing |
+| `24px` | Card padding, modal padding |
+| `28px` | Modal footer margin |
+| `32px` | Page content padding |
+| `40px` | Empty state, modal top padding |
+| `48px` | Login card padding, feature list |
+| `60px` | Sign-in panel padding |
+
+Fluent UI tokens (`spacingVerticalL`, etc.) are used in `NavRail.tsx` and `AppLayout.tsx`, but all feature pages use raw pixel values.
+
+---
+
+## STEP 5 — COMPONENT STYLE REFERENCE
+
+### TopBar (Navbar)
+| Property | Value | Source |
+|---|---|---|
+| Height | `64px` | `topbar-vanilla.css` |
+| Background | `#193e6b` | `topbar-vanilla.css` |
+| Brand text | `#FFFFFF` + `#B3A125` (gold "2") | `topbar-vanilla.css` |
+| Search bg | `rgba(255,255,255,0.12)` | `topbar-vanilla.css` |
+| Search height | `36px` | `topbar-vanilla.css` |
+| Search border-radius | `6px` | `topbar-vanilla.css` |
+| Icon btn size | `32×32px` | `topbar-vanilla.css` |
+| Icon btn border-radius | `4px` | `topbar-vanilla.css` |
+| Notification dot | `#dc3545` | `topbar-vanilla.css` |
+
+### NavRail (Sidebar)
+| Property | Value | Source |
+|---|---|---|
+| Width | `270px` (expanded) / `64px` (collapsed) | `AppLayout.tsx` |
+| Background | `tokens.colorNeutralBackground2` (Fluent) | `NavRail.tsx` |
+| Border-right | `1px solid tokens.colorNeutralStroke2` | `NavRail.tsx` |
+| Active item bg | `var(--color-warning-bg)` = `#FFF6E5` | `NavRail.tsx` |
+| Active item left-border | `4px solid var(--color-brand-accent)` = `#B3A125` | `NavRail.tsx` |
+| Active item color | `var(--color-brand-accent)` = `#B3A125` | `NavRail.tsx` |
+| Nav item font-size | `tokens.fontSizeBase300` | `NavRail.tsx` |
+| Nav item padding | `10px 16px` | `NavRail.tsx` |
+
+### Tabs (AuditLogViewer)
+| Property | Value | Source |
+|---|---|---|
+| Active text color | `#2F4A73` | `AuditLogViewerPage.tsx` |
+| Active border-bottom | `2px solid #2F4A73` | `AuditLogViewerPage.tsx` |
+| Inactive text color | `#6B7785` | `AuditLogViewerPage.tsx` |
+| Tab padding | `10px 20px` | `AuditLogViewerPage.tsx` |
+| Border-bottom (tab row) | `1px solid #E2E6EA` | `AuditLogViewerPage.tsx` |
+
+### Search Bar (Audit)
+| Property | Value | Source |
+|---|---|---|
+| Height | `44px` | `AuditLogViewerPage.tsx` |
+| Border | `1px solid #E2E6EA` | `AuditLogViewerPage.tsx` |
+| Border-radius | `8px` | `AuditLogViewerPage.tsx` |
+| Background | `#FFFFFF` | `AuditLogViewerPage.tsx` |
+| Focus border | `#2F4A73` | injected `<style>` tag |
+| Focus shadow | `0 0 0 2px rgba(47,74,115,0.12)` | injected `<style>` tag |
+| Placeholder color | `#9DA8B5` | injected `<style>` tag |
+
+### Data Table
+| Property | Value | Source |
+|---|---|---|
+| Row height | `64px` | `AuditLogViewerPage.tsx` |
+| Row border-bottom | `1px solid #E2E6EA` | `AuditLogViewerPage.tsx` |
+| Row hover bg | `#F8FAFB` | `AuditLogViewerPage.tsx` |
+| Header color | `#2F4A73` | `AuditLogViewerPage.tsx` |
+| Header font-size | `13px` | `AuditLogViewerPage.tsx` |
+| Header font-weight | `600` | `AuditLogViewerPage.tsx` |
+| Cell padding | `12px 16px` | `AuditLogViewerPage.tsx` |
+
+### Card Container
+| Property | Value | Source |
+|---|---|---|
+| Background | `#FFFFFF` | `AuditLogViewerPage.tsx` |
+| Border-radius | `10px` | `AuditLogViewerPage.tsx` |
+| Padding | `24px` | `AuditLogViewerPage.tsx` |
+| Box-shadow | `0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06)` | `AuditLogViewerPage.tsx` |
+
+(Role/UserEnrich cards use `12px` border-radius and same shadow)
+
+### PermissionBadge
+| Property | Value | Source |
+|---|---|---|
+| Background | `#EEF2F6` | `AuditLogViewerPage.tsx` |
+| Text color | `#425466` | `AuditLogViewerPage.tsx` |
+| Padding | `3px 10px` | `AuditLogViewerPage.tsx` |
+| Border-radius | `12px` | `AuditLogViewerPage.tsx` |
+| Font-size | `11px` | `AuditLogViewerPage.tsx` |
+
+### StatusBadge
+| Status | Background | Text Color | Source |
+|---|---|---|---|
+| Success | `#EDF7ED` | `#2E7D32` | `AuditLogViewerPage.tsx` |
+| Active | `#E8F5E9` | `#2E7D32` | `AuditLogViewerPage.tsx` |
+| Failed / Denied | (none) | `#C62828` | `AuditLogViewerPage.tsx` |
+| Error | (none) | `#E65100` | `AuditLogViewerPage.tsx` |
+
+### Floating Help Button
+| Property | Value | Source |
+|---|---|---|
+| Shape | Circle 48×48px | `AuditLogViewerPage.tsx` |
+| Background | `#111827` | `AuditLogViewerPage.tsx` |
+| Position | Fixed, bottom-right `24px` | `AuditLogViewerPage.tsx` |
+| Shadow | `0 4px 16px rgba(0,0,0,0.3)` | `AuditLogViewerPage.tsx` |
+
+---
+
+## STEP 6 — HARDCODED STYLE VIOLATIONS
+
+> [!CAUTION]
+> The following are hardcoded color values that **bypass the CSS variable token system** — making system-wide theming impossible without find-and-replace.
+
+### Critical Conflicts — Two Parallel Palettes
+
+The most serious issue: **two completely different "blue" primaries coexist**:
+
+| Palette | Blue Value | Used In |
+|---|---|---|
+| **Enterprise palette** (original) | `#193e6b` (Midnight) | TopBar, NavRail, UserEnrichment, UserRoleAssign, Modal CSS, `colors.css` token |
+| **Audit palette** (new spec) | `#2F4A73` (Medium Blue) | AuditLogViewerPage tabs/headers/timestamps |
+
+These are **visually different colors** that appear on the same page. This is a design inconsistency.
+
+Similarly for text:
+
+| Old Components | New Audit Component |
+|---|---|
+| `#333333` (primary text) | `#1F2D3D` (primary text) |
+| `#666666` (secondary text) | `#6B7785` (secondary text) |
+| `#6B7280` (token muted) | `#6B7785` (hardcoded muted) |
+
+### File-by-file hardcoded colors
+
+| File | Hardcoded Values |
+|---|---|
+| `AuditLogViewerPage.tsx` | 19 distinct hex values, all hardcoded in Griffel |
+| `topbar-vanilla.css` | `#193e6b`, `#B3A125`, `#dc3545`, `#333`, `#777`, `#666` |
+| `UserEnrichmentPage.tsx` | `#193e6b`, `#666666`, `#333333`, `#28a745`, `#dc3545`, `#007bff` |
+| `UserRoleAssignmentPage.tsx` | `#193e6b`, `#666666` |
+| `AssignmentTable.tsx` | `#193e6b`, `#333333`, `#666666`, `#999999`, `#FFFFFF` |
+| `AssignmentFilters.tsx` | `#666666`, `#333333`, `#193e6b`, `#28a745`, `#999999` |
+| `RoleBadge.tsx` | `#dc3545`, `#28a745`, `#d39e00`, `#007bff`, `#6c757d` |
+| `StatusBadge.tsx` (user-role-assign) | `#28a745`, `#dc3545` |
+| `AddSecurityRoleModal.module.css` | `#6b7280`, `#1f2937`, `#dc2626`, `#d1d5db`, `#f3f4f6` |
+
+---
+
+## STEP 7 — DESIGN TOKEN SYSTEM ASSESSMENT
+
+### What Exists ✅
+
+| Token System | File | Status |
+|---|---|---|
+| CSS Custom Properties | `src/theme/colors.css` | ✅ Defined, 35+ tokens |
+| Fluent UI brand ramp | `src/theme/kernelTheme.ts` | ✅ Used for Fluent components |
+| Fluent design tokens | `tokens.*` (Fluent v9) | ✅ Used in NavRail, AppLayout |
+
+### What's Missing / Broken ❌
+
+| Issue | Impact |
+|---|---|
+| **CSS variables rarely consumed by feature components** | Most pages use raw hex instead of `var(--color-*)` |
+| **`AuditLogViewerPage.tsx` defines its own parallel color system** in Griffel | Creates a 2nd palette that conflicts with the rest |
+| **`Inter` font declared but never imported** | Font fallback used silently |
+| **No spacing token system** | All spacing is raw `px` values |
+| **No shadow token system** | Box-shadows hardcoded in 3+ places |
+| **Two different "blue" primaries** (`#193e6b` vs `#2F4A73`) | Visual inconsistency across pages |
+| **Two different "success" colors** (`#2F855A` token vs `#28a745` vs `#2E7D32` hardcoded) | Badge inconsistency |
+| **Two different "danger" colors** (`#C53030` token vs `#C62828` vs `#dc3545` vs `#dc2626`) | Error styling inconsistency |
+
+---
+
+## STEP 8 — SUMMARY REPORT
+
+### 1️⃣ Colors Used
+
+- **35 CSS variables** defined in `colors.css` (partially consumed)
+- **19+ unique raw hex values** in `AuditLogViewerPage.tsx` alone (not connected to tokens)
+- **2 conflicting brand blues**: `#193e6b` (original) vs `#2F4A73` (Audit spec)
+- **3 different success greens**: `#2F855A`, `#28a745`, `#2E7D32`
+- **4 different danger reds**: `#C53030`, `#C62828`, `#dc3545`, `#dc2626`
+
+### 2️⃣ Typography System
+
+- **Body font**: system stack (`-apple-system, Segoe UI, Roboto...`) — no web font loaded for app shell
+- **Audit pages declare** `Inter, system-ui` but **Inter is never imported** → silent fallback
+- **Sign-in only**: Montserrat + Source Sans 3 (loaded via Google Fonts)
+- **No centralized type scale** — font sizes are scattered raw values from `11px` to `52px`
+
+### 3️⃣ Spacing System
+
+- **No token-based spacing scale** (Fluent tokens exist but only used in NavRail/AppLayout)
+- Common values: `4`, `6`, `8`, `12`, `14`, `16`, `20`, `24`, `28`, `32`, `40`, `48`, `60` px
+- All feature pages use raw pixel values
+
+### 4️⃣ Component Styles
+
+- **TopBar**: Pure CSS class-based (`.top-nav`, etc.) — consistent internally
+- **NavRail**: Griffel + CSS variables — good use of tokens
+- **Audit pages**: Griffel + parallel raw-hex palette — isolated, inconsistent with rest
+- **Older pages** (UserEnrich, UserRole, RoleMgmt): Mix of Griffel + CSS Modules + raw hex
+
+### 5️⃣ Hardcoded Style Count
+
+| Layer | Count of Hardcoded Hex Values |
+|---|---|
+| `AuditLogViewerPage.tsx` | ~50 occurrences (19 unique hex values) |
+| `topbar-vanilla.css` | ~15 occurrences |
+| `UserEnrichmentPage.tsx` | ~15 occurrences |
+| `AssignmentTable/Filters/Badges` | ~25 occurrences |
+| CSS Modules (modals) | ~10 occurrences |
+| **Total estimated** | **~115+ occurrences** |
+
+### 6️⃣ Design Token System Status
+
+| Check | Result |
+|---|---|
+| CSS variables defined? | ✅ Yes — `colors.css` |
+| CSS variables consistently consumed? | ❌ No — most features bypass them |
+| Fluent theme configured? | ✅ Yes — `kernelTheme.ts` |
+| Font imported correctly? | ⚠️ Partial — `Inter` missing |
+| Spacing tokens? | ❌ None |
+| Shadow tokens? | ❌ None |
+| Single source of truth for brand blue? | ❌ Two conflicting values |
+
+---
+
+## Recommended Fixes (for next phase)
+
+1. **Unify brand primary**: Choose `#193e6b` OR `#2F4A73` — add to `colors.css` as `--color-brand-kernel`
+2. **Add `Inter` to Google Fonts import** in `index.css`
+3. **Update `AuditLogViewerPage.tsx`** to consume CSS variables instead of raw hex
+4. **Extend `colors.css`** to include page-background, border, and audit-specific tokens
+5. **Add spacing scale** to `colors.css` as CSS custom properties or a TS constants file
+6. **Consolidate success/danger colors** to single token pair each

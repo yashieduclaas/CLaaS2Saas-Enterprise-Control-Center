@@ -2,17 +2,26 @@
 // Vanilla spec — Filter tabs with underline active style.
 
 import { makeStyles, mergeClasses } from '@fluentui/react-components';
-import { SearchRegular } from '@fluentui/react-icons';
+//import { SearchRegular } from '@fluentui/react-icons';
+import { 
+  SearchRegular,
+  ListRegular,
+  CheckmarkCircleRegular,
+  DismissCircleRegular
+} from '@fluentui/react-icons';
 
 export type StatusFilter = 'ALL' | 'ACTIVE' | 'INACTIVE';
 
 const useStyles = makeStyles({
   wrapper: {
-    display: 'flex',
+     display: 'flex',
     flexDirection: 'column',
     gap: '12px',
     padding: '16px 24px',
-    borderBottom: '1px solid rgba(0,0,0,0.05)',
+    position: 'sticky',
+    top: 0,
+    zIndex: 30,
+    backgroundColor: '#ffffff'
   },
   searchRow: {
     display: 'flex',
@@ -43,31 +52,53 @@ const useStyles = makeStyles({
     },
   },
   tabRow: {
-    display: 'flex',
-    gap: '24px',
+    display: 'inline-flex',
+    backgroundColor: '#f1f3f5',
+    borderRadius: '10px',
+    padding: '4px',
+    gap: '4px',
+    width: 'fit-content',
   },
+  tabIcon: {
+  display: 'flex',
+  alignItems: 'center',
+  color: '#276dab',
+},
   tab: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '6px',
-    padding: '8px 0',
-    background: 'transparent',
+    padding: '6px 14px',
     fontSize: '14px',
-    color: '#666666',
+    color: '#555',
     cursor: 'pointer',
     fontFamily: 'inherit',
     border: 'none',
-    borderBottom: '2px solid transparent',
-    borderRadius: 0,
+    borderRadius: '8px',
+    background: 'transparent',
     ':hover': {
-      color: '#333333',
+      backgroundColor: '#e9ecef',
     },
   },
-  tabActive: {
+tabActive: {
+    backgroundColor: '#ffffff',
     color: '#193e6b',
     fontWeight: 600,
-    borderBottomColor: '#193e6b',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
+
+    selectors: {
+      '& span': {
+        color: '#0d6efd',
+      },
+    },
   },
+  iconActive: {
+  color: '#28a745',
+},
+
+iconInactive: {
+  color: '#0d6efd',
+},
   tabDot: {
     width: '7px',
     height: '7px',
@@ -82,7 +113,7 @@ const useStyles = makeStyles({
 interface FilterTab {
   id: StatusFilter;
   label: string;
-  dotClass: string;
+  icon: React.ReactNode;
 }
 
 export interface AssignmentFiltersProps {
@@ -101,9 +132,9 @@ export function AssignmentFilters({
   const styles = useStyles();
 
   const tabs: FilterTab[] = [
-    { id: 'ALL', label: 'All Assignments', dotClass: styles.dotAll },
-    { id: 'ACTIVE', label: 'Active', dotClass: styles.dotActive },
-    { id: 'INACTIVE', label: 'Inactive', dotClass: styles.dotInactive },
+    { id: 'ALL', label: 'All Assignments', icon: <ListRegular fontSize={16} /> },
+    { id: 'ACTIVE', label: 'Active', icon: <CheckmarkCircleRegular fontSize={16} /> },
+    { id: 'INACTIVE', label: 'Inactive', icon: <DismissCircleRegular fontSize={16} /> },
   ];
 
   return (
@@ -132,7 +163,9 @@ export function AssignmentFilters({
             className={mergeClasses(styles.tab, statusFilter === tab.id && styles.tabActive)}
             onClick={() => onStatusFilterChange(tab.id)}
           >
-            <span className={mergeClasses(styles.tabDot, tab.dotClass)} aria-hidden />
+            <span className={styles.tabIcon}>
+                {tab.icon}
+              </span>
             {tab.label}
           </button>
         ))}
