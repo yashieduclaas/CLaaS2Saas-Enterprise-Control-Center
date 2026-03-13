@@ -1574,7 +1574,7 @@ code {
 .module-card-name {
     font-size: 13px;
     font-weight: 600;
-    color: var(--primary);
+    color: var (--primary);
     font-family: var(--font-heading)
 }
 
@@ -1851,7 +1851,7 @@ code {
 
 .btn-manage {
     background: rgba(68, 142, 157, .1);
-    color: var(--secondary);
+    color: var (--secondary);
     border: 1px solid var(--secondary);
     padding: 6px 14px;
     border-radius: 6px;
@@ -2010,11 +2010,27 @@ code {
 
 .data-table {
     width: 100%;
-    border-collapse: collapse
+    border-collapse: collapse;
+    display: block;
 }
 
 .data-table thead {
-    background: rgba(0, 0, 0, .02)
+    background: rgba(0, 0, 0, .02);
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.data-table tbody {
+    display: block;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.data-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 .data-table th {
