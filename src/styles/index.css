@@ -1,0 +1,61 @@
+/* apps/web/src/styles/index.css */
+/* Sole global CSS file. Griffel handles all component styles. */
+
+/* Brand fonts — used by SignInPage (Montserrat, Source Sans 3) */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800;900&family=Source+Sans+3:wght@300;400;600&display=swap');
+
+/* Focus ring — WCAG 2.1 AA compliant */
+:focus-visible {
+  outline: 2px solid var(--color-brand-accent);
+  outline-offset: 2px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background-color: var(--color-bg-muted);
+}
+
+/* Sidebar tooltip (collapsed state) — fallback when [data-tooltip] is set */
+[data-tooltip] {
+  position: relative;
+}
+[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 70px;
+  background: #111;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+}
+
+/* Fallback loading - visible when Griffel/Fluent styles not yet applied */
+.app-loading-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
