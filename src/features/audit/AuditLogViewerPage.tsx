@@ -127,22 +127,23 @@ const useStyles = makeStyles({
 
     // Card
     card: {
-         backgroundColor: '#FFFFFF',
+       backgroundColor: '#FFFFFF',
         borderRadius: '12px',
-        padding: '24px',
+        padding: '12px',
         boxShadow: '0 4px 10px rgba(0,0,0,0.06)',
 
         display: 'flex',
         flexDirection: 'column',
-        gap: '16px',
 
-        height: '520px', 
-        overflow: 'hidden'
+        height: '520px' 
     },
 
     // Search
     searchWrap: {
         position: 'relative',
+        marginTop: '12px',
+        marginLeft: '12px',  
+        marginRight: '12px'
     },
     searchIcon: {
         position: 'absolute',
@@ -182,6 +183,10 @@ const useStyles = makeStyles({
         padding: '6px',
         borderRadius: '8px',
         width: 'fit-content',
+        marginBottom: '12px',
+        marginTop: '12px',
+        marginLeft: '12px',  
+        marginRight: '12px'
     },
     filterPill: {
         padding: '6px 16px',
@@ -214,50 +219,47 @@ const useStyles = makeStyles({
         overflowY: 'auto',
         overflowX: 'hidden',
         backgroundColor: '#FFFFFF',
-
+        marginTop: '12px',
         position: 'relative',
-        scrollbarWidth: 'none',   // Firefox
-        msOverflowStyle: 'none',  // IE / Edge
+        scrollbarWidth: 'none', 
+        msOverflowStyle: 'none',  
+        marginLeft: '12px',  
+        marginRight: '12px',
         '::-webkit-scrollbar': {
-            display: 'none'       // Chrome / Safari
+            display: 'none'       
         }
     },
     table: {
         width: '100%',
-        borderCollapse: 'collapse',
+        borderCollapse: 'collapse' as const,
+        tableLayout: 'auto' as const,
     },
     th: {
-        padding: '12px 16px',
+        padding: '16px 20px',
         fontSize: '14px',
-        fontWeight: 700,
-        color: '#193E6B',
+        fontWeight: 600,
+        color: '#193e6b',
         textAlign: 'left',
-        borderBottom: '1px solid #E6ECF3',
+        borderBottom: '1px solid rgba(0,0,0,0.05)',
         whiteSpace: 'nowrap',
-        backgroundColor: '#f1f5f9',
+        backgroundColor: '#f5f6f8',
         position: 'sticky',
         top: 0,
-        zIndex: 10
-    },
-    theadRow: {
-    backgroundColor: '#F5F3F0',
+        zIndex: 20,
 },
     tr: {
-        height: '64px',
-        borderBottom: '1px solid #E6ECF3',
-        backgroundColor: '#FFFFFF',
         ':hover': {
-            backgroundColor: '#f8fafc',
-        },
+      backgroundColor: 'rgba(0,0,0,0.02)',
+     },
     },
     trLast: {
         borderBottom: 'none',
     },
     td: {
-        padding: '12px 16px',
-        fontSize: '13px',
-        color: '#1F2D3D',
-        verticalAlign: 'middle',
+        padding: '13px 12px',
+        fontSize: '14px',
+        color: '#333333',
+        borderBottom: '1px solid rgba(0,0,0,0.05)',
     },
 
     // Cell components
@@ -320,9 +322,20 @@ const useStyles = makeStyles({
 
     // Footer
     footer: {
-        fontSize: '12px',
-        color: '#6B7785',
-        paddingTop: '8px',
+        padding: '10px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+        borderTop: '1px solid #E5E7EB',
+        fontSize: '13px',
+        marginTop: 'auto',
+        color: '#6B7280',
+    },
+    loadingOverlay: {
+        padding: '48px',
+        display: 'flex',
+        justifyContent: 'center',
+        color: '#6B7280',
+        fontSize: '14px'
     },
 
     // Floating help button

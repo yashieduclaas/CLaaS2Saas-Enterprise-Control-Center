@@ -54,32 +54,37 @@ const useStyles = makeStyles({
     margin: 0,
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: '#FFFFFF',
     borderRadius: '12px',
+    padding: '12px',
     boxShadow: '0 4px 10px rgba(0,0,0,0.06)',
     display: 'flex',
     flexDirection: 'column',
-    height: '520px'   // 👈 important
+    height: '520px' 
     
   },
   searchWrap: {
-    width: '100%',
+    position: 'relative',
+    marginTop: '12px',
+    marginLeft: '12px',  
+    marginRight: '12px'
    
   },
  tableWrapper: {
-  borderRadius: '8px',
-  backgroundColor: '#ffffff',
-  overflow: 'hidden',
-  flex: 1,            // 👈 important
-  border: '1px solid #e5e7eb',
-  overflowY: 'auto',
-  margin: '0 16px',
-  overflowX: 'hidden',
-  scrollbarWidth: 'none',
-  msOverflowStyle: 'none',
-  '::-webkit-scrollbar': {
-    display: 'none'
-  }
+        flex: 1,
+        minHeight: 0,
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        backgroundColor: '#FFFFFF',
+        marginTop: '12px',
+        position: 'relative',
+        scrollbarWidth: 'none', 
+        msOverflowStyle: 'none',  
+        marginLeft: '12px',  
+        marginRight: '12px',
+        '::-webkit-scrollbar': {
+            display: 'none'       
+        }
 },
   dataTable: {
     width: '100%',
@@ -87,31 +92,33 @@ const useStyles = makeStyles({
     borderSpacing: 0,
   },
   th: {
-  padding: '14px 18px',
+  padding: '16px 20px',
   fontSize: '14px',
   fontWeight: 600,
-  color: '#1f3b64',
+  color: '#193e6b',
   textAlign: 'left',
-  backgroundColor: '#f1f5f9',
-
-   position: 'sticky',
+  borderBottom: '1px solid rgba(0,0,0,0.05)',
+  whiteSpace: 'nowrap',
+  backgroundColor: '#f5f6f8',
+  position: 'sticky',
   top: 0,
-  zIndex: 10,
-  borderBottom: '1px solid #e5e7eb',
+  zIndex: 20,
   
 },
 
   td: {
-    padding: '16px 18px',
+    padding: '13px 12px',
     fontSize: '14px',
     color: '#333333',
     borderBottom: '1px solid rgba(0,0,0,0.05)',
   },
+  trLast: {
+        borderBottom: 'none',
+    },
   tr: {
     ':hover': {
-      backgroundColor: '#f8fafc',
-      
-    },
+      backgroundColor: 'rgba(0,0,0,0.02)',
+     },
   },
   cellPrimary: {
     fontSize: '14px',
@@ -194,10 +201,13 @@ const useStyles = makeStyles({
     gap: '8px',
   },
   footer: {
+    padding: '10px',
+    paddingLeft: '20px',
+    paddingRight: '20px',
+    borderTop: '1px solid #E5E7EB',
     fontSize: '13px',
-    color: '#666666',
-    marginTop: '8px',
-    margin: '0 16px'
+    marginTop: 'auto',
+    color: '#6B7280',
   },
   searchWrapper:{
   display:"flex",
