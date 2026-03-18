@@ -253,57 +253,58 @@ export function UserEnrichmentPage() {
           )}
         </div>
 
-        <div className={styles.searchWrap}>
-          <Input
-            id="user-search-input"
-            contentBefore={<SearchRegular fontSize={16} />}
-            placeholder="Search by Name, Email, Role, Manager, or Entra ID..."
-            value={search}
-            onChange={(_, d) => setSearch(d.value)}
-            style={{ width: '100%' }}
-          />
-        </div>
+        <div className="data-table-wrapper">
+          <div className="search-bar">
+            <i className="fas fa-search" />
+            <input
+              type="text"
+              placeholder="Search by Name, Email, Role, Manager, or Entra ID..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
 
-        <div className={styles.tableWrapper}>
-          {isLoading ? (
-            <Spinner label="Loading users…" size="medium" />
-          ) : error ? (
-            <Text style={{ color: '#dc3545' }} role="alert">{error}</Text>
-          ) : (
-            <table className={styles.dataTable} aria-label="User profile listing">
-              <thead>
-                <tr>
-                  <th className={styles.th}>Entra Email Id</th>
-                  <th className={styles.th}>Display Name</th>
-                  <th className={styles.th}>Organizational Role</th>
-                  <th className={styles.th}>Manager</th>
-                  <th className={styles.th}>Status</th>
-                  <th className={styles.th}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((user) => (
-                  <tr key={user.id} className={styles.tr}>
-                    <td className={styles.td}><span className={styles.linkText}>{user.email}</span></td>
-                    <td className={styles.td}><span className={styles.cellTextBold}>{user.displayName}</span></td>
-                    <td className={styles.td}><span className={styles.cellText}>{user.role}</span></td>
-                    <td className={styles.td}><span className={styles.linkText}>{user.manager}</span></td>
-                    <td className={styles.td}><StatusBadge status={user.status} /></td>
-                    <td className={styles.td}>
-                      <ActionsCell user={user} onEdit={handleEditClick} />
-                    </td>
+          <div className={styles.tableWrapper}>
+            {isLoading ? (
+              <Spinner label="Loading users…" size="medium" />
+            ) : error ? (
+              <Text style={{ color: '#dc3545' }} role="alert">{error}</Text>
+            ) : (
+              <table className={styles.dataTable} aria-label="User profile listing">
+                <thead>
+                  <tr>
+                    <th className={styles.th}>Entra Email Id</th>
+                    <th className={styles.th}>Display Name</th>
+                    <th className={styles.th}>Organizational Role</th>
+                    <th className={styles.th}>Manager</th>
+                    <th className={styles.th}>Status</th>
+                    <th className={styles.th}>Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filtered.map((user) => (
+                    <tr key={user.id} className={styles.tr}>
+                      <td className={styles.td}><span className={styles.linkText}>{user.email}</span></td>
+                      <td className={styles.td}><span className={styles.cellTextBold}>{user.displayName}</span></td>
+                      <td className={styles.td}><span className={styles.cellText}>{user.role}</span></td>
+                      <td className={styles.td}><span className={styles.linkText}>{user.manager}</span></td>
+                      <td className={styles.td}><StatusBadge status={user.status} /></td>
+                      <td className={styles.td}>
+                        <ActionsCell user={user} onEdit={handleEditClick} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {!isLoading && !error && (
+            <Text className={styles.footer}>
+              Showing {filtered.length} of {users.length} total users
+            </Text>
           )}
         </div>
-
-        {!isLoading && !error && (
-          <Text className={styles.footer}>
-            Showing {filtered.length} of {users.length} total users
-          </Text>
-        )}
       </div>
 
       <EditUserModal
@@ -517,10 +518,6 @@ export function UserEnrichmentPage() {
         </div>
 
         <div className="data-table-wrapper">
-          <div className="table-toolbar">
-            <div className="table-title">User Listing</div>
-            <span className="table-count">{filteredUsers.length} users found</span>
-          </div>
           <div className="search-bar">
             <i className="fas fa-search" />
             <input

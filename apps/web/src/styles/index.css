@@ -821,7 +821,7 @@ code {
     padding: 10px 12px;
     border-radius: 4px;
     font-size: .85rem;
-    color: var(--dark);
+    color: var (--dark);
     cursor: pointer;
     transition: background .15s
 }
@@ -2012,11 +2012,15 @@ code {
 
 .data-table {
     width: 100%;
-    border-collapse: collapse
+    border-collapse: collapse;
+    display: block;
 }
 
 .data-table thead {
-    background: rgba(0, 0, 0, .02)
+    background: rgba(0, 0, 0, .02);
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 .data-table th {
@@ -2034,6 +2038,24 @@ code {
     font-size: 14px;
     border-bottom: 1px solid rgba(0, 0, 0, .05);
     color: var(--dark)
+}
+
+.data-table tbody {
+    display: block;
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.data-table tbody::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.data-table tbody tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
 }
 
 .data-table tbody tr:hover {
@@ -2973,7 +2995,7 @@ code {
     font-size: 16px;
     font-weight: 400;
     font-family: var(--font-body);
-    color: var(--dark);
+    color: var (--dark);
     height: 100%;
     position: relative;
     z-index: 2
