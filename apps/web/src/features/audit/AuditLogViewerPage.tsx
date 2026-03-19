@@ -1,13 +1,22 @@
 // apps/web/src/features/audit/AuditLogViewerPage.tsx
 // Audit Log Viewer — Session Logs & Action Logs tabs
-// Enterprise shell spec — Griffel (makeStyles) + native table.
+// UI matched to UserRoleAssignmentPage style.
 
 import { useState, useMemo } from 'react';
 import { makeStyles, mergeClasses, Spinner } from '@fluentui/react-components';
+import {
+    SearchRegular,
+    ListRegular,
+    CheckmarkCircleRegular,
+    DismissCircleRegular,
+    CalendarRegular,
+} from '@fluentui/react-icons';
 import { usePermissionContext } from '@/rbac/PermissionContext';
 import { PageSkeleton } from '@/app/PageSkeleton';
 import { useAuditSessionsQuery } from './hooks/useAuditSessionsQuery';
 import type { AuditSessionLog, SessionFilter } from './types/auditSession';
+import { actionLogs } from './data/mockActionLogs';
+import type { ActionLog, ActionLogStatus } from './data/mockActionLogs';
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 
@@ -54,20 +63,29 @@ function matchesFilter(session: AuditSessionLog, filter: SessionFilter): boolean
     return true;
 }
 
-// ─── Styles ────────────────────────────────────────────────────────────────
+// ─── Styles (matched to UserRoleAssignmentPage) ────────────────────────────
 
 const useStyles = makeStyles({
-    // Page wrapper
+
+    // ── Page ──
     pageContent: {
         padding: '10px 18px',
-        backgroundColor: '#EEE7E0',
-        minHeight: '100%',
-        fontFamily: 'Inter, system-ui, sans-serif',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '24px',
     },
-
-    // Header
     pageHeader: {
-        marginBottom: '24px',
+        marginBottom: '0px',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        gap: '16px',
+    },
+    titleSection: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '4px',
     },
     pageTitle: {
         fontSize: '24px',
@@ -78,16 +96,16 @@ const useStyles = makeStyles({
     },
     pageSubtitle: {
         fontSize: '14px',
-        color: '#6B7785',
+        color: '#666666',
         margin: 0,
     },
 
-    // Tabs
+    // ── Tabs (same as UserRoleAssignmentPage outer tabs) ──
     tabsRow: {
         display: 'flex',
         alignItems: 'center',
         gap: '0',
-        marginBottom: '20px',
+        marginBottom: '0px',
         borderBottom: '1px solid #E2E6EA',
     },
     tab: {
@@ -103,7 +121,6 @@ const useStyles = makeStyles({
         alignItems: 'center',
         gap: '6px',
         marginBottom: '-1px',
-        transition: 'color 0.15s ease, border-color 0.15s ease',
         ':hover': {
             color: '#2F4A73',
         },
@@ -117,157 +134,179 @@ const useStyles = makeStyles({
         borderTopRightRadius: '8px',
         boxShadow: '0 -1px 0 #FFFFFF',
     },
-    tabDot: {
-        width: '8px',
-        height: '8px',
-        borderRadius: '50%',
-        backgroundColor: '#2F4A73',
-        flexShrink: 0,
+
+    // ── Card (same as UserRoleAssignmentPage) ──
+    card: {
+        backgroundColor: '#FFFFFF',
+        borderRadius: '8px',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        overflow: 'hidden',
     },
 
-    // Card
-    card: {
-         backgroundColor: '#FFFFFF',
-        borderRadius: '12px',
-        padding: '24px',
-        boxShadow: '0 4px 10px rgba(0,0,0,0.06)',
-
+    // ── Filter wrapper (same as AssignmentFilters) ──
+    filterWrapper: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '16px',
-
-        height: '520px', 
-        overflow: 'hidden'
+        gap: '12px',
+        padding: '16px 24px',
+        position: 'sticky',
+        top: 0,
+        zIndex: 30,
+        backgroundColor: '#ffffff',
     },
 
-    // Search
-    searchWrap: {
-        position: 'relative',
-    },
-    searchIcon: {
-        position: 'absolute',
-        left: '14px',
-        top: '50%',
-        transform: 'translateY(-50%)',
-        color: '#6B7785',
-        fontSize: '16px',
-        pointerEvents: 'none',
-        display: 'flex',
-        alignItems: 'center',
-    },
-    searchInput: {
-        width: '100%',
-        height: '44px',
-        borderRadius: '8px',
-        border: '1px solid #E6ECF3',
-        backgroundColor: '#FFFFFF',
-        paddingLeft: '42px',
-        paddingRight: '16px',
-        fontSize: '13px',
-        color: '#1F2D3D',
-        outline: 'none',
-        boxSizing: 'border-box',
-        fontFamily: 'Inter, system-ui, sans-serif',
-    },
-
-    // Filter pills
-    filterRow: {
+    // ── Search row (same as AssignmentFilters) ──
+    searchRow: {
         display: 'flex',
         alignItems: 'center',
         gap: '8px',
-        flexWrap: 'wrap',
-        backgroundColor: '#EEF1F5',
-        padding: '6px',
+        backgroundColor: '#f8f9fa',
         borderRadius: '8px',
-        width: 'fit-content',
+        border: '1px solid #dee2e6',
+        paddingLeft: '12px',
+        paddingRight: '12px',
+        height: '36px',
     },
-    filterPill: {
-        padding: '6px 16px',
-        borderRadius: '8px',
-        fontSize: '13px',
-        fontWeight: 500,
-        background: '#F1F4F9',
-        border: '1px solid transparent',
-        cursor: 'pointer',
-        color: '#6B7785',
-        transition: 'all 0.15s ease',
-        ':hover': {
-            color: '#1F2D3D',
-            background: '#E9EDF5',
+    searchIcon: {
+        color: '#666666',
+        display: 'flex',
+        flexShrink: 0,
+    },
+    searchInput: {
+        flex: 1,
+        border: 'none',
+        outline: 'none',
+        background: 'transparent',
+        fontSize: '14px',
+        color: '#333333',
+        fontFamily: 'inherit',
+        '::placeholder': {
+            color: '#999999',
         },
     },
-    filterPillActive: {
-        backgroundColor: '#FFFFFF',
-        border: '1px solid #E6ECF3',
+
+    // ── Tab row (same as AssignmentFilters pill tabs) ──
+    tabRow: {
+        display: 'inline-flex',
+        backgroundColor: '#f1f3f5',
+        borderRadius: '10px',
+        padding: '4px',
+        gap: '4px',
+        width: 'fit-content',
+    },
+    filterTab: {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '6px',
+        padding: '6px 14px',
+        fontSize: '14px',
+        color: '#555',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        border: 'none',
+        borderRadius: '8px',
+        background: 'transparent',
+        ':hover': {
+            backgroundColor: '#e9ecef',
+        },
+    },
+    filterTabActive: {
+        backgroundColor: '#ffffff',
         color: '#193e6b',
         fontWeight: 600,
-        borderRadius: '6px',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.08)',
+    },
+    tabIcon: {
+        display: 'flex',
+        alignItems: 'center',
+        color: '#276dab',
     },
 
-    // Table
-    tableWrap: {
-        flex: 1,
-        minHeight: 0,
+    // ── Table wrapper (same as AssignmentTable) ──
+    tableWrapper: {
+        padding: '10px 25px 25px 25px',
+        marginTop: '-20px',
+        borderRadius: '8px',
+        backgroundColor: '#FFFFFF',
+        boxShadow: '0 3px 10px rgba(0,0,0,0.05)',
+        height: '420px',
         overflowY: 'auto',
         overflowX: 'hidden',
         position: 'relative',
-        scrollbarWidth: 'none',   // Firefox
-        msOverflowStyle: 'none',  // IE / Edge
+        scrollbarWidth: 'none',
+        msOverflowStyle: 'none',
         '::-webkit-scrollbar': {
-            display: 'none'       // Chrome / Safari
-        }
-    },
-    table: {
-        width: '100%',
-        borderCollapse: 'collapse',
-    },
-    th: {
-        padding: '12px 16px',
-        fontSize: '14px',
-        fontWeight: 700,
-        color: '#193E6B',
-        textAlign: 'left',
-        borderBottom: '1px solid #E6ECF3',
-        whiteSpace: 'nowrap',
-        backgroundColor: '#F8F6F3',
-        position: 'sticky',
-        top: 0,
-        zIndex: 10
-    },
-    theadRow: {
-    backgroundColor: '#F5F3F0',
-},
-    tr: {
-        height: '64px',
-        borderBottom: '1px solid #E6ECF3',
-        ':hover': {
-            backgroundColor: '#F7F3EE',
+            display: 'none',
         },
     },
-    trLast: {
-        borderBottom: 'none',
+    dataTable: {
+        width: '100%',
+        borderCollapse: 'collapse' as const,
+        tableLayout: 'auto' as const,
+    },
+    th: {
+        padding: '15px 12px',
+        fontSize: '14px',
+        fontWeight: 600,
+        color: '#193e6b',
+        textAlign: 'left',
+        borderBottom: '1px solid rgba(0,0,0,0.05)',
+        whiteSpace: 'nowrap',
+        backgroundColor: '#f5f6f8',
+        position: 'sticky',
+        top: 0,
+        zIndex: 20,
     },
     td: {
-        padding: '12px 16px',
-        fontSize: '13px',
-        color: '#1F2D3D',
-        verticalAlign: 'middle',
+        padding: '13px 12px',
+        fontSize: '14px',
+        color: '#333333',
+        borderBottom: '1px solid rgba(0,0,0,0.05)',
+    },
+    tr: {
+        ':hover': {
+            backgroundColor: 'rgba(0,0,0,0.02)',
+        },
     },
 
-    // Cell components
-    cellPrimary: {
-        fontSize: '13px',
-        fontWeight: 600,
-        color: '#1F2D3D',
-        display: 'block',
-        whiteSpace: 'nowrap',
+    // ── Cell blocks (same as AssignmentTable) ──
+    userBlock: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '2px',
     },
-    cellSecondary: {
+    userName: {
+        fontWeight: 600,
+        color: '#333333',
+    },
+    userEmail: {
         fontSize: '12px',
-        color: '#6B7785',
-        display: 'block',
-        whiteSpace: 'nowrap',
+        color: '#666666',
+    },
+    solutionBlock: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '2px',
+    },
+    solutionCode: {
+        fontWeight: 600,
+        color: '#333333',
+    },
+    moduleCode: {
+        fontSize: '12px',
+        color: '#666666',
+    },
+    dateBlock: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '6px',
+        color: '#333333',
+        fontSize: '14px',
+        whiteSpace: 'nowrap' as const,
+    },
+    dateIcon: {
+        color: '#666666',
+        flexShrink: 0,
     },
     cellIconRow: {
         display: 'flex',
@@ -282,7 +321,7 @@ const useStyles = makeStyles({
         alignItems: 'center',
     },
 
-    // Status badges
+    // ── Status badges (same as AssignmentTable StatusBadge) ──
     badgeSuccess: {
         display: 'inline-flex',
         alignItems: 'center',
@@ -297,10 +336,13 @@ const useStyles = makeStyles({
     badgeFailed: {
         display: 'inline-flex',
         alignItems: 'center',
-        padding: '4px 0',
+        padding: '4px 12px',
+        borderRadius: '20px',
         fontSize: '12px',
         fontWeight: 600,
+        backgroundColor: 'rgba(198,40,40,0.10)',
         color: '#C62828',
+        whiteSpace: 'nowrap',
     },
     badgeActive: {
         display: 'inline-flex',
@@ -309,18 +351,28 @@ const useStyles = makeStyles({
         borderRadius: '20px',
         fontSize: '12px',
         fontWeight: 600,
-        backgroundColor: 'rgba(95,128,37,0.15)',
-        color: '#5F8025',
+        backgroundColor: 'rgba(25,62,107,0.10)',
+        color: '#193e6b',
+        whiteSpace: 'nowrap',
     },
 
-    // Footer
+    // ── Footer (same as UserRoleAssignmentPage) ──
     footer: {
+        padding: '12px 24px',
+        borderTop: '1px solid rgba(0,0,0,0.05)',
         fontSize: '12px',
-        color: '#6B7785',
-        paddingTop: '8px',
+        color: '#666666',
     },
 
-    // Floating help button
+    // ── Empty state ──
+    emptyState: {
+        textAlign: 'center' as const,
+        padding: '48px 24px',
+        color: '#666666',
+        fontSize: '14px',
+    },
+
+    // ── Floating help button ──
     floatingBtn: {
         position: 'fixed',
         bottom: '24px',
@@ -336,68 +388,53 @@ const useStyles = makeStyles({
         justifyContent: 'center',
         boxShadow: '0 4px 16px rgba(25,62,107,0.35)',
         zIndex: 100,
-        transition: 'transform 0.15s ease, box-shadow 0.15s ease',
         ':hover': {
             transform: 'scale(1.08)',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.35)',
         },
     },
 
-    // Action logs placeholder
-    placeholderWrap: {
-        display: 'flex',
-        flexDirection: 'column',
+    // ── Action log specific ──
+    permBadge: {
+        display: 'inline-flex',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: '60px 24px',
-        gap: '12px',
-        color: '#6B7785',
-    },
-    placeholderIcon: {
-        fontSize: '48px',
-        marginBottom: '8px',
-    },
-    placeholderTitle: {
-        fontSize: '16px',
+        padding: '3px 10px',
+        borderRadius: '12px',
+        fontSize: '11px',
         fontWeight: 600,
-        color: '#1F2D3D',
+        backgroundColor: '#EEF2F6',
+        color: '#425466',
+        whiteSpace: 'nowrap',
     },
-    placeholderText: {
-        fontSize: '13px',
+    detailsCell: {
+        fontSize: '12px',
         color: '#6B7785',
-        textAlign: 'center',
+        maxWidth: '240px',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap',
     },
 });
 
-// ─── Sub-components ─────────────────────────────────────────────────────────
+// ─── SVG Icons ─────────────────────────────────────────────────────────────
 
-function StatusBadge({ status }: { status: AuditSessionLog['status'] }) {
-    const styles = useStyles();
-    if (status === 'Success') return <span className={styles.badgeSuccess}>Success</span>;
-    if (status === 'Failed') return <span className={styles.badgeFailed}>Failed</span>;
-    return <span className={styles.badgeActive}>Active</span>;
-}
-
-function DurationCell({ minutes, status }: { minutes: number | null; status: AuditSessionLog['status'] }) {
-    const styles = useStyles();
-    if (status === 'Active') {
-        return <span className={styles.badgeActive}>Active</span>;
-    }
-    return <span>{formatDuration(minutes)}</span>;
-}
-
-// SVG Icons (inline, lightweight)
-function IconSearch() {
-    return (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-        </svg>
-    );
-}
 function IconClock() {
     return (
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
+        </svg>
+    );
+}
+function IconBolt() {
+    return (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+        </svg>
+    );
+}
+function IconHelpCircle() {
+    return (
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
         </svg>
     );
 }
@@ -426,28 +463,30 @@ function IconMobile() {
         </svg>
     );
 }
-function IconBolt() {
-    return (
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-        </svg>
-    );
-}
-function IconHelpCircle() {
-    return (
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" /><line x1="12" y1="17" x2="12.01" y2="17" />
-        </svg>
-    );
-}
-
-
 function DeviceIcon({ type }: { type: AuditSessionLog['deviceType'] }) {
     if (type === 'Mobile') return <IconMobile />;
     return <IconMonitor />;
 }
 
-// ─── Session Table ──────────────────────────────────────────────────────────
+// ─── Status Badge ──────────────────────────────────────────────────────────
+
+function SessionStatusBadge({ status }: { status: AuditSessionLog['status'] }) {
+    const styles = useStyles();
+    if (status === 'Success') return <span className={styles.badgeSuccess}>Success</span>;
+    if (status === 'Failed') return <span className={styles.badgeFailed}>Failed</span>;
+    return <span className={styles.badgeActive}>Active</span>;
+}
+
+// ─── Session Filter Tabs config ────────────────────────────────────────────
+
+const SESSION_FILTERS: { key: SessionFilter; label: string; icon: React.ReactNode }[] = [
+    { key: 'all',        label: 'All Sessions',       icon: <ListRegular fontSize={16} /> },
+    { key: 'successful', label: 'Successful Logins',  icon: <CheckmarkCircleRegular fontSize={16} /> },
+    { key: 'failed',     label: 'Failed Logins',      icon: <DismissCircleRegular fontSize={16} /> },
+    { key: 'active',     label: 'Active Sessions',    icon: <CheckmarkCircleRegular fontSize={16} /> },
+];
+
+// ─── Session Logs Table ────────────────────────────────────────────────────
 
 function SessionLogsTable() {
     const styles = useStyles();
@@ -462,53 +501,49 @@ function SessionLogsTable() {
         );
     }, [sessions, search, filter]);
 
-    const FILTERS: { key: SessionFilter; label: string }[] = [
-        { key: 'all', label: 'All Sessions' },
-        { key: 'successful', label: 'Successful Logins' },
-        { key: 'failed', label: 'Failed Logins' },
-        { key: 'active', label: 'Active Sessions' },
-    ];
-
     return (
         <>
-            {/* Scoped input styles that Griffel can't express */}
-            <style>{`
-                #audit-session-search:focus { border-color: #193E6B; box-shadow: 0 0 0 2px rgba(25,62,107,0.12); }
-                #audit-session-search::placeholder { color: #9DA8B5; }
-            `}</style>
+            {/* ── Filter wrapper — same style as AssignmentFilters ── */}
+            <div className={styles.filterWrapper}>
 
-            {/* Search */}
-            <div className={styles.searchWrap}>
-                <span className={styles.searchIcon}><IconSearch /></span>
-                <input
-                    id="audit-session-search"
-                    type="text"
-                    className={styles.searchInput}
-                    placeholder="Search by User, Email, IP Address, Device, Module, or Session Token..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    aria-label="Search session logs"
-                />
+                {/* Search row */}
+                <div className={styles.searchRow}>
+                    <span className={styles.searchIcon}>
+                        <SearchRegular fontSize={16} />
+                    </span>
+                    <input
+                        className={styles.searchInput}
+                        type="search"
+                        placeholder="Search by User, Email, IP Address, Device, or Module..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        aria-label="Search session logs"
+                    />
+                </div>
+
+                {/* Filter pill tabs */}
+                <div className={styles.tabRow} role="tablist" aria-label="Filter by session status">
+                    {SESSION_FILTERS.map((f) => (
+                        <button
+                            key={f.key}
+                            type="button"
+                            role="tab"
+                            aria-selected={filter === f.key}
+                            className={mergeClasses(
+                                styles.filterTab,
+                                filter === f.key && styles.filterTabActive
+                            )}
+                            onClick={() => setFilter(f.key)}
+                        >
+                            <span className={styles.tabIcon}>{f.icon}</span>
+                            {f.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {/* Filter pills */}
-            <div className={styles.filterRow} role="group" aria-label="Filter sessions">
-                {FILTERS.map((f) => (
-                    <button
-                        key={f.key}
-                        id={`filter-${f.key}`}
-                        type="button"
-                        className={mergeClasses(styles.filterPill, filter === f.key && styles.filterPillActive)}
-                        onClick={() => setFilter(f.key)}
-                        aria-pressed={filter === f.key}
-                    >
-                        {f.label}
-                    </button>
-                ))}
-            </div>
-
-            {/* Table */}
-            <div className={styles.tableWrap}>
+            {/* ── Table — same style as AssignmentTable ── */}
+            <div className={styles.tableWrapper}>
                 {isLoading ? (
                     <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
                         <Spinner label="Loading session logs…" size="medium" />
@@ -518,7 +553,7 @@ function SessionLogsTable() {
                         Failed to load session logs. Please try again.
                     </div>
                 ) : (
-                    <table className={styles.table} aria-label="Audit session log table">
+                    <table className={styles.dataTable} aria-label="Audit session log table">
                         <thead>
                             <tr>
                                 <th className={styles.th}>User</th>
@@ -527,74 +562,83 @@ function SessionLogsTable() {
                                 <th className={styles.th}>Duration</th>
                                 <th className={styles.th}>IP Address</th>
                                 <th className={styles.th}>Device</th>
-                                <th className={styles.th} style={{ textAlign: 'right' }}>Status</th>
+                                <th className={styles.th}>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {filtered.map((session, idx) => (
-                                <tr
-                                    key={session.id}
-                                    className={mergeClasses(styles.tr, idx === filtered.length - 1 && styles.trLast)}
-                                >
-                                    {/* User */}
-                                    <td className={styles.td}>
-                                        <span className={styles.cellPrimary}>{session.userName}</span>
-                                        <span className={styles.cellSecondary}>{session.userEmail}</span>
-                                    </td>
-
-                                    {/* Module */}
-                                    <td className={styles.td}>
-                                        <span className={styles.cellPrimary}>{session.moduleName}</span>
-                                        <span className={styles.cellSecondary}>{session.moduleCode}</span>
-                                    </td>
-
-                                    {/* Session Start */}
-                                    <td className={styles.td}>
-                                        <div className={styles.cellIconRow}>
-                                            <span className={styles.cellIcon}><IconClock /></span>
-                                            <span style={{ fontSize: '12px', color: '#193E6B', fontWeight: 500 }}>
-                                                {formatSessionStart(session.sessionStart)}
-                                            </span>
-                                        </div>
-                                    </td>
-
-                                    {/* Duration */}
-                                    <td className={styles.td}>
-                                        <DurationCell minutes={session.durationMinutes} status={session.status} />
-                                    </td>
-
-                                    {/* IP Address */}
-                                    <td className={styles.td}>
-                                        <div className={styles.cellIconRow}>
-                                            <span className={styles.cellIcon}><IconNetwork /></span>
-                                            <span style={{ fontSize: '13px', color: '#1F2D3D' }}>{session.ipAddress}</span>
-                                        </div>
-                                    </td>
-
-                                    {/* Device */}
-                                    <td className={styles.td}>
-                                        <div className={styles.cellIconRow}>
-                                            <span className={styles.cellIcon}>
-                                                <DeviceIcon type={session.deviceType} />
-                                            </span>
-                                            <span style={{ fontSize: '12px', color: '#1F2D3D' }}>
-                                                {session.deviceBrowser} / {session.deviceOS} / {session.deviceType}
-                                            </span>
-                                        </div>
-                                    </td>
-
-                                    {/* Status */}
-                                    <td className={styles.td} style={{ textAlign: 'center' }}>
-                                        <StatusBadge status={session.status} />
-                                    </td>
-                                </tr>
-                            ))}
-                            {!isLoading && !isError && filtered.length === 0 && (
+                            {filtered.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6B7785', fontSize: '13px' }}>
+                                    <td colSpan={7} className={styles.emptyState}>
                                         No session logs match your search or filter.
                                     </td>
                                 </tr>
+                            ) : (
+                                filtered.map((session) => (
+                                    <tr key={session.id} className={styles.tr}>
+
+                                        {/* User */}
+                                        <td className={styles.td}>
+                                            <div className={styles.userBlock}>
+                                                <span className={styles.userName}>{session.userName}</span>
+                                                <span className={styles.userEmail}>{session.userEmail}</span>
+                                            </div>
+                                        </td>
+
+                                        {/* Module */}
+                                        <td className={styles.td}>
+                                            <div className={styles.solutionBlock}>
+                                                <span className={styles.solutionCode}>{session.moduleName}</span>
+                                                <span className={styles.moduleCode}>{session.moduleCode}</span>
+                                            </div>
+                                        </td>
+
+                                        {/* Session Start */}
+                                        <td className={styles.td}>
+                                            <div className={styles.dateBlock}>
+                                                <span className={styles.dateIcon}>
+                                                    <CalendarRegular fontSize={14} />
+                                                </span>
+                                                {formatSessionStart(session.sessionStart)}
+                                            </div>
+                                        </td>
+
+                                        {/* Duration */}
+                                        <td className={styles.td}>
+                                            {session.status === 'Active'
+                                                ? <span className={styles.badgeActive}>Active</span>
+                                                : <span>{formatDuration(session.durationMinutes)}</span>
+                                            }
+                                        </td>
+
+                                        {/* IP Address */}
+                                        <td className={styles.td}>
+                                            <div className={styles.cellIconRow}>
+                                                <span className={styles.cellIcon}><IconNetwork /></span>
+                                                <span style={{ fontSize: '13px', color: '#1F2D3D' }}>
+                                                    {session.ipAddress}
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        {/* Device */}
+                                        <td className={styles.td}>
+                                            <div className={styles.cellIconRow}>
+                                                <span className={styles.cellIcon}>
+                                                    <DeviceIcon type={session.deviceType} />
+                                                </span>
+                                                <span style={{ fontSize: '12px', color: '#1F2D3D' }}>
+                                                    {session.deviceBrowser} / {session.deviceOS} / {session.deviceType}
+                                                </span>
+                                            </div>
+                                        </td>
+
+                                        {/* Status */}
+                                        <td className={styles.td}>
+                                            <SessionStatusBadge status={session.status} />
+                                        </td>
+
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                     </table>
@@ -603,7 +647,7 @@ function SessionLogsTable() {
 
             {/* Footer */}
             {!isLoading && !isError && (
-                <div className={styles.footer} role="status" aria-live="polite">
+                <div className={styles.footer}>
                     Showing {filtered.length} of {sessions?.length ?? 0} session logs
                 </div>
             )}
@@ -613,116 +657,89 @@ function SessionLogsTable() {
 
 // ─── Action Logs Panel ──────────────────────────────────────────────────────
 
-import { actionLogs } from './data/mockActionLogs';
-import type { ActionLog, ActionLogStatus } from './data/mockActionLogs';
-
-// Additional Griffel styles injected once – action logs specifics
-const useActionStyles = makeStyles({
-    permBadge: {
-        display: 'inline-flex',
-        alignItems: 'center',
-        padding: '3px 10px',
-        borderRadius: '12px',
-        fontSize: '11px',
-        fontWeight: 600,
-        backgroundColor: '#EEF2F6',
-        color: '#425466',
-        whiteSpace: 'nowrap',
-        letterSpacing: '0.2px',
-    },
-    statusSuccess: {
-        display: 'inline-flex',
-        alignItems: 'center',
-        padding: '4px 12px',
-        borderRadius: '20px',
-        fontSize: '12px',
-        fontWeight: 600,
-        backgroundColor: 'rgba(95,128,37,0.15)',
-        color: '#5F8025',
-        whiteSpace: 'nowrap',
-    },
-    statusDenied: {
-        display: 'inline-flex',
-        alignItems: 'center',
-        fontSize: '12px',
-        fontWeight: 600,
-        color: '#C62828',
-        padding: '4px 0',
-    },
-    statusError: {
-        display: 'inline-flex',
-        alignItems: 'center',
-        fontSize: '12px',
-        fontWeight: 600,
-        color: '#E65100',
-        padding: '4px 0',
-    },
-    detailsCell: {
-        fontSize: '12px',
-        color: '#6B7785',
-        maxWidth: '240px',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        whiteSpace: 'nowrap',
-    },
-});
-
-function PermissionBadge({ code }: { code: string }) {
-    const s = useActionStyles();
-    return <span className={s.permBadge}>{code}</span>;
-}
+const ACTION_FILTERS: { key: ActionLogStatus | 'all'; label: string; icon: React.ReactNode }[] = [
+    { key: 'all',     label: 'All Actions', icon: <ListRegular fontSize={16} /> },
+    { key: 'success', label: 'Success',     icon: <CheckmarkCircleRegular fontSize={16} /> },
+    { key: 'denied',  label: 'Denied',      icon: <DismissCircleRegular fontSize={16} /> },
+    { key: 'error',   label: 'Error',       icon: <DismissCircleRegular fontSize={16} /> },
+];
 
 function ActionStatusBadge({ status }: { status: ActionLogStatus }) {
-    const s = useActionStyles();
-    if (status === 'success') return <span className={s.statusSuccess}>Success</span>;
-    if (status === 'denied') return <span className={s.statusDenied}>Denied</span>;
-    return <span className={s.statusError}>Error</span>;
+    const styles = useStyles();
+    if (status === 'success') return <span className={styles.badgeSuccess}>Success</span>;
+    if (status === 'denied')  return <span className={styles.badgeFailed}>Denied</span>;
+    return <span className={styles.badgeFailed}>Error</span>;
 }
 
 function ActionLogsPanel() {
     const styles = useStyles();
-    const actionStyles = useActionStyles();
     const [search, setSearch] = useState('');
+    const [filter, setFilter] = useState<ActionLogStatus | 'all'>('all');
 
     const filtered = useMemo(() => {
+        let result = actionLogs;
+        if (filter !== 'all') {
+            result = result.filter((log: ActionLog) => log.status === filter);
+        }
         const q = search.toLowerCase().trim();
-        if (!q) return actionLogs;
-        return actionLogs.filter(
-            (log: ActionLog) =>
-                log.name.toLowerCase().includes(q) ||
-                log.action.toLowerCase().includes(q) ||
-                log.permissionCode.toLowerCase().includes(q) ||
-                log.status.toLowerCase().includes(q) ||
-                log.module.toLowerCase().includes(q) ||
-                log.details.toLowerCase().includes(q)
-        );
-    }, [search]);
+        if (q) {
+            result = result.filter(
+                (log: ActionLog) =>
+                    log.name.toLowerCase().includes(q) ||
+                    log.action.toLowerCase().includes(q) ||
+                    log.permissionCode.toLowerCase().includes(q) ||
+                    log.status.toLowerCase().includes(q) ||
+                    log.module.toLowerCase().includes(q) ||
+                    log.details.toLowerCase().includes(q)
+            );
+        }
+        return result;
+    }, [search, filter]);
 
     return (
         <>
-            {/* Scoped styles for action-log search input */}
-            <style>{`
-                #action-log-search:focus { border-color: #193E6B; box-shadow: 0 0 0 2px rgba(25,62,107,0.12); }
-                #action-log-search::placeholder { color: #9DA8B5; }
-            `}</style>
+            {/* ── Filter wrapper — same style as AssignmentFilters ── */}
+            <div className={styles.filterWrapper}>
 
-            {/* Search */}
-            <div className={styles.searchWrap}>
-                <span className={styles.searchIcon}><IconSearch /></span>
-                <input
-                    id="action-log-search"
-                    type="text"
-                    className={styles.searchInput}
-                    placeholder="Search by User, Action, Permission Code, or Status..."
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    aria-label="Search action logs"
-                />
+                {/* Search row */}
+                <div className={styles.searchRow}>
+                    <span className={styles.searchIcon}>
+                        <SearchRegular fontSize={16} />
+                    </span>
+                    <input
+                        className={styles.searchInput}
+                        type="search"
+                        placeholder="Search by User, Action, Permission Code, or Status..."
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        aria-label="Search action logs"
+                    />
+                </div>
+
+                {/* Filter pill tabs */}
+                <div className={styles.tabRow} role="tablist" aria-label="Filter by action status">
+                    {ACTION_FILTERS.map((f) => (
+                        <button
+                            key={f.key}
+                            type="button"
+                            role="tab"
+                            aria-selected={filter === f.key}
+                            className={mergeClasses(
+                                styles.filterTab,
+                                filter === f.key && styles.filterTabActive
+                            )}
+                            onClick={() => setFilter(f.key)}
+                        >
+                            <span className={styles.tabIcon}>{f.icon}</span>
+                            {f.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {/* Table */}
-            <div className={styles.tableWrap}>
-                <table className={styles.table} aria-label="Audit action log table">
+            {/* ── Table — same style as AssignmentTable ── */}
+            <div className={styles.tableWrapper}>
+                <table className={styles.dataTable} aria-label="Audit action log table">
                     <thead>
                         <tr>
                             <th className={styles.th}>User</th>
@@ -735,68 +752,72 @@ function ActionLogsPanel() {
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered.map((log: ActionLog, idx: number) => (
-                            <tr
-                                key={log.id}
-                                className={mergeClasses(styles.tr, idx === filtered.length - 1 && styles.trLast)}
-                            >
-                                {/* User */}
-                                <td className={styles.td}>
-                                    <span className={styles.cellPrimary}>{log.name}</span>
-                                    <span className={styles.cellSecondary}>{log.email}</span>
-                                </td>
-
-                                {/* Action */}
-                                <td className={styles.td}>
-                                    <span style={{ fontSize: '13px', color: '#1F2D3D', fontWeight: 500 }}>{log.action}</span>
-                                </td>
-
-                                {/* Permission Code */}
-                                <td className={styles.td}>
-                                    <PermissionBadge code={log.permissionCode} />
-                                </td>
-
-                                {/* Module */}
-                                <td className={styles.td}>
-                                    <span style={{ fontSize: '13px', color: '#1F2D3D' }}>{log.module}</span>
-                                </td>
-
-                                {/* Timestamp */}
-                                <td className={styles.td}>
-                                    <div className={styles.cellIconRow}>
-                                        <span className={styles.cellIcon}><IconClock /></span>
-                                        <span style={{ fontSize: '12px', color: '#193E6B', fontWeight: 500 }}>
-                                            {log.timestamp}
-                                        </span>
-                                    </div>
-                                </td>
-
-                                {/* Status */}
-                                <td className={styles.td}>
-                                    <ActionStatusBadge status={log.status} />
-                                </td>
-
-                                {/* Details */}
-                                <td className={styles.td}>
-                                    <span className={actionStyles.detailsCell} title={log.details}>
-                                        {log.details}
-                                    </span>
-                                </td>
-                            </tr>
-                        ))}
-                        {filtered.length === 0 && (
+                        {filtered.length === 0 ? (
                             <tr>
-                                <td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#6B7785', fontSize: '13px' }}>
+                                <td colSpan={7} className={styles.emptyState}>
                                     No action logs match your search.
                                 </td>
                             </tr>
+                        ) : (
+                            filtered.map((log: ActionLog) => (
+                                <tr key={log.id} className={styles.tr}>
+
+                                    {/* User */}
+                                    <td className={styles.td}>
+                                        <div className={styles.userBlock}>
+                                            <span className={styles.userName}>{log.name}</span>
+                                            <span className={styles.userEmail}>{log.email}</span>
+                                        </div>
+                                    </td>
+
+                                    {/* Action */}
+                                    <td className={styles.td}>
+                                        <span style={{ fontSize: '13px', color: '#1F2D3D', fontWeight: 500 }}>
+                                            {log.action}
+                                        </span>
+                                    </td>
+
+                                    {/* Permission Code */}
+                                    <td className={styles.td}>
+                                        <span className={styles.permBadge}>{log.permissionCode}</span>
+                                    </td>
+
+                                    {/* Module */}
+                                    <td className={styles.td}>
+                                        <span style={{ fontSize: '13px', color: '#1F2D3D' }}>{log.module}</span>
+                                    </td>
+
+                                    {/* Timestamp */}
+                                    <td className={styles.td}>
+                                        <div className={styles.dateBlock}>
+                                            <span className={styles.dateIcon}>
+                                                <CalendarRegular fontSize={14} />
+                                            </span>
+                                            {log.timestamp}
+                                        </div>
+                                    </td>
+
+                                    {/* Status */}
+                                    <td className={styles.td}>
+                                        <ActionStatusBadge status={log.status} />
+                                    </td>
+
+                                    {/* Details */}
+                                    <td className={styles.td}>
+                                        <span className={styles.detailsCell} title={log.details}>
+                                            {log.details}
+                                        </span>
+                                    </td>
+
+                                </tr>
+                            ))
                         )}
                     </tbody>
                 </table>
             </div>
 
             {/* Footer */}
-            <div className={styles.footer} role="status" aria-live="polite">
+            <div className={styles.footer}>
                 Showing {filtered.length} of {actionLogs.length} action logs
             </div>
         </>
@@ -819,10 +840,15 @@ function AuditLogViewerContent() {
 
     return (
         <div className={styles.pageContent}>
-            {/* ── Page Header ── */}
+
+            {/* ── Page Header — same as UserRoleAssignmentPage ── */}
             <div className={styles.pageHeader}>
-                <h1 className={styles.pageTitle}>Audit Log Viewer</h1>
-                <p className={styles.pageSubtitle}>Monitor User Sessions, Login Attempts, and System Actions</p>
+                <div className={styles.titleSection}>
+                    <h1 className={styles.pageTitle}>Audit Log Viewer</h1>
+                    <p className={styles.pageSubtitle}>
+                        Monitor User Sessions, Login Attempts, and System Actions
+                    </p>
+                </div>
             </div>
 
             {/* ── Tabs ── */}
@@ -836,9 +862,9 @@ function AuditLogViewerContent() {
                     className={mergeClasses(styles.tab, activeTab === 'sessions' && styles.tabActive)}
                     onClick={() => setActiveTab('sessions')}
                 >
-                     <span style={{ display: "flex", alignItems: "center" }}>
-    <IconClock />
-  </span>
+                    <span style={{ display: 'flex', alignItems: 'center' }}>
+                        <IconClock />
+                    </span>
                     Session Logs
                 </button>
                 <button
@@ -850,14 +876,14 @@ function AuditLogViewerContent() {
                     className={mergeClasses(styles.tab, activeTab === 'actions' && styles.tabActive)}
                     onClick={() => setActiveTab('actions')}
                 >
-                    <span aria-hidden style={{ display: 'flex', alignItems: 'center', color: activeTab === 'actions' ? '#193E6B' : '#C0CAD4' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', color: activeTab === 'actions' ? '#193E6B' : '#C0CAD4' }}>
                         <IconBolt />
                     </span>
                     Action Logs
                 </button>
             </div>
 
-            {/* ── Card ── */}
+            {/* ── Card — same as UserRoleAssignmentPage ── */}
             <div
                 id={activeTab === 'sessions' ? 'panel-session-logs' : 'panel-action-logs'}
                 role="tabpanel"
@@ -869,7 +895,6 @@ function AuditLogViewerContent() {
 
             {/* ── Floating Help Button ── */}
             <button
-                id="btn-floating-help"
                 type="button"
                 className={styles.floatingBtn}
                 aria-label="Help"
@@ -877,9 +902,10 @@ function AuditLogViewerContent() {
             >
                 <IconHelpCircle />
             </button>
+
         </div>
     );
 }
 
-// Legacy export alias so existing router import still resolves
+// Legacy export alias
 export { AuditLogViewerPage as AuditActionsPage };
