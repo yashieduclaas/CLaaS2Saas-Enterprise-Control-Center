@@ -51,6 +51,7 @@ const UserEnrichmentPage = lazy(() =>
 export function AppRouter() {
   return (
     <BrowserRouter>
+      {/* TODO(router-v7): Revalidate Navigate/Route semantics during v7 migration pass. */}
       <Routes>
         {/* Public routes — render outside AuthGuard+AppLayout so no sidebar shows */}
         <Route path={getRoutePath('login')} element={

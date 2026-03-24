@@ -54,7 +54,7 @@ Feature-owned: pages/[feature]/** and the feature's API hooks, local components,
 ⚖ LAW: TenantId is a required, non-nullable column on every security entity. EF Core global query filters enforce isolation. Cross-tenant data visibility is a catastrophic failure, not a bug.
 The frontend treats tenantId as a server-resolved fact from the JWT tid claim. It is never a UI-selectable parameter. The backend resolves it in TenantMiddleware before any business logic executes and before IPermissionEvaluator is invoked.
 
-BACKEND CODING LAW  Sections 2 – 6 govern all ASP.NET Core .NET 8 backend code
+BACKEND CODING LAW  Sections 2 – 6 govern all ASP.NET Core .NET 10 backend code
 
 # Section 2 — Controller Design Standard
 ⚖ LAW: Controllers are thin orchestrators only. They contain zero business logic, zero permission evaluation logic, zero direct database access, and zero response envelope construction beyond wrapping a service result.

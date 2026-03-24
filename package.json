@@ -1,0 +1,26 @@
+{
+  "name": "@claas2saas/kernel",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ECC — Enterprise Control Center monorepo root",
+  "workspaces": [
+    "apps/web",
+    "packages/contracts"
+  ],
+  "engines": {
+    "node": ">=20.15.1 <23",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspace=packages/contracts && npm run build --workspace=apps/web",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspace=apps/web",
+    "test": "npm run test --workspaces --if-present",
+    "clean": "find . -name 'dist' -not -path '*/node_modules/*' -exec rm -rf {} +"
+  },
+  "devDependencies": {
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3"
+  }
+}

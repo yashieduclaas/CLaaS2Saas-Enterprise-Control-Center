@@ -108,7 +108,7 @@ Global state library (Zustand, Redux, Jotai) — React Query + Context covers al
 | --- | --- | --- |
 | Browser Client | React 18 + Fluent UI v9 + MSAL/Mock Auth | UI rendering, token acquisition via PKCE, route protection via PermissionGuard, permission-gated UI via usePermission(), server state via React Query. |
 | API Gateway (MMP) | Azure API Management | Rate limiting per tenant, auth header normalisation, API versioning, developer portal. Not present at MVP. |
-| Application API | ASP.NET Core .NET 8 | Business logic, permission enforcement via [Authorize(Policy)], controller orchestration, data access via repositories. |
+| Application API | ASP.NET Core .NET 10 | Business logic, permission enforcement via [Authorize(Policy)], controller orchestration, data access via repositories. |
 | RBAC Engine | C# Domain + Application layers | IPermissionEvaluator, PermissionContext, EvaluationResult, policy evaluation, authorization telemetry emission, audit event enqueue. |
 | Tenant Resolution | TenantMiddleware + ITenantResolver | Extracts TenantId from JWT tid claim per request. Populates scoped TenantContext. Structured log scope per request. Precedence: JWT tid → X-Tenant-Id header → subdomain → API key. |
 | Permission Cache | IPermissionCache → IMemoryCache (MVP) / Redis (MMP) | Sub-millisecond permission context lookup. 5-minute TTL. Invalidation triggered on every role assignment/revocation with PermissionsVersion bump. |

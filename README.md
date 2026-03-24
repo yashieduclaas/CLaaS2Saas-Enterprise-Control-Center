@@ -6,9 +6,11 @@
 
 ### Prerequisites
 
-- .NET 8 SDK
+- .NET 10 SDK
 - Node.js 20+
 - An Entra ID app registration (client ID + tenant ID)
+
+Preferred local / CI runtime is Node 22.x LTS. Other versions in the >=20.15.1 <23 range may work but are not officially supported.
 
 ---
 

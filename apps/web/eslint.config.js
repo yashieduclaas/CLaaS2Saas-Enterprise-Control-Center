@@ -3,6 +3,9 @@ import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 
+// TODO(tooling): @typescript-eslint v7 warns on TS 5.9.x; move to the next
+// supported @typescript-eslint major in a dedicated migration pass.
+
 export default tseslint.config(
   { ignores: ['dist'] },
   {
