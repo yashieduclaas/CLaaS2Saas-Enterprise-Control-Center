@@ -9,10 +9,10 @@
  * Changes to this package require cross-team review.
  */
 
-export * from './auth';
-export * from './rbac';
-export * from './tenant';
-export * from './api';
-export * from './audit';
-export * from './routes';
-export * from './shared';
+export * from './auth/index';
+export * from './rbac/index';
+export * from './tenant/index';
+export * from './api/index';
+export * from './audit/index';
+export * from './routes/index';
+export * from './shared/index';

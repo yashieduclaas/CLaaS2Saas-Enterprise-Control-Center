@@ -2,8 +2,7 @@
 // PLATFORM FILE — FROZEN STRUCTURE, ADDITIVE CONTENT ONLY.
 // The SINGLE SOURCE OF TRUTH for all routes, permissions, nav labels, and breadcrumbs.
 
-import type { RouteMapEntry } from '@claas2saas/contracts/routes';
-import type { PermissionCode } from '@claas2saas/contracts/rbac';
+import type { RouteMapEntry, PermissionCode } from '@claas2saas/contracts';
 
 export const ROUTE_MAP: ReadonlyArray<RouteMapEntry> = [
   // ── Shell / non-nav ──────────────────────────────────────────────────────

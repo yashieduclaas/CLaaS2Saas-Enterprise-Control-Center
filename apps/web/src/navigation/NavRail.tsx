@@ -8,7 +8,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { usePermission } from '@/rbac/usePermission';
 import { getRouteEntry } from '@/rbac/RoutePermissionMap';
 import type { RouteKey } from '@/rbac/RoutePermissionMap';
-import type { PermissionCode } from '@claas2saas/contracts/rbac';
+import type { PermissionCode } from '@claas2saas/contracts';
 import {
   ShieldCheckmarkRegular,
   SettingsRegular,

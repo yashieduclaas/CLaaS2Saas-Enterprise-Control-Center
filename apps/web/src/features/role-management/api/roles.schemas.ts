@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PERMISSION_CODES } from '@claas2saas/contracts/rbac';
+import { PERMISSION_CODES } from '@claas2saas/contracts';
 
 const PermissionCodeSchema = z.enum(PERMISSION_CODES);
 

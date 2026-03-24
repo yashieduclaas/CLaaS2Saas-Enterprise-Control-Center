@@ -10,7 +10,7 @@ import {
   TableHeaderCell,
   TableCell,
 } from '@fluentui/react-components';
-import type { RoleDto } from '@claas2saas/contracts/api';
+import type { RoleDto } from '@claas2saas/contracts';
 import { RoleEmptyState } from './RoleEmptyState';
 
 const useStyles = makeStyles({

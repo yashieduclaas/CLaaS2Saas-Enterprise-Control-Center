@@ -1,5 +1,5 @@
 import { apiClient } from '@/api/client';
-import type { ListQueryParams } from '@claas2saas/contracts/api';
+import type { ListQueryParams } from '@claas2saas/contracts';
 import { RoleListResponseSchema, type RoleListResponse } from './roles.schemas';
 
 const isDemo = (import.meta.env['VITE_AUTH_MODE'] as string | undefined) === 'demo';

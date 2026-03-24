@@ -79,11 +79,12 @@ function validate(form: FormState): FormErrors {
 export interface AddSecurityRoleModalProps {
     open: boolean;
     onClose: () => void;
+    onCreated?: (role: SecurityRole) => void;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────
 
-export function AddSecurityRoleModal({ open, onClose }: AddSecurityRoleModalProps) {
+export function AddSecurityRoleModal({ open, onClose, onCreated }: AddSecurityRoleModalProps) {
     const [form, setForm] = useState<FormState>(INITIAL_FORM);
     const [errors, setErrors] = useState<FormErrors>({});
 
@@ -108,7 +109,19 @@ export function AddSecurityRoleModal({ open, onClose }: AddSecurityRoleModalProp
             return;
         }
 
-        console.log('Submitting role:', form);
+        const newRole: SecurityRole = {
+            id: crypto.randomUUID(),
+            solutionCode: form.solution,
+            solutionName: form.solution,
+            moduleCode: form.module,
+            moduleName: form.module,
+            roleCode: form.roleCode,
+            roleName: form.roleName,
+            roleType: form.roleType === 'System Role' ? 'SYSTEM' : 'CUSTOM',
+            createdAt: new Date().toISOString(),
+        };
+
+        onCreated?.(newRole);
         onClose();
     }
 

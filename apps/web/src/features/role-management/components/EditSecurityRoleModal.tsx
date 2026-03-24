@@ -106,7 +106,7 @@ export function EditSecurityRoleModal({ role, onClose }: EditSecurityRoleModalPr
             roleType: roleTypeToDisplay(role.roleType),
         });
         setErrors({});
-    }, [role.id]);
+    }, [role.id, role.moduleCode, role.roleCode, role.roleName, role.roleType, role.solutionCode]);
 
     function setField<K extends keyof FormState>(key: K, value: FormState[K]) {
         setForm((prev) => ({ ...prev, [key]: value }));

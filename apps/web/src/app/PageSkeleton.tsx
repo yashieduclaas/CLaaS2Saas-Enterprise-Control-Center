@@ -35,7 +35,6 @@ export function PageSkeleton() {
         </div>
         <div className={styles.content}>
           {Array.from({ length: 6 }).map((_, i) => (
-            // eslint-disable-next-line react/no-array-index-key
             <SkeletonItem key={i} size={16} />
           ))}
         </div>

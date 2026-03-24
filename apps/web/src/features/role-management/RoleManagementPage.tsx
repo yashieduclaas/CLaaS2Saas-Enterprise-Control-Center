@@ -23,7 +23,7 @@ import { PageSkeleton } from '@/app/PageSkeleton';
 import { useRoles } from './hooks/useRoles';
 import { AddSecurityRoleModal } from './components/AddSecurityRoleModal';
 import { EditSecurityRoleModal } from './components/EditSecurityRoleModal';
-import type { PermissionCode } from '@claas2saas/contracts/rbac';
+import type { PermissionCode } from '@claas2saas/contracts';
 import type { SecurityRole } from './types/securityRole';
 
 const useStyles = makeStyles({

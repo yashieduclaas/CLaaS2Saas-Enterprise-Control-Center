@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/auth/useAuth';
 import { rolesApi } from './roles.api';
-import type { ListQueryParams } from '@claas2saas/contracts/api';
+import type { ListQueryParams } from '@claas2saas/contracts';
 
 export interface UseRoleListQueryParams extends Partial<ListQueryParams> {}
 
