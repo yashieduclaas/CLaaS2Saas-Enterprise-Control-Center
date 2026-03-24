@@ -1,4 +1,5 @@
 using Kernel.Application.Abstractions;
+using Kernel.Application.Features.BulkAssignment;
 using Kernel.Infrastructure.Authorization;
 using Kernel.Infrastructure.Middleware;
 using Microsoft.AspNetCore.Authorization;
@@ -36,6 +37,9 @@ public static class InfrastructureServiceExtensions
 
         // Authorization handler
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
+        // BulkAssignment application services
+        services.AddBulkAssignmentServices();
 
         return services;
     }

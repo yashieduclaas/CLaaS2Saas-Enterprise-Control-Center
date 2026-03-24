@@ -1,0 +1,29 @@
+name: CI Backend
+
+on:
+  push:
+    paths:
+      - 'services/api/**'
+      - 'tests/**'
+  pull_request:
+    paths:
+      - 'services/api/**'
+      - 'tests/**'
+
+jobs:
+  build-test-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Restore
+        run: dotnet restore ECC.sln
+      - name: Build
+        run: dotnet build ECC.sln --no-restore
+      - name: Test
+        run: dotnet test ECC.sln --no-build
