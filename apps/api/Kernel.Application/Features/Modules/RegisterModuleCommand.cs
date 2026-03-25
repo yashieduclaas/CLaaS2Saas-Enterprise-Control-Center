@@ -21,4 +21,10 @@ public class RegisterModuleCommand : IRequest<RegisterModuleResponse>
     public string Description { get; set; } = string.Empty;
 
     public string BaseUrl { get; set; } = string.Empty;
+
+    public string ModuleLead { get; set; } = string.Empty;
+
+    public string ModuleLeadEmail { get; set; } = string.Empty;
+
+    public string ModuleVersion { get; set; } = string.Empty;
 }

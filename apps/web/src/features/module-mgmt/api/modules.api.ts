@@ -6,6 +6,9 @@ export interface ModuleDto {
   moduleName: string;
   description: string;
   baseUrl: string;
+  moduleLead: string;
+  moduleLeadEmail: string;
+  moduleVersion: string;
 }
 
 export interface RegisterModuleRequest {
@@ -14,6 +17,20 @@ export interface RegisterModuleRequest {
   moduleName: string;
   description: string;
   baseUrl: string;
+  moduleLead: string;
+  moduleLeadEmail: string;
+  moduleVersion: string;
+}
+
+export interface UpdateModuleRequest {
+  solutionCode: string;
+  moduleCode: string;
+  moduleName: string;
+  description: string;
+  baseUrl: string;
+  moduleLead: string;
+  moduleLeadEmail: string;
+  moduleVersion: string;
 }
 
 interface ApiResponse<T> {
@@ -36,6 +53,22 @@ export const modulesApi = {
       ModuleName: payload.moduleName,
       Description: payload.description,
       BaseUrl: payload.baseUrl,
+      ModuleLead: payload.moduleLead,
+      ModuleLeadEmail: payload.moduleLeadEmail,
+      ModuleVersion: payload.moduleVersion,
+    });
+  },
+
+  update: async (payload: UpdateModuleRequest): Promise<void> => {
+    await apiClient.put<ApiResponse<Record<string, never>>>('/api/v1/modules/update', {
+      SolutionCode: payload.solutionCode,
+      ModuleCode: payload.moduleCode,
+      ModuleName: payload.moduleName,
+      Description: payload.description,
+      BaseUrl: payload.baseUrl,
+      ModuleLead: payload.moduleLead,
+      ModuleLeadEmail: payload.moduleLeadEmail,
+      ModuleVersion: payload.moduleVersion,
     });
   },
 } as const;

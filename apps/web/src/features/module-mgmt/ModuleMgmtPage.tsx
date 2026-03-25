@@ -2,6 +2,7 @@
 // Module Management System — static UI. Renders inside AppLayout.
 
 import { useState } from 'react';
+import { useModules, useRegisterModule, useUpdateModule } from './api/useModules';
 
 const SOLUTIONS = [
   { code: 'ADC', name: 'Adaptive CLaaS' },
@@ -23,35 +24,6 @@ interface Module {
   documentation_url: string;
   is_active: boolean;
 }
-
-const INITIAL_MODULES: Module[] = [
-  {
-    solution_module_id: 'SM-001',
-    solution_code: 'ADC',
-    solution_name: 'Adaptive CLaaS',
-    module_code: 'ADC_KERN',
-    module_name: 'Kernel Core',
-    description: 'Core kernel module for Adaptive CLaaS platform management',
-    module_lead: 'Alice Tan',
-    module_lead_email: 'alice.tan@lithan.com',
-    module_version: 'v1.2.0',
-    documentation_url: 'https://docs.example.com/kernel',
-    is_active: true,
-  },
-  {
-    solution_module_id: 'SM-002',
-    solution_code: 'AIW',
-    solution_name: 'Agentic Intelligent Workplace',
-    module_code: 'AIW_AGNT',
-    module_name: 'Agentic HR',
-    description: 'Handles agentic HR workflows and intelligent automation tasks',
-    module_lead: 'Bob Lee',
-    module_lead_email: 'bob.lee@lithan.com',
-    module_version: 'v1.0.0',
-    documentation_url: '',
-    is_active: true,
-  },
-];
 
 interface ModalState {
   open: boolean;
@@ -91,12 +63,29 @@ function Toast({ message, type }: { message: string; type: string }) {
 }
 
 export function ModuleMgmtPage() {
-  const [modules, setModules] = useState<Module[]>(INITIAL_MODULES);
+  const { data: modulesData = [], isLoading } = useModules();
+  const registerMutation = useRegisterModule();
+  const updateMutation = useUpdateModule();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [modal, setModal] = useState<ModalState>({ open: false, mode: 'add' });
   const [form, setForm] = useState<FormState>(emptyForm());
   const [descLen, setDescLen] = useState(0);
   const [toast, setToast] = useState<{ message: string; type: string } | null>(null);
+
+  const modules: Module[] = modulesData.map((m) => ({
+    solution_module_id: `${m.solutionCode}:${m.moduleCode}`,
+    solution_code: m.solutionCode,
+    solution_name: SOLUTIONS.find((s) => s.code === m.solutionCode)?.name ?? m.solutionCode,
+    module_code: m.moduleCode,
+    module_name: m.moduleName,
+    description: m.description,
+    module_lead: m.moduleLead,
+    module_lead_email: m.moduleLeadEmail,
+    module_version: m.moduleVersion || 'v1.0.0',
+    documentation_url: m.baseUrl,
+    is_active: true,
+  }));
 
   const filteredModules = searchQuery
     ? modules.filter(m => {
@@ -147,45 +136,57 @@ export function ModuleMgmtPage() {
     setForm(f => ({ ...f, solution_code: code, solution_name: sol?.name || '' }));
   };
 
-  const saveModule = () => {
+  const saveModule = async () => {
     if (!form.solution_code || !form.module_code || !form.module_name) {
       showToast('Please fill in all required fields', 'error');
       return;
     }
-    const newModule: Module = {
-      solution_module_id: `SM-${Date.now()}`,
-      solution_code: form.solution_code,
-      solution_name: form.solution_name,
-      module_code: form.module_code,
-      module_name: form.module_name,
-      description: form.description,
-      module_lead: form.module_lead,
-      module_lead_email: '',
-      module_version: form.module_version || 'v1.0.0',
-      documentation_url: form.documentation_url,
-      is_active: true,
-    };
-    setModules(prev => [...prev, newModule]);
-    closeModal();
-    showToast('Module added successfully');
+    try {
+      await registerMutation.mutateAsync({
+        solutionCode: form.solution_code,
+        moduleCode: form.module_code,
+        moduleName: form.module_name,
+        description: form.description,
+        baseUrl: form.documentation_url,
+        moduleLead: form.module_lead,
+        moduleLeadEmail: '',
+        moduleVersion: form.module_version || 'v1.0.0',
+      });
+      closeModal();
+      showToast('Module added successfully');
+    } catch {
+      showToast('Failed to add module', 'error');
+    }
   };
 
-  const updateModule = () => {
-    setModules(prev =>
-      prev.map(m =>
-        m.solution_module_id === modal.editId
-          ? { ...m, ...form, module_version: form.module_version || m.module_version }
-          : m
-      )
-    );
-    closeModal();
-    showToast('Module updated successfully');
+  const updateModule = async () => {
+    const existing = modules.find((m) => m.solution_module_id === modal.editId);
+    if (!existing) {
+      showToast('Module not found', 'error');
+      return;
+    }
+
+    try {
+      await updateMutation.mutateAsync({
+        solutionCode: existing.solution_code,
+        moduleCode: existing.module_code,
+        moduleName: form.module_name,
+        description: form.description,
+        baseUrl: form.documentation_url,
+        moduleLead: form.module_lead,
+        moduleLeadEmail: existing.module_lead_email,
+        moduleVersion: form.module_version || existing.module_version,
+      });
+      closeModal();
+      showToast('Module updated successfully');
+    } catch {
+      showToast('Failed to update module', 'error');
+    }
   };
 
-  const deleteModule = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this module?')) {
-      setModules(prev => prev.filter(m => m.solution_module_id !== id));
-      showToast('Module deleted');
+  const deleteModule = () => {
+    if (window.confirm('Delete is not implemented yet in backend API.')) {
+      showToast('Delete API not implemented yet', 'info');
     }
   };
 
@@ -220,6 +221,9 @@ export function ModuleMgmtPage() {
             />
           </div>
           <div className="table-scroll-wrapper">
+            {isLoading ? (
+              <div className="table-footer">Loading modules...</div>
+            ) : (
             <table className="data-table">
               <thead>
                 <tr>
@@ -263,7 +267,7 @@ export function ModuleMgmtPage() {
                       <button className="icon-btn edit" onClick={() => openEditModal(m.solution_module_id)} title="Edit">
                         <i className="fas fa-pen" />
                       </button>
-                      <button className="icon-btn delete" onClick={() => deleteModule(m.solution_module_id)} title="Delete">
+                      <button className="icon-btn delete" onClick={() => deleteModule()} title="Delete">
                         <i className="fas fa-trash" />
                       </button>
                     </td>
@@ -271,6 +275,7 @@ export function ModuleMgmtPage() {
                 ))}
               </tbody>
             </table>
+            )}
           </div>
           <div className="table-footer">Showing {filteredModules.length} of {modules.length} modules</div>
         </div>

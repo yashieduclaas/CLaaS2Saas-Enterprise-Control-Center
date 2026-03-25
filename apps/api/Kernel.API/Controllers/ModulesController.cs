@@ -1,6 +1,7 @@
 using Kernel.Application.Authorization;
 using Kernel.Application.Common;
 using Kernel.Application.Features.Modules;
+using Kernel.Application.Validators;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -28,7 +29,10 @@ public sealed class ModulesController : ControllerBase
             ModuleCode: "KERNEL",
             ModuleName: "Kernel Apps",
             Description: "Core kernel administration module",
-            BaseUrl: "/kernel")
+            BaseUrl: "/kernel",
+            ModuleLead: "Platform Team",
+            ModuleLeadEmail: "platform.team@lithan.com",
+            ModuleVersion: "v1.0.0")
     ];
 
     /// <summary>
@@ -71,9 +75,59 @@ public sealed class ModulesController : ControllerBase
             ModuleCode: command.ModuleCode,
             ModuleName: command.ModuleName,
             Description: command.Description,
-            BaseUrl: command.BaseUrl));
+            BaseUrl: command.BaseUrl,
+            ModuleLead: command.ModuleLead,
+            ModuleLeadEmail: command.ModuleLeadEmail,
+            ModuleVersion: command.ModuleVersion));
 
         return Ok(ApiResponse<RegisterModuleResponse>.Ok(new RegisterModuleResponse()));
+    }
+
+    /// <summary>
+    /// Updates an existing module.
+    /// </summary>
+    [HttpPut("update")]
+    [Authorize(Policy = Policies.AdminGlobal)]
+    [ProducesResponseType(typeof(ApiResponse<ModuleDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<ModuleDto>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<ModuleDto>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status403Forbidden)]
+    public ActionResult<ApiResponse<ModuleDto>> UpdateModule([FromBody] UpdateModuleCommand command)
+    {
+        var validator = new UpdateModuleValidator();
+        var validationResult = validator.Validate(command);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(ApiResponse<ModuleDto>.Fail(
+                "INVALID_MODULE_UPDATE_REQUEST",
+                string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage))));
+        }
+
+        var index = ModulesStore.FindIndex(m =>
+            string.Equals(m.SolutionCode, command.SolutionCode, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(m.ModuleCode, command.ModuleCode, StringComparison.OrdinalIgnoreCase));
+
+        if (index < 0)
+        {
+            return NotFound(ApiResponse<ModuleDto>.Fail(
+                "MODULE_NOT_FOUND",
+                "Module was not found for the specified SolutionCode and ModuleCode."));
+        }
+
+        var updated = new ModuleDto(
+            SolutionCode: command.SolutionCode,
+            ModuleCode: command.ModuleCode,
+            ModuleName: command.ModuleName,
+            Description: command.Description,
+            BaseUrl: command.BaseUrl,
+            ModuleLead: command.ModuleLead,
+            ModuleLeadEmail: command.ModuleLeadEmail,
+            ModuleVersion: command.ModuleVersion);
+
+        ModulesStore[index] = updated;
+
+        return Ok(ApiResponse<ModuleDto>.Ok(updated));
     }
 }
 
@@ -82,4 +136,7 @@ public sealed record ModuleDto(
     string ModuleCode,
     string ModuleName,
     string Description,
-    string BaseUrl);
+    string BaseUrl,
+    string ModuleLead,
+    string ModuleLeadEmail,
+    string ModuleVersion);
