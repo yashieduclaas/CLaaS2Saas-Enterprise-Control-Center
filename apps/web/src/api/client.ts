@@ -23,10 +23,11 @@ apiClient.interceptors.request.use(async (config) => {
 
   if (authMode === 'demo') {
     // Demo mode: inject X-Demo-User from localStorage.
-    const email = localStorage.getItem('demo-user-email');
-    if (email) {
-      config.headers['X-Demo-User'] = email;
-    }
+    const email = localStorage.getItem('demo-user-email')
+      ?? 'test-global-admin@claas2saas-dev.onmicrosoft.com';
+    config.headers['X-Demo-User'] = email;
+    config.headers['X-Tenant-Id'] =
+      (import.meta.env['VITE_TEST_TENANT_ID'] as string | undefined) ?? 'demo-tenant-001';
     return config;
   }
 

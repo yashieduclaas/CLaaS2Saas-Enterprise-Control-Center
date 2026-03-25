@@ -8,45 +8,14 @@ import { PageSkeleton } from '@/app/PageSkeleton';
 import { ModuleTable } from './components/ModuleTable';
 import { AddModuleDialog } from './components/AddModuleDialog';
 import type { ModuleRowData } from './components/ModuleRow';
+import { useModules, useRegisterModule } from './api/useModules';
 
-const STATIC_MODULES: ModuleRowData[] = [
-  {
-    solutionCode: 'AESS',
-    solutionName: 'Agentic ERP & Shared Services',
-    moduleCode: 'AESS',
-    moduleName: 'Agentic ERP & Shared Services',
-    description: 'ERP and shared services with AI-driven insights',
-    lead: 'John Smith',
-    version: 'v2.3.1',
-  },
-  {
-    solutionCode: 'AIW',
-    solutionName: 'Agentic Intelligent Workplace',
-    moduleCode: 'AIW',
-    moduleName: 'Agentic Intelligent Workplace',
-    description: 'Intelligent workplace and collaboration',
-    lead: 'Sarah Johnson',
-    version: 'v1.5.0',
-  },
-  {
-    solutionCode: 'ADLT',
-    solutionName: 'Adaptive Learning & Talent',
-    moduleCode: 'ADLT',
-    moduleName: 'Adaptive Learning & Talent',
-    description: 'Talent management and adaptive learning',
-    lead: 'Michael Chen',
-    version: 'v3.0.2',
-  },
-  {
-    solutionCode: 'ACRM',
-    solutionName: 'Agentic CRM & Marketer',
-    moduleCode: 'ACRM',
-    moduleName: 'Agentic CRM & Marketer',
-    description: 'CRM and marketing automation',
-    lead: 'Emily Davis',
-    version: 'v2.1.0',
-  },
-];
+const SOLUTION_NAMES: Record<string, string> = {
+  AESS: 'Agentic ERP & Shared Services',
+  AIW: 'Agentic Intelligent Workplace',
+  ADLT: 'Adaptive Learning & Talent',
+  ACRM: 'Agentic CRM & Marketer',
+};
 
 const useStyles = makeStyles({
   page: {
@@ -88,12 +57,33 @@ export function ModuleMgmtPage() {
   const styles = useStyles();
   const [open, setOpen] = useState(false);
   const { isLoading: permLoading } = usePermissionContext();
+  const { data: modules, isLoading: modulesLoading, isError: modulesError } = useModules();
+  const registerModule = useRegisterModule();
 
-  if (permLoading) return <PageSkeleton />;
+  if (permLoading || modulesLoading) return <PageSkeleton />;
+
+  const tableModules: ModuleRowData[] = (modules ?? []).map((module) => ({
+    solutionCode: module.solutionCode,
+    solutionName: SOLUTION_NAMES[module.solutionCode] ?? module.solutionCode,
+    moduleCode: module.moduleCode,
+    moduleName: module.moduleName,
+    description: module.description,
+    lead: '-',
+    version: '-',
+  }));
 
   const handleOpenDialog = () => setOpen(true);
   const handleCancel = () => setOpen(false);
-  const handleAdd = () => setOpen(false);
+  const handleAdd = async (payload: {
+    solutionCode: string;
+    moduleCode: string;
+    moduleName: string;
+    description: string;
+    baseUrl: string;
+  }) => {
+    await registerModule.mutateAsync(payload);
+    setOpen(false);
+  };
 
   return (
     <div className={styles.page}>
@@ -105,6 +95,16 @@ export function ModuleMgmtPage() {
           <Text className={styles.pageSubtitle}>
             Manage your Solutions and Modules
           </Text>
+          {modulesError && (
+            <Text style={{ color: tokens.colorPaletteRedForeground1 }} role="alert">
+              Failed to load modules. Please try again.
+            </Text>
+          )}
+          {registerModule.isError && (
+            <Text style={{ color: tokens.colorPaletteRedForeground1 }} role="alert">
+              Failed to add module. It may already exist.
+            </Text>
+          )}
         </div>
         <Button appearance="primary" onClick={handleOpenDialog}>
           + Add New Module
@@ -112,7 +112,7 @@ export function ModuleMgmtPage() {
       </div>
 
       <div className={styles.card}>
-        <ModuleTable modules={STATIC_MODULES} />
+        <ModuleTable modules={tableModules} />
       </div>
 
       <AddModuleDialog

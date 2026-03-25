@@ -15,6 +15,8 @@ import {
   Input,
   Dropdown,
   Option,
+  type OptionOnSelectData,
+  type InputOnChangeData,
 } from '@fluentui/react-components';
 import { DismissRegular } from '@fluentui/react-icons';
 
@@ -107,16 +109,49 @@ export interface AddModuleDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCancel: () => void;
-  onAdd: () => void;
+  onAdd: (payload: {
+    solutionCode: string;
+    moduleCode: string;
+    moduleName: string;
+    description: string;
+    baseUrl: string;
+  }) => Promise<void> | void;
 }
 
 export function AddModuleDialog({ open, onOpenChange, onCancel, onAdd }: AddModuleDialogProps) {
   const styles = useStyles();
+  const [solutionCode, setSolutionCode] = useState('');
+  const [moduleCode, setModuleCode] = useState('');
+  const [moduleName, setModuleName] = useState('');
+  const [baseUrl, setBaseUrl] = useState('');
   const [description, setDescription] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleAdd = () => {
-    console.log('Add Module clicked (static)');
-    onAdd();
+  const selectedSolution = SOLUTION_OPTIONS.find((opt) => opt.value === solutionCode);
+  const canSubmit =
+    solutionCode.trim().length > 0 &&
+    moduleCode.trim().length > 0 &&
+    moduleName.trim().length > 0 &&
+    description.trim().length > 0;
+
+  const handleAdd = async () => {
+    if (!canSubmit || submitting) {
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await onAdd({
+        solutionCode,
+        moduleCode,
+        moduleName,
+        description,
+        baseUrl,
+      });
+      onOpenChange(false);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
@@ -155,6 +190,11 @@ export function AddModuleDialog({ open, onOpenChange, onCancel, onAdd }: AddModu
                   id="solution-code"
                   placeholder="Select Solution Code"
                   aria-label="Solution Code"
+                  value={solutionCode}
+                  selectedOptions={solutionCode ? [solutionCode] : []}
+                  onOptionSelect={(_: unknown, data: OptionOnSelectData) => {
+                    setSolutionCode(data.optionValue ?? '');
+                  }}
                 >
                   {SOLUTION_OPTIONS.map((opt) => (
                     <Option key={opt.value} value={opt.value}>
@@ -171,6 +211,7 @@ export function AddModuleDialog({ open, onOpenChange, onCancel, onAdd }: AddModu
                 <Input
                   id="solution-name"
                   placeholder="Auto-filled"
+                  value={selectedSolution?.label ?? ''}
                   disabled
                   aria-label="Solution Name"
                 />
@@ -183,6 +224,10 @@ export function AddModuleDialog({ open, onOpenChange, onCancel, onAdd }: AddModu
                 <Input
                   id="module-code"
                   placeholder="e.g., AESS"
+                  value={moduleCode}
+                  onChange={(_: unknown, data: InputOnChangeData) => {
+                    setModuleCode(data.value.toUpperCase());
+                  }}
                   aria-label="Module Code"
                 />
               </div>
@@ -194,6 +239,10 @@ export function AddModuleDialog({ open, onOpenChange, onCancel, onAdd }: AddModu
                 <Input
                   id="module-name"
                   placeholder="e.g., Agentic ERP & Shared Services"
+                  value={moduleName}
+                  onChange={(_: unknown, data: InputOnChangeData) => {
+                    setModuleName(data.value);
+                  }}
                   aria-label="Module Name"
                 />
               </div>
@@ -247,6 +296,10 @@ export function AddModuleDialog({ open, onOpenChange, onCancel, onAdd }: AddModu
                 <Input
                   id="doc-url"
                   placeholder="https://docs.example.com/module"
+                  value={baseUrl}
+                  onChange={(_: unknown, data: InputOnChangeData) => {
+                    setBaseUrl(data.value);
+                  }}
                   aria-label="Documentation URL"
                 />
               </div>
@@ -257,8 +310,8 @@ export function AddModuleDialog({ open, onOpenChange, onCancel, onAdd }: AddModu
             <Button appearance="secondary" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button appearance="primary" onClick={handleAdd}>
-              Add Module
+            <Button appearance="primary" onClick={() => { void handleAdd(); }} disabled={!canSubmit || submitting}>
+              {submitting ? 'Adding...' : 'Add Module'}
             </Button>
           </DialogActions>
         </DialogBody>
