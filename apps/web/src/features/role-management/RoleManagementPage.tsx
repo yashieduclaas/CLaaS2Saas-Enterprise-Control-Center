@@ -38,6 +38,15 @@ const useStyles = makeStyles({
     display: 'flex',
     flexDirection: 'column',
     gap: tokens.spacingVerticalL,
+    height: '100%',
+    minHeight: 0,
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    scrollbarWidth: 'none',
+    msOverflowStyle: 'none',
+    '::-webkit-scrollbar': {
+      display: 'none',
+    },
   },
 
   // ── Header ──
@@ -73,6 +82,10 @@ const useStyles = makeStyles({
     borderRadius: tokens.borderRadiusLarge,
     boxShadow: tokens.shadow16,
     overflow: 'hidden',
+    flex: 1,
+    minHeight: 0,
+    display: 'flex',
+    flexDirection: 'column',
   },
 
   // ── Filters wrapper (same as AssignmentFilters / AuditLogViewerPage) ──

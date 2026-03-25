@@ -505,8 +505,8 @@ export function UserEnrichmentPage() {
   };
 
   return (
-    <div className="center-stage feature-page">
-      <div className="page-content">
+    <div className="center-stage feature-page feature-page-contained">
+      <div className="page-content page-content-contained">
         <div className="page-header">
           <div>
             <h1>User Profile Enrichment</h1>
@@ -528,51 +528,53 @@ export function UserEnrichmentPage() {
             />
           </div>
 
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Entra Email Id</th>
-                <th>Display Name</th>
-                <th>Organizational Role</th>
-                <th>Manager</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map(u => (
-                <tr key={u.user_id}>
-                  <td className="email-cell">{u.entra_email_id}</td>
-                  <td><strong>{u.display_name}</strong></td>
-                  <td>{u.org_role}</td>
-                  <td>
-                    {u.manager_name ? (
-                      <span
-                        className="module-lead-link"
-                        onClick={() => copyEmail(u.manager_email_id)}
-                        title="Click to copy email"
-                      >
-                        {u.manager_name}
-                      </span>
-                    ) : '-'}
-                  </td>
-                  <td>
-                    <span className={`status-badge ${u.is_active ? 'active' : 'inactive'}`}>
-                      {u.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td className="actions-cell">
-                    <button className="icon-btn edit" onClick={() => openEditModal(u.user_id)} title="Edit">
-                      <i className="fas fa-pen" />
-                    </button>
-                    <button className="icon-btn delete" onClick={() => deleteUser(u.user_id)} title="Delete">
-                      <i className="fas fa-trash" />
-                    </button>
-                  </td>
+          <div className="table-scroll-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Entra Email Id</th>
+                  <th>Display Name</th>
+                  <th>Organizational Role</th>
+                  <th>Manager</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredUsers.map(u => (
+                  <tr key={u.user_id}>
+                    <td className="email-cell">{u.entra_email_id}</td>
+                    <td><strong>{u.display_name}</strong></td>
+                    <td>{u.org_role}</td>
+                    <td>
+                      {u.manager_name ? (
+                        <span
+                          className="module-lead-link"
+                          onClick={() => copyEmail(u.manager_email_id)}
+                          title="Click to copy email"
+                        >
+                          {u.manager_name}
+                        </span>
+                      ) : '-'}
+                    </td>
+                    <td>
+                      <span className={`status-badge ${u.is_active ? 'active' : 'inactive'}`}>
+                        {u.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="actions-cell">
+                      <button className="icon-btn edit" onClick={() => openEditModal(u.user_id)} title="Edit">
+                        <i className="fas fa-pen" />
+                      </button>
+                      <button className="icon-btn delete" onClick={() => deleteUser(u.user_id)} title="Delete">
+                        <i className="fas fa-trash" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div className="table-footer">
             Showing {filteredUsers.length} of {users.length} total users
           </div>

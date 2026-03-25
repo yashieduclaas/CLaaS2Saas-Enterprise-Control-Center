@@ -73,6 +73,9 @@ const useStyles = makeStyles({
         display: 'flex',
         flexDirection: 'column',
         gap: '24px',
+        height: '100%',
+        minHeight: 0,
+        overflow: 'hidden',
     },
     pageHeader: {
         marginBottom: '0px',
@@ -141,6 +144,10 @@ const useStyles = makeStyles({
         borderRadius: '8px',
         boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
         overflow: 'hidden',
+        flex: 1,
+        minHeight: 0,
+        display: 'flex',
+        flexDirection: 'column',
     },
 
     // ── Filter wrapper (same as AssignmentFilters) ──

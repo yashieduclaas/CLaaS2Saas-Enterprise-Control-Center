@@ -1750,12 +1750,44 @@ code {
     flex-direction: column
 }
 
+.feature-page-contained {
+    overflow: hidden;
+    min-height: 0;
+}
+
 /* Tab bar REMOVED — no .tab-bar styles needed */
 .page-content {
     padding: 30px;
     flex: 1;
     overflow-y: auto;
     background: var(--bg)
+}
+
+.page-content-contained {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.page-content-contained::-webkit-scrollbar {
+    display: none;
+}
+
+.page-content-contained .data-table-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+.page-content-contained .search-bar,
+.page-content-contained .table-footer {
+    flex-shrink: 0;
 }
 
 .page-header {
@@ -1924,6 +1956,60 @@ code {
     overflow: hidden;
     box-shadow: var(--shadow);
     padding: 25px
+}
+
+.table-scroll-wrapper {
+    padding: 10px 25px 25px 25px;
+    margin-top: -20px;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    height: 420px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.table-scroll-wrapper .data-table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.table-scroll-wrapper .data-table thead {
+    display: table-header-group;
+    width: auto;
+    table-layout: auto;
+    background: rgba(0, 0, 0, .02);
+}
+
+.table-scroll-wrapper .data-table th {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background-color: #f5f6f8;
+    white-space: nowrap;
+}
+
+.table-scroll-wrapper .data-table tbody {
+    display: table-row-group;
+    max-height: none;
+    overflow: visible;
+    scrollbar-width: auto;
+    -ms-overflow-style: auto;
+}
+
+.table-scroll-wrapper .data-table tbody tr {
+    display: table-row;
+    width: auto;
+    table-layout: auto;
 }
 
 .table-toolbar {

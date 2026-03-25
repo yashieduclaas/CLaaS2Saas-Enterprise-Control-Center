@@ -197,8 +197,8 @@ export function ModuleMgmtPage() {
   };
 
   return (
-    <div className="center-stage feature-page">
-      <div className="page-content">
+    <div className="center-stage feature-page feature-page-contained">
+      <div className="page-content page-content-contained">
         <div className="page-header">
           <div>
             <h1>Module Management System</h1>
@@ -219,57 +219,59 @@ export function ModuleMgmtPage() {
               onChange={e => setSearchQuery(e.target.value)}
             />
           </div>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Solution Code</th>
-                <th>Solution Name</th>
-                <th>Module Code</th>
-                <th>Module Name</th>
-                <th>Description</th>
-                <th>Module Lead</th>
-                <th>Version</th>
-                <th>Documentation</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredModules.map(m => (
-                <tr key={m.solution_module_id}>
-                  <td><span className="code-badge">{m.solution_code}</span></td>
-                  <td>{m.solution_name}</td>
-                  <td><span className="code-badge module-code">{m.module_code}</span></td>
-                  <td><strong>{m.module_name}</strong></td>
-                  <td className="desc-cell">{m.description.substring(0, 40)}...</td>
-                  <td>
-                    {m.module_lead ? (
-                      <span
-                        className="module-lead-link"
-                        onClick={() => copyEmail(m.module_lead_email)}
-                        title="Click to copy email"
-                      >
-                        {m.module_lead}
-                      </span>
-                    ) : '-'}
-                  </td>
-                  <td><span className="version-badge">{m.module_version}</span></td>
-                  <td>
-                    {m.documentation_url
-                      ? <a href="#" className="link-btn"><i className="fas fa-external-link-alt" /> View</a>
-                      : '-'}
-                  </td>
-                  <td className="actions-cell">
-                    <button className="icon-btn edit" onClick={() => openEditModal(m.solution_module_id)} title="Edit">
-                      <i className="fas fa-pen" />
-                    </button>
-                    <button className="icon-btn delete" onClick={() => deleteModule(m.solution_module_id)} title="Delete">
-                      <i className="fas fa-trash" />
-                    </button>
-                  </td>
+          <div className="table-scroll-wrapper">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Solution Code</th>
+                  <th>Solution Name</th>
+                  <th>Module Code</th>
+                  <th>Module Name</th>
+                  <th>Description</th>
+                  <th>Module Lead</th>
+                  <th>Version</th>
+                  <th>Documentation</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredModules.map(m => (
+                  <tr key={m.solution_module_id}>
+                    <td><span className="code-badge">{m.solution_code}</span></td>
+                    <td>{m.solution_name}</td>
+                    <td><span className="code-badge module-code">{m.module_code}</span></td>
+                    <td><strong>{m.module_name}</strong></td>
+                    <td className="desc-cell">{m.description.substring(0, 40)}...</td>
+                    <td>
+                      {m.module_lead ? (
+                        <span
+                          className="module-lead-link"
+                          onClick={() => copyEmail(m.module_lead_email)}
+                          title="Click to copy email"
+                        >
+                          {m.module_lead}
+                        </span>
+                      ) : '-'}
+                    </td>
+                    <td><span className="version-badge">{m.module_version}</span></td>
+                    <td>
+                      {m.documentation_url
+                        ? <a href="#" className="link-btn"><i className="fas fa-external-link-alt" /> View</a>
+                        : '-'}
+                    </td>
+                    <td className="actions-cell">
+                      <button className="icon-btn edit" onClick={() => openEditModal(m.solution_module_id)} title="Edit">
+                        <i className="fas fa-pen" />
+                      </button>
+                      <button className="icon-btn delete" onClick={() => deleteModule(m.solution_module_id)} title="Delete">
+                        <i className="fas fa-trash" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div className="table-footer">Showing {filteredModules.length} of {modules.length} modules</div>
         </div>
       </div>
