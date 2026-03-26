@@ -1,15 +1,20 @@
+using FluentValidation;
+using Kernel.API.ExceptionHandling;
+using Kernel.Application.Common.Behaviors;
 using Kernel.Application.Authorization;
+using Kernel.Application.Features.Users;
 using Kernel.Infrastructure.Auth;
 using Kernel.Infrastructure.Authorization;
 using Kernel.Infrastructure.DependencyInjection;
 using Kernel.Infrastructure.Middleware;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var authMode = builder.Configuration["AUTH_MODE"] ?? "Demo";
-var dataMode = builder.Configuration["DATA_MODE"] ?? "Local";
+var dataMode = builder.Configuration["DATA_MODE"] ?? "InMemory";
 
 // ── Logging ──────────────────────────────────────────────────────────────────
 builder.Logging.ClearProviders();
@@ -62,13 +67,31 @@ builder.Services.AddAuthorization(options =>
 });
 
 // ── Infrastructure (TenantContext, IPermissionEvaluator, handler) ────────────
-builder.Services.AddKernelInfrastructure(authMode: authMode);
+builder.Services.AddKernelInfrastructure(
+    authMode: authMode,
+    dataMode: dataMode,
+    configuration: builder.Configuration);
+
+// ── MediatR + FluentValidation pipeline ───────────────────────────────────────
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(EnrichUserCommand).Assembly);
+});
+builder.Services.AddValidatorsFromAssemblyContaining<EnrichUserCommandValidator>();
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
 // ── Problem Details ───────────────────────────────────────────────────────────
 builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<ApiExceptionHandler>();
 
 // ── Controllers ───────────────────────────────────────────────────────────────
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Enable camelCase property name mapping for JSON serialization/deserialization.
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 
 // ── Health ────────────────────────────────────────────────────────────────────
 builder.Services.AddHealthChecks();
@@ -107,32 +130,6 @@ app.UseAuthorization();             // 3️⃣  Enforce policies
 app.MapControllers();
 app.MapHealthChecks("/health");
 
-// TEMP: demo permissions stub for shell - remove before production
-app.MapGet("/api/auth/me/permissions", () =>
-    Results.Ok(new[] {
-        "ROLE:CREATE", "ROLE:READ", "ROLE:UPDATE", "ROLE:DELETE",
-        "USER:CREATE", "USER:READ", "USER:UPDATE", "USER:DELETE",
-        "USER:ASSIGN_ROLE", "USER:REVOKE_ROLE",
-        "MODULE:CREATE", "MODULE:READ", "MODULE:UPDATE", "MODULE:DELETE",
-        "AUDIT:VIEW_SESSIONS", "AUDIT:VIEW_ACTIONS", "AUDIT:EXPORT",
-        "ACCESS_REQUEST:SUBMIT", "ACCESS_REQUEST:REVIEW", "ACCESS_REQUEST:RESOLVE",
-        "ADMIN:MODULE_SCOPED", "ADMIN:GLOBAL"
-    }))
-    .AllowAnonymous();
-
-// TEMP: demo roles stub (shell contract shape) - remove before production
-app.MapGet("/api/demo/roles", () => Results.Ok(new
-{
-    data = new[]
-    {
-        new { roleId = "r1", tenantId = "t1", moduleId = "m1", roleCode = "GLOBAL_ADMIN", roleName = "Global Admin",
-            roleType = "GLOBAL_ADMIN", isSystemRole = true, isActive = true,
-            permissionCodes = new[] { "ADMIN:GLOBAL" }, createdAt = "2026-02-19T00:00:00Z" },
-        new { roleId = "r2", tenantId = "t1", moduleId = "m1", roleCode = "SECURITY_ADMIN", roleName = "Security Admin",
-            roleType = "ADMIN", isSystemRole = true, isActive = true,
-            permissionCodes = new[] { "ROLE:READ", "ROLE:CREATE", "AUDIT:VIEW_ACTIONS" }, createdAt = "2026-02-19T00:00:00Z" },
-    },
-    meta = new { requestId = "demo", timestamp = DateTime.UtcNow.ToString("O"), apiVersion = "1.0" }
-})).AllowAnonymous();
+// TODO: Remove demo auth middleware and demo user store before production deployment
 
 app.Run();
