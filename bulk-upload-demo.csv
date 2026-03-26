@@ -1,0 +1,11 @@
+entra_email_id,display_name,org_role,manager_email_id,manager_name,is_active
+alex.rivera@company.com,Alex Rivera,Global Admin,,,true
+maya.patel@company.com,Maya Patel,Admin,alex.rivera@company.com,Alex Rivera,true
+liam.chen@company.com,Liam Chen,Collaborator,maya.patel@company.com,Maya Patel,true
+noah.wright@company.com,Noah Wright,Contributor,liam.chen@company.com,Liam Chen,true
+zoe.king@company.com,Zoe King,Viewer,liam.chen@company.com,Liam Chen,true
+olivia.james@company.com,Olivia James,Contributor,maya.patel@company.com,Maya Patel,false
+daniel.moore@company.com,Daniel Moore,Collaborator,maya.patel@company.com,Maya Patel,true
+emma.scott@company.com,Emma Scott,Viewer,daniel.moore@company.com,Daniel Moore,true
+ryan.tan@company.com,Ryan Tan,Contributor,daniel.moore@company.com,Daniel Moore,true
+sophia.nguyen@company.com,Sophia Nguyen,Viewer,noah.wright@company.com,Noah Wright,true

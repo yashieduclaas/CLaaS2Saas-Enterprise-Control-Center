@@ -46,9 +46,11 @@ internal sealed class SqlAuditWriter : IAuditQueue
     /// </remarks>
     public void Enqueue(AuditEntry entry)
     {
+        Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<AuditLogEntry>? auditEntry = null;
+
         try
         {
-            _dbContext.AuditLogs.Add(new AuditLogEntry
+            auditEntry = _dbContext.AuditLogs.Add(new AuditLogEntry
             {
                 AuditSessionPid = 0,   // Placeholder: real implementation requires a resolved audit session
                 SecurityUserPid = 0,   // Placeholder: real implementation requires a resolved security_user_pid
@@ -65,6 +67,11 @@ internal sealed class SqlAuditWriter : IAuditQueue
         }
         catch (Exception ex)
         {
+            if (auditEntry is not null)
+            {
+                auditEntry.State = Microsoft.EntityFrameworkCore.EntityState.Detached;
+            }
+
             // Fire-and-forget: audit failures MUST NOT propagate to the caller.
             _logger.LogWarning(ex, "Audit write failed for entity_type={EntityType} entity_pid={EntityPid} action={Action}. This is non-fatal.",
                 entry.entity_type, entry.entity_pid, entry.action_type);
