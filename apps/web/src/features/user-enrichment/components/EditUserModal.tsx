@@ -156,13 +156,7 @@ export function EditUserModal({ open, user, onClose, onSaved }: EditUserModalPro
                                     value={form.displayName}
                                     onChange={(_, d) => {
                                         setForm((f) => ({ ...f, displayName: d.value }));
-                                        if (errors.displayName) {
-                                            setErrors((currentErrors) => {
-                                                const nextErrors = { ...currentErrors };
-                                                delete nextErrors.displayName;
-                                                return nextErrors;
-                                            });
-                                        }
+                                        if (errors.displayName) setErrors((e) => { const { displayName: _, ...rest } = e; return rest; });
                                     }}
                                     aria-invalid={!!errors.displayName}
                                 />
@@ -181,13 +175,7 @@ export function EditUserModal({ open, user, onClose, onSaved }: EditUserModalPro
                                     value={form.role}
                                     onChange={(_, d) => {
                                         setForm((f) => ({ ...f, role: d.value }));
-                                        if (errors.role) {
-                                            setErrors((currentErrors) => {
-                                                const nextErrors = { ...currentErrors };
-                                                delete nextErrors.role;
-                                                return nextErrors;
-                                            });
-                                        }
+                                        if (errors.role) setErrors((e) => { const { role: _, ...rest } = e; return rest; });
                                     }}
                                     aria-invalid={!!errors.role}
                                 >
@@ -221,13 +209,7 @@ export function EditUserModal({ open, user, onClose, onSaved }: EditUserModalPro
                                     value={form.status}
                                     onChange={(_, d) => {
                                         setForm((f) => ({ ...f, status: d.value as 'Active' | 'Inactive' }));
-                                        if (errors.status) {
-                                            setErrors((currentErrors) => {
-                                                const nextErrors = { ...currentErrors };
-                                                delete nextErrors.status;
-                                                return nextErrors;
-                                            });
-                                        }
+                                        if (errors.status) setErrors((e) => { const { status: _, ...rest } = e; return rest; });
                                     }}
                                     aria-invalid={!!errors.status}
                                 >

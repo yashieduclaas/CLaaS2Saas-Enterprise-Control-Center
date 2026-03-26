@@ -1,41 +1,29 @@
 // features/user-enrichment/hooks/useUsers.ts
-// Fetches user list once on mount. Page components must not call service directly.
+// React Query hook for fetching the user list from GET /api/v1/users.
+// All server state goes through React Query — no useEffect + fetch patterns.
 
-import { useState, useEffect } from 'react';
-import { getUsers } from '../services/userService';
-import type { UserProfile } from '../types/user';
+import { useQuery } from '@tanstack/react-query';
+import { listUsers } from '@/api/usersApi';
+import type { UserDto } from '@/api/usersApi';
 
-interface UseUsersState {
-    data: UserProfile[];
+export const USERS_QUERY_KEY = ['users'] as const;
+
+interface UseUsersReturn {
+    data: UserDto[];
     isLoading: boolean;
     error: string | null;
 }
 
-export function useUsers(): UseUsersState {
-    const [state, setState] = useState<UseUsersState>({
-        data: [],
-        isLoading: true,
-        error: null,
+export function useUsers(): UseUsersReturn {
+    const { data, isLoading, error } = useQuery({
+        queryKey: USERS_QUERY_KEY,
+        queryFn: listUsers,
+        staleTime: 30_000,
     });
 
-    useEffect(() => {
-        let cancelled = false;
-        getUsers()
-            .then((users) => {
-                if (!cancelled) setState({ data: users, isLoading: false, error: null });
-            })
-            .catch((err) => {
-                if (!cancelled)
-                    setState({
-                        data: [],
-                        isLoading: false,
-                        error: err instanceof Error ? err.message : 'Failed to load users',
-                    });
-            });
-        return () => {
-            cancelled = true;
-        };
-    }, []);
-
-    return state;
+    return {
+        data: data ?? [],
+        isLoading,
+        error: error ? (error instanceof Error ? error.message : 'Failed to load users') : null,
+    };
 }

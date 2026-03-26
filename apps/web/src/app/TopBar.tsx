@@ -18,9 +18,7 @@ function getInitials(displayName: string | null): string {
   if (!displayName || !displayName.trim()) return '?';
   const parts = displayName.trim().split(/\s+/);
   if (parts.length >= 2) {
-    const firstInitial = parts[0]?.[0] ?? '?';
-    const lastInitial = parts[parts.length - 1]?.[0] ?? firstInitial;
-    return (firstInitial + lastInitial).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
   return displayName.slice(0, 2).toUpperCase();
 }
@@ -83,7 +81,7 @@ export function TopBar() {
     setEnvOpen(false);
   };
 
-  const handleNotificationClick = () => {
+  const handleNotificationClick = (n: { notification_id: string }) => {
     setNotificationOpen(false);
     navigate(getRoutePath('admin-access-requests'));
   };
@@ -233,7 +231,7 @@ export function TopBar() {
                     key={n.notification_id}
                     type="button"
                     className="notification-item"
-                    onClick={() => handleNotificationClick()}
+                    onClick={() => handleNotificationClick(n)}
                   >
                     <i className="fas fa-key" aria-hidden />
                     New access request

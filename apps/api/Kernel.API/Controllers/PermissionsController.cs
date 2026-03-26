@@ -12,7 +12,7 @@ namespace Kernel.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/v1/[controller]")]
-[Authorize]
+[Authorize(Policy = Policies.UsersRead)]
 [Produces("application/json")]
 public sealed class PermissionsController : ControllerBase
 {

@@ -21,18 +21,24 @@ public sealed class DemoAuthMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var email = context.Request.Headers["X-Demo-User"].FirstOrDefault()
-            ?? "global.admin@demo.com";
+        var demoUserHeader = context.Request.Headers["X-Demo-User"].FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(demoUserHeader))
+        {
+            _logger.LogDebug("Demo auth: no X-Demo-User header supplied; request remains anonymous");
+            await _next(context);
+            return;
+        }
 
-        var user = DemoUserStore.GetByEmail(email);
+        var user = DemoUserStore.GetByEmail(demoUserHeader);
         if (user is null)
         {
-            _logger.LogWarning("DemoAuth: unknown user {Email}, defaulting to global.admin@demo.com", email);
-            user = DemoUserStore.GetByEmail("global.admin@demo.com")!;
+            _logger.LogWarning("Demo auth: header did not resolve to a configured user; request remains anonymous");
+            await _next(context);
+            return;
         }
 
         context.User = DemoUserStore.CreatePrincipal(user);
-        _logger.LogDebug("DemoAuth: set User for {Email} tenant={TenantId}", user.Email, user.TenantId);
+        _logger.LogDebug("Demo auth: principal established for request");
 
         await _next(context);
     }
