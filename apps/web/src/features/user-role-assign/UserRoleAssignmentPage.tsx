@@ -22,9 +22,6 @@ const useStyles = makeStyles({
         display: 'flex',
         flexDirection: 'column',
         gap: tokens.spacingVerticalL,
-        height: '100%',
-        minHeight: 0,
-        overflow: 'hidden',
     },
     pageHeader: {
         marginBottom: '24px',
@@ -53,10 +50,6 @@ const useStyles = makeStyles({
         borderRadius: tokens.borderRadiusLarge,
         boxShadow: tokens.shadow16,
         overflow: 'hidden',
-        flex: 1,
-        minHeight: 0,
-        display: 'flex',
-        flexDirection: 'column',
     },
     footer: {
         padding: tokens.spacingVerticalM,
@@ -72,8 +65,6 @@ const useStyles = makeStyles({
         justifyContent: 'center',
         color: tokens.colorNeutralForeground3,
         fontSize: tokens.fontSizeBase300,
-        flex: 1,
-        minHeight: 0,
     },
 });
 

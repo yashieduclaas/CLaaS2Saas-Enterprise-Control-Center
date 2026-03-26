@@ -24,25 +24,15 @@ function formatDate(iso: string): string {
 
 const useStyles = makeStyles({
   tableWrapper: {
-    padding: '10px 25px 25px 25px',
-    marginTop: '-20px',
+    padding: '25px',
     borderRadius: '8px',
     backgroundColor: '#FFFFFF',
     boxShadow: '0 3px 10px rgba(0,0,0,0.05)',
-    height: '420px',
-    overflowY: 'auto' as const,
-    overflowX: 'hidden' as const,
-    position: 'relative',
-    scrollbarWidth: 'none',
-    msOverflowStyle: 'none',
-    '::-webkit-scrollbar': {
-      display: 'none',
-    },
+    overflowX: 'auto' as const,
   },
   dataTable: {
     width: '100%',
     borderCollapse: 'collapse' as const,
-    tableLayout: 'auto' as const,
   },
   th: {
     padding: '15px 12px',
@@ -51,11 +41,6 @@ const useStyles = makeStyles({
     color: '#193e6b',
     textAlign: 'left' as const,
     borderBottom: '1px solid rgba(0,0,0,0.05)',
-    whiteSpace: 'nowrap' as const,
-    backgroundColor: '#f5f6f8',
-    position: 'sticky',
-    top: 0,
-    zIndex: 20,
   },
   td: {
     padding: '15px 12px',

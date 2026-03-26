@@ -1,7 +1,6 @@
 using Kernel.Application.Abstractions;
 using Kernel.Application.Audit;
 using Kernel.Application.Features.Users;
-using Kernel.Application.Features.BulkAssignment;
 using Kernel.Infrastructure.Audit;
 using Kernel.Infrastructure.Auth;
 using Kernel.Infrastructure.Authorization;
@@ -72,9 +71,6 @@ public static class InfrastructureServiceExtensions
 
         // Authorization handler
         services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
-
-        // BulkAssignment application services
-        services.AddBulkAssignmentServices();
 
         return services;
     }
