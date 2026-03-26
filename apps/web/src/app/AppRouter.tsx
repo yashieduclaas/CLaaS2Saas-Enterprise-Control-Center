@@ -17,8 +17,8 @@ const SignInPage = lazy(() =>
 const RoleManagementPage = lazy(() =>
   import('@/features/role-management/RoleManagementPage').then(m => ({ default: m.RoleManagementPage }))
 );
-const AuditLogViewerPage = lazy(() =>
-  import('@/features/audit/AuditLogViewerPage').then(m => ({ default: m.AuditLogViewerPage }))
+const AuditActionsPage = lazy(() =>
+  import('@/features/audit/AuditActionsPage').then(m => ({ default: m.AuditActionsPage }))
 );
 const PlaceholderPage = lazy(() =>
   import('@/features/PlaceholderPage').then(m => ({ default: m.PlaceholderPage }))
@@ -51,6 +51,7 @@ const UserEnrichmentPage = lazy(() =>
 export function AppRouter() {
   return (
     <BrowserRouter>
+      {/* TODO(router-v7): Revalidate Navigate/Route semantics during v7 migration pass. */}
       <Routes>
         {/* Public routes — render outside AuthGuard+AppLayout so no sidebar shows */}
         <Route path={getRoutePath('login')} element={
@@ -96,7 +97,7 @@ export function AppRouter() {
           } />
           <Route path={getRoutePath('audit-logs')} element={
             <PermissionGuard pageKey="audit-logs">
-              <Suspense fallback={<PageSkeleton />}><AuditLogViewerPage /></Suspense>
+              <Suspense fallback={<PageSkeleton />}><AuditActionsPage /></Suspense>
             </PermissionGuard>
           } />
 

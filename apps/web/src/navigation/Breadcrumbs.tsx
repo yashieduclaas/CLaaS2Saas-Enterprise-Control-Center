@@ -21,7 +21,7 @@ export function Breadcrumbs() {
 
   return (
     <Breadcrumb className={styles.breadcrumb} aria-label="Breadcrumb navigation">
-      {crumbs.map((crumb, idx) => (
+      {crumbs.map((crumb: string, idx: number) => (
         <span key={crumb} style={{ display: 'flex', alignItems: 'center' }}>
           {idx > 0 && <BreadcrumbDivider />}
           <BreadcrumbItem

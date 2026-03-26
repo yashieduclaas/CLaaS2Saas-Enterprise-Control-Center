@@ -6,14 +6,6 @@ public abstract class DomainException : Exception
     protected DomainException(string message, Exception inner) : base(message, inner) { }
 }
 
-public sealed class PermissionDeniedException : DomainException
-{
-    public PermissionDeniedException(string message)
-        : base(message)
-    {
-    }
-}
-
 public sealed class TenantNotFoundException : DomainException
 {
     public TenantNotFoundException(string tenantId)

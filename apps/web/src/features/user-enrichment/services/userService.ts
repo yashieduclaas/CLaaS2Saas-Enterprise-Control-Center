@@ -1,31 +1,57 @@
 // features/user-enrichment/services/userService.ts
-// Thin wrappers kept for backward compat with useUpdateUser hook.
-// All new calls go directly through usersApi.ts + React Query.
+// Mock service — replace bodies with real API calls when backend is ready.
+// getUsers  → apiClient.get('/users')
+// updateUser → apiClient.put(`/users/${id}`, payload)
 
-import { enrichUser } from '@/api/usersApi';
 import type { UserProfile, UpdateUserRequest } from '../types/user';
+
+export async function getUsers(): Promise<UserProfile[]> {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve([
+                {
+                    id: '1',
+                    email: 'admin@lithan.com',
+                    displayName: 'Admin User',
+                    role: 'Platform Director',
+                    manager: 'rabiul',
+                    status: 'Active',
+                },
+                {
+                    id: '2',
+                    email: 'alice.johnson@lithan.com',
+                    displayName: 'Alice Johnson',
+                    role: 'Senior Developer',
+                    manager: 'Admin User',
+                    status: 'Active',
+                },
+                {
+                    id: '3',
+                    email: 'bob.smith@lithan.com',
+                    displayName: 'Bob Smith',
+                    role: 'Project Manager',
+                    manager: 'Admin User',
+                    status: 'Active',
+                },
+            ]);
+        }, 400);
+    });
+}
 
 export async function updateUser(
     id: string,
     payload: UpdateUserRequest
 ): Promise<UserProfile> {
-    // Map UserProfile fields back to the enrich endpoint shape.
-    // `id` is the entra_email_id (set by the page component).
-    await enrichUser({
-        entraEmailId: id,
-        displayName: payload.displayName,
-        orgRole: payload.role || null,
-        managerEmailId: null,
-        managerName: payload.manager || null,
-        isActive: payload.status === 'Active',
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve({
+                id,
+                email: 'mock@email.com',
+                displayName: payload.displayName,
+                role: payload.role,
+                manager: payload.manager,
+                status: payload.status,
+            });
+        }, 400);
     });
-    // Return the updated profile so the modal can merge it back.
-    return {
-        id,
-        email: id,
-        displayName: payload.displayName,
-        role: payload.role,
-        manager: payload.manager,
-        status: payload.status,
-    };
 }

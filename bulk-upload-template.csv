@@ -1,6 +1,0 @@
-entra_email_id,display_name,org_role,manager_email_id,manager_name,is_active
-john.doe@company.com,John Doe,Collaborator,jane.smith@company.com,Jane Smith,true
-sarah.wilson@company.com,Sarah Wilson,Contributor,jane.smith@company.com,Jane Smith,true
-mark.johnson@company.com,Mark Johnson,Viewer,john.doe@company.com,John Doe,true
-emily.brown@company.com,Emily Brown,Contributor,,true
-david.lee@company.com,David Lee,Collaborator,,false

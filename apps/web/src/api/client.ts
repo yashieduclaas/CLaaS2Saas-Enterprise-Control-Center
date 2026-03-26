@@ -22,14 +22,10 @@ apiClient.interceptors.request.use(async (config) => {
   const authMode = import.meta.env['VITE_AUTH_MODE'] as string | undefined;
 
   if (authMode === 'demo') {
-    // Demo mode: inject identity and tenant headers from localStorage.
+    // Demo mode: inject X-Demo-User from localStorage.
     const email = localStorage.getItem('demo-user-email');
-    const tenantId = localStorage.getItem('demo-tenant-id');
     if (email) {
       config.headers['X-Demo-User'] = email;
-    }
-    if (tenantId) {
-      config.headers['X-Tenant-Id'] = tenantId;
     }
     return config;
   }

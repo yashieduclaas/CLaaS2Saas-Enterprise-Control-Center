@@ -35,6 +35,8 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
 const root = document.getElementById('root');
 if (!root) throw new Error('Root element #root not found in DOM');
 
+// TODO(react19): Re-check StrictMode + ErrorBoundary behavior during React 19 migration,
+// especially duplicate-effect surfacing in development.
 createRoot(root).render(
   <StrictMode>
     <ErrorBoundary>

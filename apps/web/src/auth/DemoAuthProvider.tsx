@@ -3,7 +3,7 @@
 // Identity is 100% client-side. No backend login call.
 // The X-Demo-User header is injected by src/api/client.ts interceptor — NOT here.
 
-import { createContext, useCallback, useContext, useEffect, useState, type PropsWithChildren } from 'react';
+import { createContext, useContext, useState, useCallback, type PropsWithChildren } from 'react';
 import type { AuthState } from './useAuth';
 
 // ── Canonical demo users ────────────────────────────────────────────────────
@@ -11,41 +11,46 @@ import type { AuthState } from './useAuth';
 // Email values are used as X-Demo-User header — exact string match required.
 export const DEMO_USERS = [
   {
-    email: 'global.admin@demo.com',
-    displayName: 'Global Admin',
-    userId: 'demo-user-global-admin',
-    tenantId: 'tenant-global',
+    email:       'test-global-admin@claas2saas-dev.onmicrosoft.com',
+    displayName: 'Test Global Admin',
+    userId:      '00000000-0000-0000-0001-000000000001',
+    tenantId:    (import.meta.env['VITE_TEST_TENANT_ID'] as string | undefined) ?? 'demo-tenant-001',
   },
   {
-    email: 'security.admin@demo.com',
-    displayName: 'Security Admin',
-    userId: 'demo-user-security-admin',
-    tenantId: 'tenant-a',
+    email:       'test-security-admin@claas2saas-dev.onmicrosoft.com',
+    displayName: 'Test Security Admin',
+    userId:      '00000000-0000-0000-0001-000000000002',
+    tenantId:    (import.meta.env['VITE_TEST_TENANT_ID'] as string | undefined) ?? 'demo-tenant-001',
   },
   {
-    email: 'helpdesk@demo.com',
-    displayName: 'Help Desk',
-    userId: 'demo-user-helpdesk',
-    tenantId: 'tenant-a',
+    email:       'test-module-admin@claas2saas-dev.onmicrosoft.com',
+    displayName: 'Test Module Admin',
+    userId:      '00000000-0000-0000-0001-000000000003',
+    tenantId:    (import.meta.env['VITE_TEST_TENANT_ID'] as string | undefined) ?? 'demo-tenant-001',
   },
   {
-    email: 'user@tenantA.com',
-    displayName: 'User TenantA',
-    userId: 'demo-user-tenant-a',
-    tenantId: 'tenant-a',
+    email:       'test-helpdesk@claas2saas-dev.onmicrosoft.com',
+    displayName: 'Test Help Desk',
+    userId:      '00000000-0000-0000-0001-000000000004',
+    tenantId:    (import.meta.env['VITE_TEST_TENANT_ID'] as string | undefined) ?? 'demo-tenant-001',
   },
   {
-    email: 'user@tenantB.com',
-    displayName: 'User TenantB',
-    userId: 'demo-user-tenant-b',
-    tenantId: 'tenant-b',
+    email:       'test-standard-user@claas2saas-dev.onmicrosoft.com',
+    displayName: 'Test Standard User',
+    userId:      '00000000-0000-0000-0001-000000000005',
+    tenantId:    (import.meta.env['VITE_TEST_TENANT_ID'] as string | undefined) ?? 'demo-tenant-001',
+  },
+  {
+    email:       'test-no-role@claas2saas-dev.onmicrosoft.com',
+    displayName: 'Test No Role User',
+    userId:      '00000000-0000-0000-0001-000000000006',
+    tenantId:    (import.meta.env['VITE_TEST_TENANT_ID'] as string | undefined) ?? 'demo-tenant-001',
   },
 ] as const;
 
 export type DemoUser = (typeof DEMO_USERS)[number];
 
 const STORAGE_KEY = 'demo-user-email';
-const TENANT_STORAGE_KEY = 'demo-tenant-id';
 const DEFAULT_EMAIL = DEMO_USERS[0].email;
 
 function getUserByEmail(email: string): DemoUser | undefined {
@@ -54,11 +59,6 @@ function getUserByEmail(email: string): DemoUser | undefined {
 
 function readStoredEmail(): string {
   return localStorage.getItem(STORAGE_KEY) ?? DEFAULT_EMAIL;
-}
-
-function persistDemoUser(user: DemoUser): void {
-  localStorage.setItem(STORAGE_KEY, user.email);
-  localStorage.setItem(TENANT_STORAGE_KEY, user.tenantId);
 }
 
 interface DemoAuthContextValue extends AuthState {
@@ -79,14 +79,9 @@ export function DemoAuthProvider({ children }: PropsWithChildren) {
 
   const activeUser = getUserByEmail(activeEmail) ?? DEMO_USERS[0];
 
-  useEffect(() => {
-    persistDemoUser(activeUser);
-  }, [activeUser]);
-
   const setActiveUser = useCallback((email: string) => {
-    const nextUser = getUserByEmail(email) ?? DEMO_USERS[0];
-    persistDemoUser(nextUser);
-    setActiveEmail(nextUser.email);
+    localStorage.setItem(STORAGE_KEY, email);
+    setActiveEmail(email);
   }, []);
 
   const getAccessToken = useCallback(async (): Promise<null> => null, []);
