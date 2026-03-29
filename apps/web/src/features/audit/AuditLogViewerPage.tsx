@@ -63,7 +63,7 @@ function matchesFilter(session: AuditSessionLog, filter: SessionFilter): boolean
     return true;
 }
 
-// ─── Styles (matched to UserRoleAssignmentPage) ────────────────────────────
+// ─── Styles ────────────────────────────────────────────────────────────────
 
 const useStyles = makeStyles({
 
@@ -100,7 +100,7 @@ const useStyles = makeStyles({
         margin: 0,
     },
 
-    // ── Tabs (same as UserRoleAssignmentPage outer tabs) ──
+    // ── Tabs ──
     tabsRow: {
         display: 'flex',
         alignItems: 'center',
@@ -135,7 +135,7 @@ const useStyles = makeStyles({
         boxShadow: '0 -1px 0 #FFFFFF',
     },
 
-    // ── Card (same as UserRoleAssignmentPage) ──
+    // ── Card ──
     card: {
         backgroundColor: '#FFFFFF',
         borderRadius: '8px',
@@ -143,7 +143,7 @@ const useStyles = makeStyles({
         overflow: 'hidden',
     },
 
-    // ── Filter wrapper (same as AssignmentFilters) ──
+    // ── Filter wrapper ──
     filterWrapper: {
         display: 'flex',
         flexDirection: 'column',
@@ -155,22 +155,29 @@ const useStyles = makeStyles({
         backgroundColor: '#ffffff',
     },
 
-    // ── Search row (same as AssignmentFilters) ──
+    // ── Search row — icon bahar, input wrapper alag ──
     searchRow: {
         display: 'flex',
         alignItems: 'center',
-        gap: '8px',
-        backgroundColor: '#f8f9fa',
-        borderRadius: '8px',
-        border: '1px solid #dee2e6',
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        height: '36px',
+        gap: '10px',
+        width: '100%',
     },
     searchIcon: {
-        color: '#666666',
+        color: '#9ca3af',
         display: 'flex',
+        alignItems: 'center',
         flexShrink: 0,
+    },
+    searchInputWrapper: {
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        border: '1px solid #e5e7eb',
+        borderRadius: '8px',
+        height: '40px',
+        padding: '0 14px',
+        backgroundColor: '#ffffff',
+        boxSizing: 'border-box',
     },
     searchInput: {
         flex: 1,
@@ -178,14 +185,19 @@ const useStyles = makeStyles({
         outline: 'none',
         background: 'transparent',
         fontSize: '14px',
-        color: '#333333',
+        color: '#374151',
+        padding: '0',
+        height: '100%',
         fontFamily: 'inherit',
+        WebkitAppearance: 'none',
+        appearance: 'none',
         '::placeholder': {
-            color: '#999999',
+            color: '#9ca3af',
+            fontSize: '14px',
         },
     },
 
-    // ── Tab row (same as AssignmentFilters pill tabs) ──
+    // ── Tab row ──
     tabRow: {
         display: 'inline-flex',
         backgroundColor: '#f1f3f5',
@@ -222,7 +234,7 @@ const useStyles = makeStyles({
         color: '#276dab',
     },
 
-    // ── Table wrapper (same as AssignmentTable) ──
+    // ── Table wrapper ──
     tableWrapper: {
         padding: '10px 25px 25px 25px',
         marginTop: '-20px',
@@ -269,7 +281,7 @@ const useStyles = makeStyles({
         },
     },
 
-    // ── Cell blocks (same as AssignmentTable) ──
+    // ── Cell blocks ──
     userBlock: {
         display: 'flex',
         flexDirection: 'column',
@@ -321,7 +333,7 @@ const useStyles = makeStyles({
         alignItems: 'center',
     },
 
-    // ── Status badges (same as AssignmentTable StatusBadge) ──
+    // ── Status badges ──
     badgeSuccess: {
         display: 'inline-flex',
         alignItems: 'center',
@@ -356,7 +368,7 @@ const useStyles = makeStyles({
         whiteSpace: 'nowrap',
     },
 
-    // ── Footer (same as UserRoleAssignmentPage) ──
+    // ── Footer ──
     footer: {
         padding: '12px 24px',
         borderTop: '1px solid rgba(0,0,0,0.05)',
@@ -473,17 +485,17 @@ function DeviceIcon({ type }: { type: AuditSessionLog['deviceType'] }) {
 function SessionStatusBadge({ status }: { status: AuditSessionLog['status'] }) {
     const styles = useStyles();
     if (status === 'Success') return <span className={styles.badgeSuccess}>Success</span>;
-    if (status === 'Failed') return <span className={styles.badgeFailed}>Failed</span>;
+    if (status === 'Failed')  return <span className={styles.badgeFailed}>Failed</span>;
     return <span className={styles.badgeActive}>Active</span>;
 }
 
 // ─── Session Filter Tabs config ────────────────────────────────────────────
 
 const SESSION_FILTERS: { key: SessionFilter; label: string; icon: React.ReactNode }[] = [
-    { key: 'all',        label: 'All Sessions',       icon: <ListRegular fontSize={16} /> },
-    { key: 'successful', label: 'Successful Logins',  icon: <CheckmarkCircleRegular fontSize={16} /> },
-    { key: 'failed',     label: 'Failed Logins',      icon: <DismissCircleRegular fontSize={16} /> },
-    { key: 'active',     label: 'Active Sessions',    icon: <CheckmarkCircleRegular fontSize={16} /> },
+    { key: 'all',        label: 'All Sessions',      icon: <ListRegular fontSize={16} /> },
+    { key: 'successful', label: 'Successful Logins', icon: <CheckmarkCircleRegular fontSize={16} /> },
+    { key: 'failed',     label: 'Failed Logins',     icon: <DismissCircleRegular fontSize={16} /> },
+    { key: 'active',     label: 'Active Sessions',   icon: <CheckmarkCircleRegular fontSize={16} /> },
 ];
 
 // ─── Session Logs Table ────────────────────────────────────────────────────
@@ -491,8 +503,9 @@ const SESSION_FILTERS: { key: SessionFilter; label: string; icon: React.ReactNod
 function SessionLogsTable() {
     const styles = useStyles();
     const { data: sessions, isLoading, isError } = useAuditSessionsQuery();
-    const [search, setSearch] = useState('');
-    const [filter, setFilter] = useState<SessionFilter>('all');
+    const [search, setSearch]   = useState('');
+    const [filter, setFilter]   = useState<SessionFilter>('all');
+    const [focused, setFocused] = useState(false); // ✅ focus state
 
     const filtered = useMemo(() => {
         if (!sessions) return [];
@@ -503,22 +516,34 @@ function SessionLogsTable() {
 
     return (
         <>
-            {/* ── Filter wrapper — same style as AssignmentFilters ── */}
+            {/* ── Filter wrapper ── */}
             <div className={styles.filterWrapper}>
 
-                {/* Search row */}
+                {/* ── Search bar ── */}
                 <div className={styles.searchRow}>
+                    {/* Icon — bahar */}
                     <span className={styles.searchIcon}>
-                        <SearchRegular fontSize={16} />
+                        <SearchRegular fontSize={18} />
                     </span>
-                    <input
-                        className={styles.searchInput}
-                        type="search"
-                        placeholder="Search by User, Email, IP Address, Device, or Module..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        aria-label="Search session logs"
-                    />
+                    {/* Input wrapper — border yahan */}
+                    <div
+                        className={styles.searchInputWrapper}
+                        style={focused ? {
+                            border: '1px solid #c7d2fe',
+                            boxShadow: '0 0 0 2px rgba(99, 102, 241, 0.2)',
+                        } : undefined}
+                    >
+                        <input
+                            className={styles.searchInput}
+                            type="search"
+                            placeholder="Search by User, Email, IP Address, Device, or Module..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onFocus={() => setFocused(true)}
+                            onBlur={() => setFocused(false)}
+                            aria-label="Search session logs"
+                        />
+                    </div>
                 </div>
 
                 {/* Filter pill tabs */}
@@ -542,7 +567,7 @@ function SessionLogsTable() {
                 </div>
             </div>
 
-            {/* ── Table — same style as AssignmentTable ── */}
+            {/* ── Table ── */}
             <div className={styles.tableWrapper}>
                 {isLoading ? (
                     <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
@@ -673,8 +698,9 @@ function ActionStatusBadge({ status }: { status: ActionLogStatus }) {
 
 function ActionLogsPanel() {
     const styles = useStyles();
-    const [search, setSearch] = useState('');
-    const [filter, setFilter] = useState<ActionLogStatus | 'all'>('all');
+    const [search, setSearch]   = useState('');
+    const [filter, setFilter]   = useState<ActionLogStatus | 'all'>('all');
+    const [focused, setFocused] = useState(false); // ✅ focus state
 
     const filtered = useMemo(() => {
         let result = actionLogs;
@@ -698,22 +724,34 @@ function ActionLogsPanel() {
 
     return (
         <>
-            {/* ── Filter wrapper — same style as AssignmentFilters ── */}
+            {/* ── Filter wrapper ── */}
             <div className={styles.filterWrapper}>
 
-                {/* Search row */}
+                {/* ── Search bar ── */}
                 <div className={styles.searchRow}>
+                    {/* Icon — bahar */}
                     <span className={styles.searchIcon}>
-                        <SearchRegular fontSize={16} />
+                        <SearchRegular fontSize={18} />
                     </span>
-                    <input
-                        className={styles.searchInput}
-                        type="search"
-                        placeholder="Search by User, Action, Permission Code, or Status..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        aria-label="Search action logs"
-                    />
+                    {/* Input wrapper — border yahan */}
+                    <div
+                        className={styles.searchInputWrapper}
+                        style={focused ? {
+                            border: '1px solid #c7d2fe',
+                            boxShadow: '0 0 0 2px rgba(99, 102, 241, 0.2)',
+                        } : undefined}
+                    >
+                        <input
+                            className={styles.searchInput}
+                            type="search"
+                            placeholder="Search by User, Action, Permission Code, or Status..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            onFocus={() => setFocused(true)}
+                            onBlur={() => setFocused(false)}
+                            aria-label="Search action logs"
+                        />
+                    </div>
                 </div>
 
                 {/* Filter pill tabs */}
@@ -737,7 +775,7 @@ function ActionLogsPanel() {
                 </div>
             </div>
 
-            {/* ── Table — same style as AssignmentTable ── */}
+            {/* ── Table ── */}
             <div className={styles.tableWrapper}>
                 <table className={styles.dataTable} aria-label="Audit action log table">
                     <thead>
@@ -841,7 +879,7 @@ function AuditLogViewerContent() {
     return (
         <div className={styles.pageContent}>
 
-            {/* ── Page Header — same as UserRoleAssignmentPage ── */}
+            {/* ── Page Header ── */}
             <div className={styles.pageHeader}>
                 <div className={styles.titleSection}>
                     <h1 className={styles.pageTitle}>Audit Log Viewer</h1>
@@ -883,7 +921,7 @@ function AuditLogViewerContent() {
                 </button>
             </div>
 
-            {/* ── Card — same as UserRoleAssignmentPage ── */}
+            {/* ── Card ── */}
             <div
                 id={activeTab === 'sessions' ? 'panel-session-logs' : 'panel-action-logs'}
                 role="tabpanel"
