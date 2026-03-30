@@ -32,7 +32,7 @@ const useStyles = makeStyles({
 
   // ── Page ──
   pageContent: {
-    padding: '10px 18px',
+    padding: '16px 24px',
     display: 'flex',
     flexDirection: 'column',
     gap: tokens.spacingVerticalL,
@@ -55,7 +55,8 @@ const useStyles = makeStyles({
   pageTitle: {
     fontSize: '24px',
     fontWeight: 600,
-    color: '#193e6b',
+    color: 'var(--primary)',
+    fontFamily: 'var(--font-heading)',
     margin: 0,
     lineHeight: 1.3,
   },
@@ -77,8 +78,8 @@ const useStyles = makeStyles({
   filtersWrapper: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '0',                          // ✅ gap hataya
-    padding: '16px 24px 12px 24px',   // ✅ bottom padding thoda kam
+    gap: '0',                         
+    padding: '16px 24px 12px 24px',   
     position: 'sticky',
     top: 0,
     zIndex: 30,
@@ -106,7 +107,7 @@ const useStyles = makeStyles({
     borderRadius: '8px',
     height: '40px',
     padding: '0 14px',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#ffffff', 
     boxSizing: 'border-box',
   },
   searchInput: {

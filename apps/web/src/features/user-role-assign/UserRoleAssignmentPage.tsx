@@ -39,7 +39,8 @@ const useStyles = makeStyles({
     pageTitle: {
        fontSize: '24px',
         fontWeight: 600,
-        color: '#193e6b',
+        color: 'var(--primary)',
+        fontFamily: 'var(--font-heading)',
         margin: 0,
         lineHeight: 1.3,
         },

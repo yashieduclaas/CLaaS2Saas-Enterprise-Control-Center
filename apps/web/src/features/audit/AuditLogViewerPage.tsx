@@ -14,7 +14,8 @@ import {
 import { usePermissionContext } from '@/rbac/PermissionContext';
 import { PageSkeleton } from '@/app/PageSkeleton';
 import { useAuditSessionsQuery } from './hooks/useAuditSessionsQuery';
-import type { AuditSessionLog, SessionFilter } from './types/auditSession';
+import type { AuditSession } from './api/audit.schemas';
+import type { SessionFilter } from './types/auditSession';
 import { actionLogs } from './data/mockActionLogs';
 import type { ActionLog, ActionLogStatus } from './data/mockActionLogs';
 
@@ -33,33 +34,29 @@ function formatSessionStart(isoString: string): string {
     });
 }
 
-function formatDuration(minutes: number | null): string {
-    if (minutes === null) return 'Active';
+function formatDuration(minutes: number | null, isActive: boolean): string {
+    if (isActive || minutes === null) return 'Active';
     if (minutes < 60) return `${minutes}m`;
     const h = Math.floor(minutes / 60);
     const m = minutes % 60;
     return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
-function matchesSearch(session: AuditSessionLog, query: string): boolean {
+function matchesSearch(session: AuditSession, query: string): boolean {
     if (!query.trim()) return true;
     const q = query.toLowerCase();
     return (
-        session.userName.toLowerCase().includes(q) ||
-        session.userEmail.toLowerCase().includes(q) ||
-        session.ipAddress.toLowerCase().includes(q) ||
-        session.deviceBrowser.toLowerCase().includes(q) ||
-        session.deviceOS.toLowerCase().includes(q) ||
-        session.moduleName.toLowerCase().includes(q) ||
-        session.moduleCode.toLowerCase().includes(q)
+        session.userId.toLowerCase().includes(q) ||
+        (session.ipAddress?.toLowerCase().includes(q) ?? false) ||
+        (session.userAgent?.toLowerCase().includes(q) ?? false)
     );
 }
 
-function matchesFilter(session: AuditSessionLog, filter: SessionFilter): boolean {
+function matchesFilter(session: AuditSession, filter: SessionFilter): boolean {
     if (filter === 'all') return true;
-    if (filter === 'successful') return session.status === 'Success';
-    if (filter === 'failed') return session.status === 'Failed';
-    if (filter === 'active') return session.status === 'Active';
+    if (filter === 'successful') return !session.isActive;
+    if (filter === 'failed') return false; // No failure indicator in API
+    if (filter === 'active') return session.isActive;
     return true;
 }
 
@@ -90,7 +87,8 @@ const useStyles = makeStyles({
     pageTitle: {
         fontSize: '24px',
         fontWeight: 600,
-        color: '#193e6b',
+        color: 'var(--primary)',
+        fontFamily: 'var(--font-heading)',
         margin: 0,
         lineHeight: 1.3,
     },
@@ -468,25 +466,13 @@ function IconMonitor() {
         </svg>
     );
 }
-function IconMobile() {
-    return (
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <rect x="5" y="2" width="14" height="20" rx="2" /><line x1="12" y1="18" x2="12.01" y2="18" />
-        </svg>
-    );
-}
-function DeviceIcon({ type }: { type: AuditSessionLog['deviceType'] }) {
-    if (type === 'Mobile') return <IconMobile />;
-    return <IconMonitor />;
-}
 
 // ─── Status Badge ──────────────────────────────────────────────────────────
 
-function SessionStatusBadge({ status }: { status: AuditSessionLog['status'] }) {
+function SessionStatusBadge({ isActive }: { isActive: boolean }) {
     const styles = useStyles();
-    if (status === 'Success') return <span className={styles.badgeSuccess}>Success</span>;
-    if (status === 'Failed')  return <span className={styles.badgeFailed}>Failed</span>;
-    return <span className={styles.badgeActive}>Active</span>;
+    if (isActive) return <span className={styles.badgeActive}>Active</span>;
+    return <span className={styles.badgeSuccess}>Completed</span>;
 }
 
 // ─── Session Filter Tabs config ────────────────────────────────────────────
@@ -502,13 +488,13 @@ const SESSION_FILTERS: { key: SessionFilter; label: string; icon: React.ReactNod
 
 function SessionLogsTable() {
     const styles = useStyles();
-    const { data: sessions, isLoading, isError } = useAuditSessionsQuery();
+    const { data, isLoading, error } = useAuditSessionsQuery();
+    const sessions = data?.data ?? [];
     const [search, setSearch]   = useState('');
     const [filter, setFilter]   = useState<SessionFilter>('all');
-    const [focused, setFocused] = useState(false); // ✅ focus state
+    const [focused, setFocused] = useState(false);
 
     const filtered = useMemo(() => {
-        if (!sessions) return [];
         return sessions.filter(
             (s) => matchesSearch(s, search) && matchesFilter(s, filter)
         );
@@ -573,20 +559,20 @@ function SessionLogsTable() {
                     <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
                         <Spinner label="Loading session logs…" size="medium" />
                     </div>
-                ) : isError ? (
-                    <div style={{ padding: '24px', color: '#C62828', fontSize: '14px' }}>
+                ) : error ? (
+                    <div style={{ padding: '24px', color: '#C62828', fontSize: '14px' }} role="alert">
                         Failed to load session logs. Please try again.
                     </div>
                 ) : (
                     <table className={styles.dataTable} aria-label="Audit session log table">
                         <thead>
                             <tr>
-                                <th className={styles.th}>User</th>
-                                <th className={styles.th}>Module</th>
-                                <th className={styles.th}>Session Start</th>
+                                <th className={styles.th}>User ID</th>
+                                <th className={styles.th}>Session Start Time</th>
+                                <th className={styles.th}>Session End Time</th>
                                 <th className={styles.th}>Duration</th>
                                 <th className={styles.th}>IP Address</th>
-                                <th className={styles.th}>Device</th>
+                                <th className={styles.th}>Device Info</th>
                                 <th className={styles.th}>Status</th>
                             </tr>
                         </thead>
@@ -599,40 +585,31 @@ function SessionLogsTable() {
                                 </tr>
                             ) : (
                                 filtered.map((session) => (
-                                    <tr key={session.id} className={styles.tr}>
+                                    <tr key={session.sessionId} className={styles.tr}>
 
-                                        {/* User */}
+                                        {/* User ID */}
                                         <td className={styles.td}>
-                                            <div className={styles.userBlock}>
-                                                <span className={styles.userName}>{session.userName}</span>
-                                                <span className={styles.userEmail}>{session.userEmail}</span>
-                                            </div>
+                                            <span className={styles.userName}>{session.userId}</span>
                                         </td>
 
-                                        {/* Module */}
-                                        <td className={styles.td}>
-                                            <div className={styles.solutionBlock}>
-                                                <span className={styles.solutionCode}>{session.moduleName}</span>
-                                                <span className={styles.moduleCode}>{session.moduleCode}</span>
-                                            </div>
-                                        </td>
-
-                                        {/* Session Start */}
+                                        {/* Session Start Time */}
                                         <td className={styles.td}>
                                             <div className={styles.dateBlock}>
                                                 <span className={styles.dateIcon}>
                                                     <CalendarRegular fontSize={14} />
                                                 </span>
-                                                {formatSessionStart(session.sessionStart)}
+                                                {formatSessionStart(session.startTime)}
                                             </div>
+                                        </td>
+
+                                        {/* Session End Time */}
+                                        <td className={styles.td}>
+                                            {session.endTime ? formatSessionStart(session.endTime) : 'Ongoing'}
                                         </td>
 
                                         {/* Duration */}
                                         <td className={styles.td}>
-                                            {session.status === 'Active'
-                                                ? <span className={styles.badgeActive}>Active</span>
-                                                : <span>{formatDuration(session.durationMinutes)}</span>
-                                            }
+                                            {formatDuration(session.duration, session.isActive)}
                                         </td>
 
                                         {/* IP Address */}
@@ -640,26 +617,26 @@ function SessionLogsTable() {
                                             <div className={styles.cellIconRow}>
                                                 <span className={styles.cellIcon}><IconNetwork /></span>
                                                 <span style={{ fontSize: '13px', color: '#1F2D3D' }}>
-                                                    {session.ipAddress}
+                                                    {session.ipAddress ?? 'N/A'}
                                                 </span>
                                             </div>
                                         </td>
 
-                                        {/* Device */}
+                                        {/* Device Info */}
                                         <td className={styles.td}>
                                             <div className={styles.cellIconRow}>
                                                 <span className={styles.cellIcon}>
-                                                    <DeviceIcon type={session.deviceType} />
+                                                    <IconMonitor />
                                                 </span>
-                                                <span style={{ fontSize: '12px', color: '#1F2D3D' }}>
-                                                    {session.deviceBrowser} / {session.deviceOS} / {session.deviceType}
+                                                <span style={{ fontSize: '12px', color: '#1F2D3D', maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                    {session.userAgent ?? 'Unknown'}
                                                 </span>
                                             </div>
                                         </td>
 
                                         {/* Status */}
                                         <td className={styles.td}>
-                                            <SessionStatusBadge status={session.status} />
+                                            <SessionStatusBadge isActive={session.isActive} />
                                         </td>
 
                                     </tr>
@@ -671,9 +648,9 @@ function SessionLogsTable() {
             </div>
 
             {/* Footer */}
-            {!isLoading && !isError && (
+            {!isLoading && !error && (
                 <div className={styles.footer}>
-                    Showing {filtered.length} of {sessions?.length ?? 0} session logs
+                    Showing {filtered.length} of {sessions.length} session logs
                 </div>
             )}
         </>

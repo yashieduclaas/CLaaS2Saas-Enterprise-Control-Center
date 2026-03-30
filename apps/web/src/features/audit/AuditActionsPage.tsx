@@ -95,12 +95,12 @@ function AuditActionsContent() {
           </thead>
           <tbody>
             {events.map((event) => (
-              <tr key={event.correlationId}>
+              <tr key={event.id}>
                 <td className={styles.td}>{event.timestamp}</td>
                 <td className={styles.td}>{event.userId}</td>
-                <td className={styles.td}>{event.actionName}</td>
-                <td className={styles.td}>{event.permissionCode}</td>
-                <td className={styles.td}>{event.outcome}</td>
+                <td className={styles.td}>{event.action}</td>
+                <td className={styles.td}>{event.resource}</td>
+                <td className={styles.td}>{event.result}</td>
               </tr>
             ))}
           </tbody>
